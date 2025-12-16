@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16 # Version
+    container_name: electro_pg
+    restart: always
+    environment:
+      POSTGRES_DB: electro_db
+      POSTGRES_USER: electro_user
+      POSTGRES_PASSWORD: electro_pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: electro_backend
+    command: npm run start:dev
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+
+  frontend:
+    image: node:20
+    container_name: electro_frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm run dev -- --host 0.0.0.0"
+
+volumes:
+  pgdata:
