@@ -8,11 +8,21 @@
 
     <!-- Center: Menu icons -->
      <nav class="navbar__menu">
-      <RouterLink to="/" class="nav-icon">Home</RouterLink>
-      <RouterLink to="/products" class="nav-icon">Product</RouterLink>
-      <RouterLink to="/categories" class="nav-icon">Order</RouterLink>
-      <RouterLink to="/orders" class="nav-icon">Admin</RouterLink>
-      <RouterLink to="/cart" class="nav-icon">Cart</RouterLink>
+      <RouterLink to="/" class="nav-icon">
+        <v-icon scale="1.5" name="hi-solid-home" />
+      </RouterLink>
+      <RouterLink to="/products" class="nav-icon">
+        <v-icon scale="1.5" name="fa-box" />
+      </RouterLink>
+      <RouterLink to="/categories" class="nav-icon">
+        <v-icon scale="1.5" name="fa-clipboard-list" />
+      </RouterLink>
+      <RouterLink to="/orders" class="nav-icon">
+        <v-icon scale="1.5" name="fa-user-tie" />
+      </RouterLink>
+      <RouterLink to="/cart" class="nav-icon">
+        <v-icon scale="1.5" name="fa-shopping-cart" />
+      </RouterLink>
      </nav>
 
      <!-- Right: Auth -->

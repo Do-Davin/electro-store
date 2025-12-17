@@ -1,0 +1,22 @@
+# Git
+.git
+.gitignore
+
+# Secrets
+.env
+
+# Database volume
+pgdata
+
+# Frontend (NOT dockerized)
+frontend/node_modules
+frontend/dist
+
+# Backend build output
+backend/node_modules
+backend/dist
+backend/target
+
+# OS
+.DS_Store
+Thumbs.db

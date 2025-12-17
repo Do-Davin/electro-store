@@ -92,5 +92,6 @@ const backgroundImage = ''
 /* Right image */
 .hero__image img {
   max-width: 420px;
+  transform: scale(1.35);
 }
 </style>
