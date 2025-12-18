@@ -8,9 +8,19 @@
       <span class="hero__tag">Hurry up only fews left!</span>
 
       <h1 class="hero__title">
-        Next-Level Smartphone <br>
-        Experience Starts Here - Discover <br>
-        iPhone 17 Pro Max Today!
+        <span class="hero__typing-box">
+          <TextType
+            :text="[
+              'Next-Level Smartphone\nExperience',
+              'Discover iPhone 17 Pro Max\nToday!'
+            ]"
+            :typingSpeed="70"
+            :pauseDuration="1200"
+            :showCursor="true"
+            cursorCharacter="|"
+            className="hero__typing"
+          />
+        </span>
       </h1>
 
       <div class="hero__actions">
@@ -25,7 +35,8 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
+  import TextType from '@/components/ui/TextType.vue';
 // const backgroundImage = '/hero-bg.avif'
 const backgroundImage = ''
 </script>
@@ -43,6 +54,7 @@ const backgroundImage = ''
   background-repeat: no-repeat;
   color: white;
   background-color: #000;
+  overflow: hidden;
 }
 
 /* Left */
@@ -61,6 +73,10 @@ const backgroundImage = ''
   font-size: 48px;
   font-weight: 700;
   line-height: 1.2;
+  position: relative;
+  min-height: calc(1.2em * 2);
+  height: auto;
+  overflow: hidden;
 }
 
 /* Action */
@@ -93,5 +109,26 @@ const backgroundImage = ''
 .hero__image img {
   max-width: 420px;
   transform: scale(1.35);
+}
+
+.hero-typing-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+
+.hero__typing {
+  transform: translateZ(0);
+  will-change: contents;
+  white-space: pre-line;
+}
+
+.hero__typing span {
+  display: block;
+  overflow: hidden;
 }
 </style>
