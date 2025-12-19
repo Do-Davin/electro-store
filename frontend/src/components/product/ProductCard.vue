@@ -1,30 +1,77 @@
 <template>
-  <div class="product-card">
-    <div class="image-wrapper">
-      <img :src="image" :alt="title" />
-    </div>
+  <div class="card">
+    <div class="product-card">
+      <div class="image-wrapper">
+        <img
+          :src="currentImage"
+          :alt="title"
+          :class="['product-image', { placeholder: isPlaceholder }]"
+          draggable="false"
+          @error="onImageError"
+        />
+      </div>
 
-    <h3>{{ title }}</h3>
-    <p class="price">{{ price }}</p>
+      <h3>{{ title }}</h3>
+      <p class="price">{{ price }}</p>
 
-    <div class="rating">
-      <span v-for="i in 5" :key="i" :class="{ active: i <= rating }">
-        ★
-      </span>
+      <div class="rating">
+        <span v-for="i in 5" :key="i" :class="{ active: i <= rating }">
+          ★
+        </span>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  title: string
-  price: string
-  image: string
-  rating: number
-}>()
+<script lang="ts">
+import { defineComponent, ref } from "vue";
+import placeholderImg from "@/assets/placeholder.png"
+
+export default defineComponent({
+  name: 'ProductCard',
+
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    rating: {
+      type: Number,
+      required: true,
+    },
+  },
+
+  setup(props) {
+    const isPlaceholder = ref(!props.image)
+    const currentImage = ref(props.image || placeholderImg);
+    const onImageError = () => {
+      currentImage.value = placeholderImg;
+      isPlaceholder.value = true
+    };
+    return {
+      currentImage,
+      isPlaceholder,
+      onImageError,
+     };
+  },
+});
 </script>
 
 <style scoped>
+.card {
+  display: flex;
+  flex-direction: row;
+}
+
 .product-card {
   margin: 20px;
   width: 280px;
@@ -36,18 +83,28 @@ defineProps<{
 
 /* IMAGE */
 .image-wrapper {
+  width: 100%;
+  height: 200px;
   background: #f6f6f6;
   border-radius: 16px;
-  padding: 20px;
   display: flex;
+  align-items: center;
   justify-content: center;
   margin-bottom: 16px;
+  overflow: hidden;
 }
 
 .image-wrapper img {
-  width: 160px;
-  height: auto;
+  width: 100%;
+  height: 100%;
+}
+
+.product-image:not(.placeholder) {
   object-fit: contain;
+}
+
+.product-image.placeholder {
+  object-fit: cover;
 }
 
 /* TEXT */
