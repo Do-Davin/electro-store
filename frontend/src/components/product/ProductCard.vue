@@ -5,7 +5,10 @@
         <img
           :src="currentImage"
           :alt="title"
-          :class="['product-image', { placeholder: isPlaceholder }]"
+          :class="{
+            'product-image': true,
+            placeholder: isPlaceholder
+          }"
           draggable="false"
           @error="onImageError"
         />
@@ -23,47 +26,49 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from "vue";
+<script setup>
+import { ref, watch } from "vue"
 import placeholderImg from "@/assets/placeholder.png"
 
-export default defineComponent({
-  name: 'ProductCard',
-
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: String,
-      required: true,
-    },
-    image: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    rating: {
-      type: Number,
-      required: true,
-    },
+const props = defineProps({
+  title: {
+    type: String,
+    required: true,
   },
+  price: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    default: "",
+  },
+  rating: {
+    type: Number,
+    required: true,
+  }
+})
 
-  setup(props) {
-    const isPlaceholder = ref(!props.image)
-    const currentImage = ref(props.image || placeholderImg);
-    const onImageError = () => {
-      currentImage.value = placeholderImg;
+const currentImage = ref(props.image || placeholderImg)
+const isPlaceholder = ref(!props.image)
+
+const onImageError = () => {
+  currentImage.value = placeholderImg
+  isPlaceholder.value = true
+}
+
+watch(
+  () => props.image,
+  (newImage) => {
+    if (newImage) {
+      currentImage.value = newImage
+      isPlaceholder.value = false
+    } else {
+      currentImage.value = placeholderImg
       isPlaceholder.value = true
-    };
-    return {
-      currentImage,
-      isPlaceholder,
-      onImageError,
-     };
-  },
-});
+    }
+  }
+)
 </script>
 
 <style scoped>
@@ -81,7 +86,6 @@ export default defineComponent({
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* IMAGE */
 .image-wrapper {
   width: 100%;
   height: 200px;
@@ -107,7 +111,6 @@ export default defineComponent({
   object-fit: cover;
 }
 
-/* TEXT */
 h3 {
   font-size: 26px;
   font-weight: 700;
@@ -122,7 +125,6 @@ h3 {
   margin-bottom: 10px;
 }
 
-/* RATING */
 .rating {
   font-size: 24px;
   letter-spacing: 4px;
