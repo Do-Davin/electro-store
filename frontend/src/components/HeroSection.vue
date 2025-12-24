@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-  import TextType from '@/components/ui/TextType.vue';
+  import TextType from './TextType.vue';
 // const backgroundImage = '/hero-bg.avif'
 const backgroundImage = ''
 </script>

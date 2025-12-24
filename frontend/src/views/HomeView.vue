@@ -1,4 +1,5 @@
 <template>
+  <Navbar />
   <HeroSection />
   <CategoryCarousel />
 
@@ -14,12 +15,14 @@
 <script lang="ts">
 import CategoryCarousel from '@/components/CategoryCarousel.vue';
 import HeroSection from '@/components/HeroSection.vue';
-import ProductCard from '@/components/product/ProductCard.vue';
+import Navbar from '@/components/Navbar.vue';
+import ProductCard from '@/modules/product/_components/ProductCard.vue';
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   name: 'HomeView',
   components: {
+    Navbar,
     HeroSection,
     CategoryCarousel,
     ProductCard,
