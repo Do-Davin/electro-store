@@ -1,0 +1,44 @@
+import { User } from 'src/modules/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { OrderItem } from './order-item.entity';
+
+export type OrderStatus =
+  | 'PENDING'
+  | 'PAID'
+  | 'PROCESSING'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
+@Entity('orders')
+export class Order {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @ManyToOne(() => User, (user) => user.orders, { eager: true })
+  user: User;
+
+  @OneToMany(() => OrderItem, (item) => item.order, {
+    cascade: true,
+    eager: true,
+    orphanedRowAction: 'delete',
+  })
+  items: OrderItem[];
+
+  @Column('decimal')
+  totalAmount: number;
+
+  @Column({ type: 'varchar', default: 'PENDING' })
+  status: OrderStatus;
+
+  @CreateDateColumn()
+  createdAt: Date;
+}
