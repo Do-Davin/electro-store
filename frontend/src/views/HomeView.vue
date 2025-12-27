@@ -34,7 +34,7 @@ export default defineComponent({
         id: 1,
         title: 'iPhone 17 Pro Max',
         price: '$1499.99',
-        image: '/src/assets/iphone17promax.png',
+        image: '/src/assets/img/iphone17promax.png',
         rating: 4,
       },
       {

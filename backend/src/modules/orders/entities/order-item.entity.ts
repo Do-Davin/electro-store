@@ -7,7 +7,9 @@ export class OrderItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Order, (order) => order.items)
+  @ManyToOne(() => Order, (order) => order.items, {
+    onDelete: 'CASCADE',
+  })
   order: Order;
 
   @ManyToOne(() => Product, { eager: true })
@@ -16,6 +18,6 @@ export class OrderItem {
   @Column()
   quantity: number;
 
-  @Column('decimal')
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   priceAtTime: number;
 }

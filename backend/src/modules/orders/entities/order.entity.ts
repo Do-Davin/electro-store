@@ -9,6 +9,15 @@ import {
 } from 'typeorm';
 import { OrderItem } from './order-item.entity';
 
+export type OrderStatus =
+  | 'PENDING'
+  | 'PAID'
+  | 'PROCESSING'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
 @Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn('uuid')
@@ -20,14 +29,15 @@ export class Order {
   @OneToMany(() => OrderItem, (item) => item.order, {
     cascade: true,
     eager: true,
+    orphanedRowAction: 'delete',
   })
   items: OrderItem[];
 
   @Column('decimal')
   totalAmount: number;
 
-  @Column({ default: 'PENDING' })
-  status: string;
+  @Column({ type: 'varchar', default: 'PENDING' })
+  status: OrderStatus;
 
   @CreateDateColumn()
   createdAt: Date;

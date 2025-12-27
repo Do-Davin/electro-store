@@ -28,7 +28,7 @@
 
 <script setup>
 import { ref, watch } from "vue"
-import placeholderImg from "@/assets/placeholder.png"
+import placeholderImg from "@/assets/img/placeholder.png"
 
 const props = defineProps({
   title: {

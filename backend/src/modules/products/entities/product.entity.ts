@@ -19,7 +19,7 @@ export class Product {
   @Column({ nullable: true })
   description: string;
 
-  @Column('decimal')
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
   // eager: true automatically loads category when fetching a product.

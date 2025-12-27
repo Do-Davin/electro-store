@@ -4,12 +4,12 @@ import {
   Get,
   Param,
   Post,
-  Req,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -28,7 +28,7 @@ export class UsersController {
   // Testing
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getMe(@Req() req) {
+  getMe(@Request() req) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     return req.user;
   }

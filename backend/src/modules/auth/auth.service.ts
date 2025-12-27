@@ -3,6 +3,8 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
+import { User } from '../users/entities/user.entity';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +28,17 @@ export class AuthService {
     const match = await bcrypt.compare(password, user.password);
     if (!match) throw new UnauthorizedException('Invalid password');
 
-    const payload = { sub: user.id, email: user.email };
+    return this.signToken(user);
+  }
+
+  // JWT SIGNING
+  async signToken(user: User): Promise<{ access_token: string }> {
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role, // User | Admin
+    };
+
     return {
       access_token: await this.jwt.signAsync(payload),
     };

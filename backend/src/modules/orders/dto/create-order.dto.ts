@@ -1,12 +1,18 @@
-import { IsArray, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsInt, IsUUID, Min, ValidateNested } from 'class-validator';
+
+class OrderItemInput {
+  @IsUUID()
+  productId: string;
+
+  @IsInt()
+  @Min(1)
+  quantity: number;
+}
 
 export class CreateOrderDto {
-  @IsUUID()
-  userId: string;
-
   @IsArray()
-  items: {
-    productId: string;
-    quantity: number;
-  }[];
+  @ValidateNested({ each: true })
+  @Type(() => OrderItemInput)
+  items: OrderItemInput[];
 }
