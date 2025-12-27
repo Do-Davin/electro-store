@@ -4,11 +4,17 @@ import { AppService } from './app.service';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './modules/products/products.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     CategoriesModule,
     ProductsModule,
+    OrdersModule,
+    UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'postgres',
