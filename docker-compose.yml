@@ -17,13 +17,10 @@ services:
   backend:
     build: ./backend
     container_name: electro_backend
-    command: npm run start:dev
     ports:
       - "3000:3000"
     depends_on:
       - postgres
-    volumes:
-      - ./backend:/app
     env_file:
       - ./backend/.env
 
