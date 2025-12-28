@@ -1,31 +1,25 @@
+import authRoutes from '@/modules/auth/_routes/auth.routes'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
     path: '/',
-    component: () => import('@/views/HomeView.vue'),
     name: 'HomeView',
-    // children: [
-    //   {
-    //     path: '',
-    //     name: 'Home',
-    //     component: () => import('@/views/HomeView.vue')
-    //   },
-    // ],
-    // redirect: {
-    //   path: '/',
-    //   component: () => import('@/views/HomeView.vue'),
-    //   name: 'HomeView',
-    // },
+    component: () => import('@/views/HomeView.vue'),
   },
   {
     path: '/dashboard',
-    component: () => import('@/views/DashboardView.vue'),
     name: 'DashboardView',
-  }
+    component: () => import('@/views/DashboardView.vue'),
+  },
+
+  // Inject Auth Module Routes
+  ...authRoutes
 ]
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+export default router;
