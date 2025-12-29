@@ -1,4 +1,5 @@
 import authRoutes from '@/modules/auth/_routes/auth.routes'
+import productRoutes from '@/modules/product/_routes/product.routes';
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -14,7 +15,9 @@ const routes = [
   },
 
   // Inject Auth Module Routes
-  ...authRoutes
+  ...authRoutes,
+  // Register Product Routes in Root Router
+  ...productRoutes
 ]
 
 const router = createRouter({

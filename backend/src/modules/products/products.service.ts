@@ -31,8 +31,45 @@ export class ProductsService {
     return this.productsRepo.save(product);
   }
 
-  findAll() {
-    return this.productsRepo.find();
+  async findAll({
+    page = 1,
+    limit = 12,
+    search,
+    category,
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+  }) {
+    const qb = this.productsRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category');
+
+    if (search) {
+      qb.andWhere('LOWER(product.name) LIKE LOWER(:search)', {
+        search: `%${search}%`,
+      });
+    }
+
+    if (category) {
+      qb.andWhere('category.id = :categoryId', { categoryId: category });
+    }
+
+    qb.skip((page - 1) * limit).take(limit);
+
+    const [data, total] = await qb.getManyAndCount();
+
+    console.log('[PRODUCT]: Get all product');
+    console.log('[PRODUCT] USING PAGINATED FIND ALL');
+
+    return {
+      data,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: string) {

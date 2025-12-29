@@ -11,6 +11,9 @@ export class CreateProductDto {
   @IsNumber()
   price: number;
 
+  @IsString()
+  imageUrl: string;
+
   @IsUUID()
   categoryId: string;
 }

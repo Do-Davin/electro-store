@@ -4,6 +4,8 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { addIcons, OhVueIcon } from 'oh-vue-icons'
+import axios from 'axios'
+axios.defaults.baseURL = 'http://localhost:3000'
 
 import {
   FaUserTie,
