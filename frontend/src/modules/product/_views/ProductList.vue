@@ -1,129 +1,179 @@
 <template>
-  <section class="container">
-    <h1>All Product</h1>
+  <Navbar />
 
-    <!-- Filter -->
-     <div class="filter-wrapper">
-      <SearchBar v-model="search" @search="fetchProducts" />
+  <div class="card mt-6 px-6">
+    <DataView :value="products" :layout="layout">
+      <!-- ===== Switch Layout Button ===== -->
+      <template #header>
+        <div class="flex justify-end mb-3">
+          <SelectButton v-model="layout" :options="options" :allowEmpty="false">
+            <template #option="{ option }">
+              <i :class="[option === 'list' ? 'pi pi-bars' : 'pi pi-table']" />
+            </template>
+          </SelectButton>
+        </div>
+      </template>
 
-      <CategoryFilter
-        :categories="categories"
-        v-model="selectedCategory"
-        @change="fetchProducts"
-      />
-     </div>
+      <!-- ===== LIST VIEW ===== -->
+      <template #list="slotProps">
+        <div class="flex flex-col">
+          <div
+            v-for="(item, index) in slotProps.items"
+            :key="index"
+          >
+            <div
+              class="flex flex-col sm:flex-row sm:items-center p-6 gap-4"
+              :class="{ 'border-t border-surface-200 dark:border-surface-700': index !== 0 }"
+            >
+              <div class="md:w-40">
+                <img
+                  class="w-full rounded"
+                  :src="item.imageUrl"
+                  :alt="item.name"
+                />
+              </div>
 
-     <!-- Product -->
-      <div v-if="loading">Loading...</div>
+              <div class="flex justify-between items-center flex-1 gap-6">
+                <div>
+                  <span class="text-sm text-gray-500">
+                    {{ item.category?.name }}
+                  </span>
+                  <div class="text-lg font-medium mt-1">
+                    {{ item.name }}
+                  </div>
+                </div>
 
-      <div v-else-if="products.length === 0">
-        No product found
-      </div>
+                <div class="flex flex-col items-end gap-4">
+                  <span class="text-xl font-semibold">
+                    ${{ Number(item.price).toFixed(2) }}
+                  </span>
 
-      <div class="grid" v-else>
-        <ProductCard
-          v-for="p in products"
-          :key="p.id"
-          :title="p.name"
-          :price="'$' + p.price"
-          :image="p.imageUrl || ''"
-          :rating="p.rating || 4"
-        />
-      </div>
+                  <div class="flex gap-2">
+                    <Button icon="pi pi-heart" variant="outlined" />
+                    <Button
+                      icon="pi pi-shopping-cart"
+                      label="Buy Now"
+                      class="flex-auto whitespace-nowrap"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
 
-      <!-- Pagination -->
-       <Pagination
-        :page="page"
-        :totalPages="totalPages"
-        @change="changePage"
-       />
-  </section>
+      <!-- ===== GRID VIEW ===== -->
+      <template #grid="slotProps">
+        <div class="grid grid-cols-12 gap-4">
+          <div
+            v-for="(item, index) in slotProps.items"
+            :key="index"
+            class="col-span-12 sm:col-span-6 md:col-span-4 xl:col-span-3 p-2"
+          >
+            <div
+              class="p-4 border rounded bg-white flex flex-col"
+            >
+              <div class="flex justify-center rounded p-3">
+                <img
+                  class="rounded w-full"
+                  :src="item.imageUrl"
+                  :alt="item.name"
+                  style="max-width: 250px"
+                />
+              </div>
+
+              <div class="pt-4">
+                <span class="text-sm text-gray-500">
+                  {{ item.category?.name }}
+                </span>
+
+                <div class="text-lg font-medium mt-1">
+                  {{ item.name }}
+                </div>
+
+                <div class="flex flex-col gap-4 mt-4">
+                  <span class="text-xl font-semibold">
+                    ${{ Number(item.price).toFixed(2) }}
+                  </span>
+
+                  <div class="flex gap-2">
+                    <Button
+                      icon="pi pi-shopping-cart"
+                      label="Buy Now"
+                      severity="primary"
+                      class="flex-auto whitespace-nowrap"
+                    />
+                    <Button icon="pi pi-heart" variant="outlined" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </DataView>
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
-import CategoryFilter from '../_components/CategoryFilter.vue';
-import Pagination from '../_components/Pagination.vue';
-import ProductCard from '../_components/ProductCard.vue';
-import SearchBar from '../_components/SearchBar.vue';
+import axios from "axios";
+import DataView from 'primevue/dataview'
+import SelectButton from 'primevue/selectbutton'
+import Button from 'primevue/button'
+import Tag from 'primevue/tag'
+import Navbar from "@/components/Navbar.vue";
 
 export default {
-  name: "ProductList",
-
   components: {
-    ProductCard,
-    CategoryFilter,
-    SearchBar,
-    Pagination
+    Navbar,
+    DataView,
+    SelectButton,
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Button,
+    // eslint-disable-next-line vue/no-unused-components
+    Tag
   },
 
   data() {
     return {
-      loading: false,
-
       products: [],
-      categories: [],
-
-      page: 1,
-      limit: 12,
-      totalPages: 1,
-
-      search: "",
-      selectedCategory: "",
+      layout: "grid",
+      options: ["list", "grid"],
     };
   },
 
-  created() {
-    this.fetchCategories()
-    this.fetchProducts()
+  async mounted() {
+    await this.fetchProducts();
   },
 
   methods: {
     async fetchProducts() {
-      this.loading = true
+      const res = await axios.get("/products", {
+        params: { page: 1, limit: 12 }
+      });
 
-      const params = {
-        page: this.page,
-        limit: this.limit,
+      // backend returns: data[]
+      this.products = res.data.data;
+    },
+
+    getSeverity(product) {
+      // If don’t have inventoryStatus in backend,
+      // just force INSTOCK for now
+      if (!product.inventoryStatus) return "success";
+
+      switch (product.inventoryStatus) {
+        case "INSTOCK":
+          return "success";
+        case "LOWSTOCK":
+          return "warn";
+        case "OUTOFSTOCK":
+          return "danger";
+        default:
+          return null;
       }
-
-      if (this.search) params.search = this.search
-      if (this.selectedCategory) params.category = this.selectedCategory
-
-      const res = await axios.get("/products", { params })
-
-      this.products = res.data.data
-      this.totalPages = res.data.totalPages
-      this.loading = false
-    },
-
-    async fetchCategories() {
-      const res = await axios.get("/categories")
-      this.categories = res.data
-    },
-
-    changePage(newPage) {
-      this.page = newPage
-      this.fetchProducts()
     },
   },
-}
+};
 </script>
 
-<style scoped>
-.container {
-  padding: 30px 80px;
-}
-
-.grid {
-  margin-top: 30px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.filter-wrapper {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-</style>

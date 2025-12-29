@@ -16,5 +16,6 @@
   font-size: 1.5rem;
   justify-content:center;
   align-items: center;
+  border: 2px solid red;
 }
 </style>
