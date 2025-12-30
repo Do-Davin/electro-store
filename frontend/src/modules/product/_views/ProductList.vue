@@ -124,6 +124,7 @@ export default {
     SearchBar,
     Pagination,
 
+    // From tailwindcss
     // eslint-disable-next-line vue/no-reserved-component-names
     Select,
     SelectContent,
