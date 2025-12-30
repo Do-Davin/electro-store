@@ -14,6 +14,8 @@ import {
   FaClipboardList,
   FaBox,
   HiSolidHome,
+  BiGrid1X2Fill,
+  IoListSharp,
 } from 'oh-vue-icons/icons'
 
 addIcons(
@@ -22,7 +24,9 @@ addIcons(
   FaBars,
   FaClipboardList,
   FaBox,
-  HiSolidHome
+  HiSolidHome,
+  BiGrid1X2Fill,
+  IoListSharp
 )
 
 const app = createApp(App)
