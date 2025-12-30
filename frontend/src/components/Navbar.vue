@@ -1,92 +1,44 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <header class="navbar">
+  <header
+    class="fixed top-0 left-0 w-full z-50 flex items-center justify-between h-16 p-8
+    border-b border-gray-200 dark:border-gray-700 bg-white">
     <!-- Left: Logo -->
-    <div class="navbar__logo">
+    <div class="font-bold text-[18px] text-primary items-center">
       &lt;DT /&gt;
     </div>
 
     <!-- Center: Menu icons -->
-     <nav class="navbar__menu">
-      <RouterLink to="/" class="nav-icon">
-        <v-icon scale="1.5" name="hi-solid-home" />
+     <div class="flex gap-7 items-center">
+      <RouterLink to="/">
+        <Home class="w-6 h-6" />
       </RouterLink>
-      <RouterLink to="/products" class="nav-icon">
-        <v-icon scale="1.5" name="fa-box" />
+      <RouterLink to="/products">
+        <Box class="w-6 h-6" />
       </RouterLink>
-      <RouterLink to="/categories" class="nav-icon">
-        <v-icon scale="1.5" name="fa-clipboard-list" />
+      <RouterLink to="/categories">
+        <List class="w-6 h-6" />
       </RouterLink>
-      <RouterLink to="/orders" class="nav-icon">
-        <v-icon scale="1.5" name="fa-user-tie" />
+      <RouterLink to="/orders">
+        <User class="w-6 h-6" />
       </RouterLink>
-      <RouterLink to="/cart" class="nav-icon">
-        <v-icon scale="1.5" name="fa-shopping-cart" />
+      <RouterLink to="/cart">
+        <ShoppingCart class="w-6 h-6" />
       </RouterLink>
-     </nav>
 
-     <!-- Right: Auth -->
-      <div class="navbar__auth">
-        <button class="btn-signin">Sign In</button>
-      </div>
+      <button
+        class="inline-flex justify-center items-center px-6 py-2 rounded-xl
+        bg-primary text-white text-sm font-medium
+        hover:bg-primary/90
+        active:scale-[0.98]"
+      >
+        Sign In
+      </button>
+    </div>
   </header>
 </template>
 
 <script setup>
 import { RouterLink } from 'vue-router';
+import { Home, Box, List, User, ShoppingCart } from 'lucide-vue-next';
 </script>
-
-<style scoped>
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 72px;
-  padding: 0 32px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #eaeaea;
-}
-
-/* Logo */
-.navbar__logo {
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--primary);
-}
-
-/* Menu */
-.navbar__menu {
-  display: flex;
-  gap: 28px;
-}
-
-.nav-icon {
-  font-size: 18px;
-  color: #555;
-  transition: color 0.2s;
-}
-
-.nav-icon:hover {
-  color: var(--primary);
-}
-
-/* Auth */
-.navbar__auth {
-  display: flex;
-  align-items: center;
-}
-
-.btn-signin {
-  padding: 8px 18px;
-  border-radius: 8px;
-  border: none;
-  background-color: var(--primary);
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.btn-signin:hover {
-  opacity: 0.9;
-}
-</style>

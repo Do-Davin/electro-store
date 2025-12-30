@@ -12,7 +12,7 @@
         @change="fetchProducts"
       /> -->
       <Select v-model="selectedCategory" @update:modelValue="fetchProducts">
-        <SelectTrigger class="w-[200px]">
+        <SelectTrigger class="w-50">
           <SelectValue placeholder="All Categories"/>
         </SelectTrigger>
 
@@ -39,12 +39,12 @@
      </div>
 
      <div class="view-toggle">
-       <button @click="viewMode='list'" id="btn-col">
-         <v-icon scale="1.5" name="io-list-sharp"></v-icon>
-       </button>
+       <button @click="viewMode='list'">
+         <TextAlignJustify class="w-6 h-8" />
+        </button>
 
-       <button @click="viewMode='grid'" id="btn-col">
-         <v-icon scale="1.5" name="bi-grid-1x2-fill"></v-icon>
+        <button @click="viewMode='grid'">
+         <LayoutPanelLeft class="w-6 h-8" />
        </button>
      </div>
   </div>
@@ -103,6 +103,7 @@ import Pagination from '../_components/Pagination.vue';
 import ProductCard from '../_components/ProductCard.vue';
 import SearchBar from '../_components/SearchBar.vue';
 import Navbar from '@/components/Navbar.vue';
+import { LayoutPanelLeft, TextAlignJustify } from 'lucide-vue-next';
 
 import {
   Select,
@@ -133,6 +134,8 @@ export default {
     SelectLabel,
     SelectTrigger,
     SelectValue,
+    LayoutPanelLeft,
+    TextAlignJustify,
   },
 
   data() {
@@ -192,8 +195,10 @@ export default {
 
 <style scoped>
 .container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px 20px;
   border: 1px solid #000;
-  padding: 30px 80px;
 }
 
 .nav-bar {
@@ -202,6 +207,7 @@ export default {
   align-items: center;
   padding: 20px;
   gap: 20px;
+  padding-top: calc(var(--spacing) * 20)
 }
 
 .filter-wrapper {
@@ -213,15 +219,6 @@ export default {
 .view-toggle {
   display: flex;
   gap: 10px;
-}
-
-#btn-col {
-  background: white;
-  border: 1px solid #ddd;
-  color: var(--primary);
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
 }
 
 .grid {
