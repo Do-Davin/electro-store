@@ -1,10 +1,10 @@
 <template>
   <Navbar />
-  <div class="nav-bar">
+  <div class="flex justify-between items-center p-5 gap-5 pt-20">
     <h1>All Product</h1>
 
     <!-- Filter -->
-     <div class="filter-wrapper">
+     <div class="flex items-center gap-4">
       <SearchBar v-model="search" @search="fetchProducts" />
       <!-- <CategoryFilter
         :categories="categories"
@@ -38,7 +38,7 @@
       </Select>
      </div>
 
-     <div class="view-toggle">
+     <div class="flex gap-2.5">
        <button @click="viewMode='list'">
          <TextAlignJustify class="w-6 h-8" />
         </button>
@@ -57,7 +57,8 @@
       </div>
 
       <!-- GRID VIEW -->
-      <div v-else-if="viewMode==='grid'" class="grid">
+      <!-- grid-cols-3 = grid-template-columns: repeat(3, 1fr); [Don't delete this] -->
+      <div v-else-if="viewMode==='grid'" class="grid mt-7.5 gap-6.25 grid-cols-3">
         <ProductCard
           v-for="p in products"
           :key="p.id"
@@ -69,15 +70,15 @@
       </div>
 
       <!-- LIST VIEW -->
-       <div v-else class="list">
+       <div v-else class="flex mt-7.5 flex-col gap-4.5">
         <div
           v-for="p in products"
           :key="p.id"
-          class="list-item"
+          class="flex items-center justify-between border border-[#ddd] p-3 rounded-lg"
         >
-          <img :src="p.imageUrl">
-          <div class="info">
-            <h3>{{ p.name }}</h3>
+          <img class="w-21.25 h-21.25 object-cover rounded-md" :src="p.imageUrl">
+          <div>
+            <h3 class="m-0 font-semibold">{{ p.name }}</h3>
             <p>${{ p.price }}</p>
           </div>
 
@@ -87,7 +88,7 @@
 
     </div>
     <!-- Pagination -->
-     <div class="pagination">
+     <div class="flex justify-center items-center text-[30px]">
        <Pagination
         :page="page"
         :totalPages="totalPages"
@@ -201,42 +202,42 @@ export default {
   border: 1px solid #000;
 }
 
-.nav-bar {
+/* .nav-bar {
   display: flex;
   justify-content:space-between;
   align-items: center;
   padding: 20px;
   gap: 20px;
   padding-top: calc(var(--spacing) * 20)
-}
+} */
 
-.filter-wrapper {
+/* .filter-wrapper {
   display: flex;
   align-items: center;
   gap: 16px;
-}
+} */
 
-.view-toggle {
+/* .view-toggle {
   display: flex;
   gap: 10px;
-}
+} */
 
-.grid {
+/* .grid {
   margin-top: 30px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 25px;
-}
+} */
 
 /* LIST VIEW */
-.list {
+/* .list {
   margin-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-}
+} */
 
-.list-item {
+/* .list-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -250,12 +251,12 @@ export default {
   height: 85px;
   object-fit: cover;
   border-radius: 6px;
-}
+} */
 
-.info h3 {
+/* .info h3 {
   margin: 0;
   font-weight: 600;
-}
+} */
 
 .buy-btn {
   background: var(--primary);
@@ -265,10 +266,10 @@ export default {
   border: none;
 }
 
-.pagination {
+/* .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 30px;
-}
+} */
 </style>
