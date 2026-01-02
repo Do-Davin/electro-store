@@ -22,7 +22,7 @@ export class Product {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
-  @Column({ type: 'varchar', length: 500, nullable: true })
+  @Column({ nullable: true })
   imageUrl: string;
 
   // eager: true automatically loads category when fetching a product.

@@ -25,9 +25,11 @@ export class ProductsService {
       name: dto.name,
       description: dto.description,
       price: dto.price,
+      imageUrl: dto.imageUrl,
       category,
     });
 
+    console.log(`[PRODUCT] created successfully!`);
     return this.productsRepo.save(product);
   }
 
