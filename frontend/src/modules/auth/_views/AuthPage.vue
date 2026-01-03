@@ -8,10 +8,22 @@
         </div>
       </div>
     </div>
+
     <div class="signup-below">
-      <span>Don't have an account yet? </span>
-      <a class="signup-link" href="/auth/register">Sign Up</a>
+      <span>
+        {{$route.name === 'Register'
+          ? 'Already have an account?'
+          : "Don't have an account yet?"}}
+      </span>
+
+      <RouterLink
+        class="signup-link"
+        :to="$route.name === 'Register' ? '/auth/login' : '/auth/register'"
+      >
+        {{$route.name === 'Register' ? 'Login' : 'Sign Up'}}
+      </RouterLink>
     </div>
+
   </div>
 </template>
 
@@ -24,6 +36,7 @@
   justify-content: center;
   padding: 2rem;
   position: relative;
+  overflow: hidden;
 }
 
 .welcome-text {
@@ -56,10 +69,12 @@
 }
 
 .form-content {
+  height: 100%;
   transform: rotate(-45deg);
   width: 420px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 1.5rem;
 }
 
@@ -91,12 +106,12 @@
     left: 2rem;
     font-size: 2rem;
   }
-  
+
   .diamond {
     width: 400px;
     height: 400px;
   }
-  
+
   .form-content {
     width: 280px;
   }
@@ -107,7 +122,7 @@
     width: 320px;
     height: 320px;
   }
-  
+
   .form-content {
     width: 240px;
   }
