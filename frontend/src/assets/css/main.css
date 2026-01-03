@@ -27,6 +27,10 @@
   --foreground: white;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Base layer */
 @layer base {
   * {

@@ -27,8 +27,7 @@ export class Product {
 
   // eager: true automatically loads category when fetching a product.
   @ManyToOne(() => Category, (category) => category.products, {
-    onDelete: 'SET NULL',
-    eager: true,
+    onDelete: 'RESTRICT',
   })
   category: Category;
 

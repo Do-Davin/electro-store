@@ -1,16 +1,11 @@
 <template>
   <Navbar />
   <div class="flex justify-between items-center p-5 gap-5 pt-20">
-    <h1>All Product</h1>
+    <h1 class="text-primary text-2xl font-bold">All Product</h1>
 
     <!-- Filter -->
      <div class="flex items-center gap-4">
       <SearchBar v-model="search" @search="fetchProducts" />
-      <!-- <CategoryFilter
-        :categories="categories"
-        v-model="selectedCategory"
-        @change="fetchProducts"
-      /> -->
       <Select v-model="selectedCategory" @update:modelValue="fetchProducts">
         <SelectTrigger class="w-50">
           <SelectValue placeholder="All Categories"/>
@@ -66,6 +61,7 @@
           :price="'$' + p.price"
           :image="p.imageUrl"
           :rating="p.rating || 4"
+          :category="p.category"
         />
       </div>
 

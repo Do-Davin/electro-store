@@ -15,16 +15,15 @@ export class ProductsService {
     private categoriesRepo: Repository<Category>,
   ) {}
 
-  async create(dto: CreateProductDto) {
+  async create(dto: CreateProductDto, file: Express.Multer.File) {
     const category = await this.categoriesRepo.findOneBy({
       id: dto.categoryId,
     });
     if (!category) throw new NotFoundException('Category not found');
 
     const product = this.productsRepo.create({
-      name: dto.name,
-      description: dto.description,
-      price: dto.price,
+      ...dto,
+      imageUrl: `http://localhost:3000/uploads/products/${file.filename}`,
       category,
     });
 
@@ -78,15 +77,23 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, dto: UpdateProductDto) {
+  async update(id: string, dto: UpdateProductDto, file?: Express.Multer.File) {
     const product = await this.findOne(id);
 
+    // Update category if provided
     if (dto.categoryId) {
       const category = await this.categoriesRepo.findOneBy({
         id: dto.categoryId,
       });
+
       if (!category) throw new NotFoundException('Category not found');
+
       product.category = category;
+    }
+
+    // Update image only if new one uploaded
+    if (file) {
+      product.imageUrl = `http://localhost:3000/uploads/products/${file.filename}`;
     }
 
     Object.assign(product, dto);
