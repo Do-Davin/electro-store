@@ -25,15 +25,16 @@
       <RouterLink to="/cart">
         <ShoppingCart class="w-6 h-6" />
       </RouterLink>
-
-      <button
-        class="inline-flex justify-center items-center px-6 py-2 rounded-xl
-        bg-primary text-white text-sm font-medium
-        hover:bg-primary/90
-        active:scale-[0.98]"
-      >
-        Sign In
-      </button>
+      <RouterLink to="/auth/login">
+        <button
+          class="inline-flex justify-center items-center px-6 py-2 rounded-xl
+          bg-primary text-white text-sm font-medium
+          hover:bg-primary/90
+          active:scale-[0.98]"
+        >
+          Sign In
+        </button>
+      </RouterLink>
     </div>
   </header>
 </template>

@@ -12,7 +12,7 @@
           <TextType
             :text="[
               'Next-Level Smartphone\nExperience',
-              'Discover iPhone 17 Pro Max\nToday!'
+              'Discover IPhone 17 Pro Max\nToday!'
             ]"
             :typingSpeed="70"
             :pauseDuration="1200"

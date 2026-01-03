@@ -1,3 +1,3 @@
 <template>
-  <h1>LoginForm component</h1>
+  <h1></h1>
 </template>
