@@ -1,3 +1,7 @@
+<script setup>
+import RegisterForm from '../_components/RegisterForm.vue';
+</script>
+
 <template>
-  <h1>This is Register Page</h1>
+  <RegisterForm />
 </template>

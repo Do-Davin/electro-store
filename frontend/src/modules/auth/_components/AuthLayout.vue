@@ -4,9 +4,13 @@
     <div class="diamond-container">
       <div class="diamond">
         <div class="form-content">
-          <slot></slot>
+          <router-view />
         </div>
       </div>
+    </div>
+    <div class="signup-below">
+      <span>Don't have an account yet? </span>
+      <a class="signup-link" href="/auth/register">Sign Up</a>
     </div>
   </div>
 </template>
@@ -41,8 +45,8 @@
 }
 
 .diamond {
-  width: 500px;
-  height: 500px;
+  width: 560px;
+  height: 560px;
   transform: rotate(45deg);
   border: 2px solid #FFF3CD;
   display: flex;
@@ -53,10 +57,31 @@
 
 .form-content {
   transform: rotate(-45deg);
-  width: 350px;
+  width: 420px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.signup-below {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #FFF3CD;
+  font-size: 0.95rem;
+  z-index: 20;
+}
+
+.signup-below .signup-link {
+  color: #ffffff;
+  text-decoration: underline;
+  margin-left: 0.25rem;
+}
+
+.signup-below .signup-link:hover {
+  color: rgba(230, 210, 160, 0.95);
 }
 
 /* Responsive adjustments */

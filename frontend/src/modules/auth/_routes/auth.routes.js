@@ -3,6 +3,7 @@ export default [
     path: '/auth',
     redirect: '/auth/login',
     meta: { guestOnly: true },
+    component: () => import('../_components/AuthLayout.vue'),
 
     children: [
       {
