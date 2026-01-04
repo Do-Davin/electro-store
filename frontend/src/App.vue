@@ -1,6 +1,5 @@
 <template>
-  <!-- <HomeView /> -->
-  <router-view/>
+  <router-view />
 </template>
 
 <script setup>

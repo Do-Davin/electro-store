@@ -27,12 +27,21 @@
   --foreground: white;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 /* Base layer */
 @layer base {
+  html, body {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  html {
+    scrollbar-width: none;
+  }
   * {
     @apply border-border outline-ring/50;
   }

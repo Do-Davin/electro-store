@@ -164,7 +164,6 @@ export default {
       }
 
       if (this.search) params.search = this.search
-      // if (this.selectedCategory) params.category = this.selectedCategory
       if (this.selectedCategory && this.selectedCategory !== "all") {
         params.category = this.selectedCategory
       }

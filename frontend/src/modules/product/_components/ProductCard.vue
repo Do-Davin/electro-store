@@ -45,7 +45,7 @@
       <button
         class="flex-1 bg-primary text-white py-2 rounded-xl flex justify-center items-center gap-2"
       >
-        <ShoppingCart /> Buy Now
+        <ShoppingCart /> Add To Cart
       </button>
 
       <button
