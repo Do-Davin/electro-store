@@ -1,6 +1,7 @@
 <template>
   <Navbar />
   <HeroSection />
+  <PromoBanner />
   <CategoryCarousel />
   <FeaturedProductComponent />
   <TrustSection />
@@ -10,6 +11,7 @@
 <script setup>
 import CategoryCarousel from '@/components/CategoryCarousel.vue';
 import HeroSection from '@/components/HeroSection.vue';
+import PromoBanner from '@/components/PromoBanner.vue';
 import Navbar from '@/components/Navbar.vue';
 import FeaturedProductComponent from '@/components/FeaturedProductComponent.vue';
 import TrustSection from '@/components/TrustSection.vue';

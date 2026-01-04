@@ -16,7 +16,7 @@
         >
           <component :is="item.icon" class="w-10 h-10 text-primary mb-3" />
 
-          <h3 class="text-lg font-semibold text-foreground">
+          <h3 class="text-lg font-semibold text-primary">
             {{ item.title }}
           </h3>
 
