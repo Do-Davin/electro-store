@@ -3,10 +3,10 @@
         transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
     <!-- Image Box -->
     <div
-      class="relative w-full h-48 bg-[#f6f6f6f6] rounded-2xl flex items-center justify-center overflow-hidden mb-4"
+      class="relative w-full h-48 bg-white rounded-2xl flex items-center justify-center overflow-hidden mb-4"
     >
       <span
-        class="absolute top-3 left-3 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-lg"
+        class="absolute top-1 left-45 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-lg"
       >
         INSTOCK
       </span>
@@ -26,13 +26,13 @@
     </p>
 
     <!-- Title -->
-    <h3 class="text-xl font-bold text-[#0b2c5f] mb-2">
+    <p class="text-2xl font-bold text-[#0b2c5f] mb-2">
       {{ title }}
-    </h3>
+    </p>
 
     <!-- Price + Rating Row -->
     <div class="flex justify-between items-center mb-4">
-      <p class="text-2xl font-bold text-[#0b2c5f]">{{ price }}</p>
+      <p class=" text-xl font-bold text-[#0b2c5f]">{{ price }}</p>
 
       <span class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full shadow">
         <span class="font-bold">{{ rating }}</span>

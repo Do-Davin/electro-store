@@ -195,7 +195,6 @@ export default {
   max-width: 1200px;
   margin: 40px auto;
   padding: 30px 20px;
-  border: 1px solid #000;
 }
 
 /* .nav-bar {
