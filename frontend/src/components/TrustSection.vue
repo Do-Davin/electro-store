@@ -1,5 +1,5 @@
 <template>
-  <section class="w-full py-16 bg-white dark:bg-[#0b2447]">
+  <section class="w-full py-16 bg-[#f8f9fc] dark:bg-[#0b2447]">
     <div class="max-w-6xl mx-auto px-6">
       <h2 class="text-3xl font-bold text-center text-primary mb-10">Why Buy From Us?</h2>
 

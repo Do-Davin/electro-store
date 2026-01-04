@@ -5,6 +5,7 @@
   <CategoryCarousel />
   <FeaturedProductComponent />
   <BestSellerComponent />
+  <BrandsSection />
   <TrustSection />
   <Footer />
 </template>
@@ -16,6 +17,7 @@ import PromoBanner from '@/components/PromoBanner.vue';
 import Navbar from '@/components/Navbar.vue';
 import FeaturedProductComponent from '@/components/FeaturedProductComponent.vue';
 import BestSellerComponent from '@/components/BestSellerComponent.vue';
+import BrandsSection from '@/components/BrandsSection.vue';
 import TrustSection from '@/components/TrustSection.vue';
 import Footer from '@/components/Footer.vue';
 </script>
