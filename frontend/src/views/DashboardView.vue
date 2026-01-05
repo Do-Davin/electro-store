@@ -1,12 +1,27 @@
 <template>
-  <h1 id="myH1" >This is Dashboard</h1>
+  <div class="dashboard-layout">
+    <Sidebarcomponent />
+    <main class="content">
+      <h1>Dashboard View</h1>
+      <!-- Dashboard content goes here -->
+    </main>
+  </div>
 </template>
 
+<script setup>
+import Sidebarcomponent from '@/modules/dashboard/_components/SidebarComponent.vue';
+</script>
+
 <style scoped>
-#myH1 {
-  min-height: 100vh;
+.dashboard-layout {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 100vh;
+}
+.content {
+  flex: 1 1 auto;
+  padding: 32px;
+}
+h1 {
+  color: #0f3b5a;
 }
 </style>
