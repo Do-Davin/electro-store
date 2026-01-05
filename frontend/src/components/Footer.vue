@@ -37,7 +37,7 @@
 
           <div class="flex items-center gap-2">
             <Phone />
-            <span>071 711 7773</span>
+            <span>076 214 7429</span>
           </div>
 
           <div class="flex items-center gap-2">
@@ -47,7 +47,7 @@
 
           <div class="flex items-center gap-2">
             <Mail />
-            <span>dodavin96@gmail.com</span>
+            <span>sereyvongtat@gmail.com</span>
           </div>
         </div>
       </div>
