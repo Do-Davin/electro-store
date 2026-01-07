@@ -1,6 +1,7 @@
 import authRoutes from '@/modules/auth/_routes/auth.routes'
 import cartRoutes from '@/modules/cart/_routes/cart.routes';
 import categoryRoutes from '@/modules/category/_routes/category.routes';
+import dealsRoutes from '@/modules/deal/_router/deals.routes';
 import orderRoutes from '@/modules/order/_routes/order.routes';
 import productRoutes from '@/modules/product/_routes/product.routes';
 import { createRouter, createWebHistory } from 'vue-router'
@@ -26,7 +27,9 @@ const routes = [
   // Register Cart Routes in Root Router
   ...cartRoutes,
   // Register Order Routes in Root Router
-  ...orderRoutes
+  ...orderRoutes,
+  // Register Order Routes in Root Router
+  ...dealsRoutes
 ]
 
 const router = createRouter({

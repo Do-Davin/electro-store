@@ -33,7 +33,7 @@
       transition"
       @click="visible = false"
     >
-      <CircleX class="text-red-500 w-8 h-8 hover:text-red-600 transition-transform
+      <CircleX class="text-red-500 w-5 h-5 hover:text-red-600 transition-transform
       duration-200 ease-out hover:scale-105 active:scale-95" />
     </button>
   </div>

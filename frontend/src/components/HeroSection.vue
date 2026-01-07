@@ -24,8 +24,21 @@
       </h1>
 
       <div class="hero__actions">
-        <button class="btn-primary">Shop Now</button>
-        <a href="#" class="btn-link">Explore Deals →</a>
+        <RouterLink
+          to="/products"
+          class="btn-primary"
+          draggable="false"
+        >
+          Shop Now
+        </RouterLink>
+
+        <RouterLink
+          to="/deals"
+          class="btn-link"
+          draggable="false"
+        >
+          Explore Deals →
+        </RouterLink>
       </div>
     </div>
 
@@ -36,7 +49,8 @@
 </template>
 
 <script setup lang="ts">
-  import TextType from './TextType.vue';
+import { RouterLink } from 'vue-router';
+import TextType from './TextType.vue';
 // const backgroundImage = '/hero-bg.avif'
 const backgroundImage = ''
 </script>
@@ -94,10 +108,20 @@ const backgroundImage = ''
   color: white;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  filter: brightness(1.05);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  filter: brightness(0.95);
 }
 
 .btn-link {
