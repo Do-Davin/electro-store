@@ -19,11 +19,11 @@
       <RouterLink to="/categories">
         <List class="w-6 h-6" />
       </RouterLink>
-      <RouterLink to="/orders">
-        <User class="w-6 h-6" />
-      </RouterLink>
-      <RouterLink to="/cart">
+      <RouterLink to="/carts">
         <ShoppingCart class="w-6 h-6" />
+      </RouterLink>
+      <RouterLink to="/orders">
+        <ClipboardCheck class="w-6 h-6" />
       </RouterLink>
       <RouterLink to="/auth/login">
         <button
@@ -41,5 +41,5 @@
 
 <script setup>
 import { RouterLink } from 'vue-router';
-import { Home, Box, List, User, ShoppingCart } from 'lucide-vue-next';
+import { Home, Box, List, ShoppingCart, ClipboardCheck } from 'lucide-vue-next';
 </script>
