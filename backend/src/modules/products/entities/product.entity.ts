@@ -31,6 +31,15 @@ export class Product {
   })
   category: Category;
 
+  @Column({ type: 'int', default: 0 })
+  stock: number;
+
+  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
+  rating: number;
+
+  @Column({ type: 'int', default: 0 })
+  discountPercent: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
