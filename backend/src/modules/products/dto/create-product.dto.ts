@@ -43,6 +43,7 @@ export class CreateProductDto {
   rating?: number;
 
   @Type(() => Number)
+  @IsNumber()
   @IsOptional()
   @IsInt()
   @Min(0)

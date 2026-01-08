@@ -1,29 +1,4 @@
 <!-- eslint-disable vue/multi-word-component-names -->
-<!-- <template>
-  <div class="pagination">
-    <button :disabled="page === 1" @click="$emit('change', page - 1)">
-      Prev
-    </button>
-
-    <span>{{ page }} / {{ totalPages }}</span>
-
-    <button
-      :disabled="page === totalPages"
-      @click="$emit('change', page + 1)"
-    >
-      Next
-    </button>
-  </div>
-</template>
-
-<script>
-export default {
-  props: {
-    page: Number,
-    totalPages: Number
-  }
-}
-</script> -->
 <template>
   <div class="flex justify-center mt-6">
     <div class="flex items-center gap-2 bg-white shadow-md px-4 py-2 rounded-xl">

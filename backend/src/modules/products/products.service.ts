@@ -63,7 +63,7 @@ export class ProductsService {
     console.log('[PRODUCT] USING PAGINATED FIND ALL');
 
     return {
-      data,
+      data: data.map((product) => this.withFinalPrice(product)),
       page,
       limit,
       total,
@@ -72,9 +72,12 @@ export class ProductsService {
   }
 
   async findOne(id: string) {
-    const product = await this.productsRepo.findOneBy({ id });
+    const product = await this.productsRepo.findOne({
+      where: { id },
+      relations: ['category'],
+    });
     if (!product) throw new NotFoundException('Product not found');
-    return product;
+    return this.withFinalPrice(product);
   }
 
   async update(id: string, dto: UpdateProductDto, file?: Express.Multer.File) {
@@ -112,9 +115,16 @@ export class ProductsService {
       where: { discountPercent: MoreThan(0) },
     });
 
-    return products.map((p) => ({
-      ...p,
-      finalPrice: Number(p.price) - Number(p.price) * (p.discountPercent / 100),
-    }));
+    return products.map((product) => this.withFinalPrice(product));
+  }
+
+  private withFinalPrice(product: Product) {
+    return {
+      ...product,
+      finalPrice:
+        product.discountPercent > 0
+          ? Number(product.price) * (1 - product.discountPercent / 100)
+          : Number(product.price),
+    };
   }
 }

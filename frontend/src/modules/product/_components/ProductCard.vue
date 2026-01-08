@@ -122,22 +122,9 @@ watch(
 
 const isFavorite = ref(false)
 const toggleFavorite = () => (isFavorite.value = !isFavorite.value)
-
-// const finalPrice = computed(() => {
-//   if (!props.product.discountPercent) return props.product.price
-//   return(
-//     props.product.price -
-//     props.product.price * (props.product.discountPercent / 100)
-//   ).toFixed(2)
-// })
 </script>
 
 <style scoped>
-/* .card {
-  display: flex;
-  flex-direction: row;
-} */
-
 .product-card {
   margin: 20px;
   width: 280px;
@@ -146,18 +133,6 @@ const toggleFavorite = () => (isFavorite.value = !isFavorite.value)
   padding: 20px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
-
-/* .image-wrapper {
-  width: 100%;
-  height: 200px;
-  background: #f6f6f6;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-  overflow: hidden;
-} */
 
 .image-wrapper img {
   width: 100%;

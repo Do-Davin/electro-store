@@ -54,15 +54,6 @@
       <!-- GRID VIEW -->
       <!-- grid-cols-3 = grid-template-columns: repeat(3, 1fr); [Don't delete this] -->
       <div v-else-if="viewMode==='grid'" class="grid mt-7.5 gap-6.25 grid-cols-3">
-        <!-- <ProductCard
-          v-for="p in products"
-          :key="p.id"
-          :title="p.name"
-          :price="'$' + p.price"
-          :image="p.imageUrl"
-          :rating="p.rating || 4"
-          :category="p.category"
-        /> -->
         <ProductCard
           v-for="p in products"
           :key="p.id"
