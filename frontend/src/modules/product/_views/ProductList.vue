@@ -54,7 +54,7 @@
       <!-- GRID VIEW -->
       <!-- grid-cols-3 = grid-template-columns: repeat(3, 1fr); [Don't delete this] -->
       <div v-else-if="viewMode==='grid'" class="grid mt-7.5 gap-6.25 grid-cols-3">
-        <ProductCard
+        <!-- <ProductCard
           v-for="p in products"
           :key="p.id"
           :title="p.name"
@@ -62,6 +62,11 @@
           :image="p.imageUrl"
           :rating="p.rating || 4"
           :category="p.category"
+        /> -->
+        <ProductCard
+          v-for="p in products"
+          :key="p.id"
+          :product="p"
         />
       </div>
 
@@ -196,62 +201,6 @@ export default {
   padding: 30px 20px;
 }
 
-/* .nav-bar {
-  display: flex;
-  justify-content:space-between;
-  align-items: center;
-  padding: 20px;
-  gap: 20px;
-  padding-top: calc(var(--spacing) * 20)
-} */
-
-/* .filter-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-} */
-
-/* .view-toggle {
-  display: flex;
-  gap: 10px;
-} */
-
-/* .grid {
-  margin-top: 30px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
-} */
-
-/* LIST VIEW */
-/* .list {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-} */
-
-/* .list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #ddd;
-  padding: 12px;
-  border-radius: 8px;
-}
-
-.list-item img {
-  width: 85px;
-  height: 85px;
-  object-fit: cover;
-  border-radius: 6px;
-} */
-
-/* .info h3 {
-  margin: 0;
-  font-weight: 600;
-} */
-
 .buy-btn {
   background: var(--primary);
   color: white;
@@ -259,11 +208,4 @@ export default {
   border-radius: 6px;
   border: none;
 }
-
-/* .pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
-} */
 </style>

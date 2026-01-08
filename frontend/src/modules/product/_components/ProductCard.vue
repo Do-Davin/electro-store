@@ -1,19 +1,26 @@
 <template>
-  <div class="w-75 bg-white rounded-2xl p-4 shadow-[0_10px_25px_rgba(0,0,0,0.15)]
-        transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+  <div
+    class="w-75 bg-white rounded-2xl p-4 shadow-[0_10px_25px_rgba(0,0,0,0.15)]
+    transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+  >
     <!-- Image Box -->
     <div
-      class="relative w-full h-48 bg-white rounded-2xl flex items-center justify-center overflow-hidden mb-4"
+      class="relative w-full h-48 bg-white rounded-2xl flex items-center
+      justify-center overflow-hidden mb-4"
     >
+      <!-- Stock -->
       <span
-        class="absolute top-1 left-45 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-lg"
+        class="absolute top-2 left-38 text-xs font-bold px-3 py-1 rounded-full"
+        :class="product.stock > 0
+        ? 'bg-green-100 text-green-700'
+        : 'bg-red-100 text-red-700'"
       >
-        INSTOCK
+        {{ product.stock > 0 ? 'INSTOCK' : 'OUT OF STOCK' }}
       </span>
 
       <img
         :src="currentImage"
-        :alt="title"
+        :alt="product.name"
         class="w-full h-full object-contain"
         draggable="false"
         @error="onImageError"
@@ -22,20 +29,32 @@
 
     <!-- Category -->
     <p class="text-gray-500 text-sm mb-1">
-      {{ category?.name || 'Unknown' }}
+      {{ product.category?.name || 'Unknown' }}
     </p>
 
     <!-- Title -->
     <p class="text-2xl font-bold text-[#0b2c5f] mb-2">
-      {{ title }}
+      {{ product.name }}
     </p>
 
     <!-- Price + Rating Row -->
     <div class="flex justify-between items-center mb-4">
-      <p class=" text-xl font-bold text-[#0b2c5f]">{{ price }}</p>
+      <div class="flex items-baseline gap-2">
+        <p class="text-xl font-bold text-[#0b2c5f]">
+          ${{ Number(product.finalPrice ?? product.price).toFixed(2) }}
+        </p>
 
-      <span class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full shadow">
-        <span class="font-bold">{{ rating }}</span>
+        <p
+          v-if="product.discountPercent > 0"
+          class="relative text-red-500 line-through text-sm -top-2"
+        >
+          ${{ Number(product.price).toFixed(2) }}
+        </p>
+      </div>
+
+      <span class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full
+            shadow">
+        <span class="font-bold">{{ Number(product.rating) > 0 ? Number(product.rating).toFixed(1) : '-' }}</span>
         <span class="text-yellow-500">★</span>
       </span>
     </div>
@@ -43,7 +62,9 @@
     <!-- Buy Button + Wishlist -->
     <div class="flex items-center gap-3">
       <button
-        class="flex-1 bg-primary text-white py-2 rounded-xl flex justify-center items-center gap-2"
+        :disabled="product.stock <= 0"
+        class="flex-1 bg-primary text-white py-2 rounded-xl flex justify-center
+        items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <ShoppingCart /> Add To Cart
       </button>
@@ -67,60 +88,48 @@ import placeholderImg from '@/assets/img/placeholder.png'
 import { ShoppingCart } from 'lucide-vue-next';
 import { Heart } from 'lucide-vue-next';
 
-const API = 'http://localhost:3000'
-
 const props = defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: String,
-    required: true,
-  },
-  image: {
-    type: String,
-    default: '',
-  },
-  rating: {
-    type: Number,
-    required: true,
-  },
-  category: {
+  product: {
     type: Object,
-    default: () => ({ name: '' }),
-  },
+    required: true,
+    default: () => ({})
+  }
 })
+
+const API = 'http://localhost:3000'
 
 const toUrl = (img) => {
   if (!img) return placeholderImg
   return img.startsWith('http') ? img : API + img
 }
 
-const currentImage = ref(toUrl(props.image))
-const isPlaceholder = ref(!props.image)
+const currentImage = ref(
+  props.product?.imageUrl ? toUrl(props.product.imageUrl) : placeholderImg
+)
 
 const onImageError = () => {
   currentImage.value = placeholderImg
-  isPlaceholder.value = true
 }
 
+// if image changes dynamically
 watch(
-  () => props.image,
-  (newImage) => {
-    currentImage.value = toUrl(newImage)
-    isPlaceholder.value = !newImage
+  () => props.product?.imageUrl,
+  newImage => {
+    currentImage.value = newImage ? toUrl(newImage) : placeholderImg
   },
-  {
-    immediate: true,
-  },
+  { immediate: true }
 )
 
 const isFavorite = ref(false)
+const toggleFavorite = () => (isFavorite.value = !isFavorite.value)
 
-const toggleFavorite = () => {
-  isFavorite.value = !isFavorite.value
-}
+// const finalPrice = computed(() => {
+//   if (!props.product.discountPercent) return props.product.price
+//   return(
+//     props.product.price -
+//     props.product.price * (props.product.discountPercent / 100)
+//   ).toFixed(2)
+// })
 </script>
 
 <style scoped>

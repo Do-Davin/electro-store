@@ -4,6 +4,7 @@
     <Navbar />
 
     <section class="max-w-6xl mx-auto px-6 py-16 mt-10">
+      <!-- Header -->
       <div class="text-center mb-10">
         <h1 class="text-4xl font-bold text-primary">Exclusive Deals & Discounts</h1>
         <p class="text-gray-600 dark:text-gray-300 mt-3">
@@ -11,6 +12,7 @@
         </p>
       </div>
 
+      <!-- Banner -->
       <div
         class="bg-linear-to-r from-orange-500 to-orange-600
                text-white rounded-2xl p-6 flex justify-between
@@ -27,52 +29,38 @@
         </div>
 
         <button class="bg-white text-orange-600 px-6 py-2 rounded-lg font-semibold hover:scale-105 transition">
-          Shop Now
+          <RouterLink to="/products">
+            Shop Now
+          </RouterLink>
         </button>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        <div
-          v-for="(item, i) in deals"
-          :key="i"
-          class="border rounded-xl bg-white dark:bg-[#132a4f]
-                 shadow-lg p-5 transition duration-300
-                 hover:-translate-y-1 hover:shadow-2xl
-                 hover:border-primary cursor-pointer group"
-        >
-          <div class="relative">
-            <img
-              :src="item.image"
-              class="w-full h-48 object-cover rounded-lg"
-            />
+      <!-- Loading -->
+      <div
+        v-if="loading"
+        class="text-center text-gray-500 text-lg py-10"
+      >
+        Loading deals...
+      </div>
 
-            <span
-              class="absolute top-3 left-3 bg-primary text-white px-3 py-1 rounded-full text-sm"
-            >
-              -{{ item.discount }}%
-            </span>
-          </div>
+      <!-- Empty -->
+      <div
+        v-else-if="deals.length === 0"
+        class="text-center text-gray-500 text-lg py-10"
+      >
+        No deals available right now.
+      </div>
 
-          <h3 class="mt-4 text-lg font-bold text-gray-900 dark:text-white">
-            {{ item.name }}
-          </h3>
-
-          <div class="flex items-center gap-2 mt-2">
-            <span class="text-xl font-bold text-primary">
-              ${{ item.salePrice }}
-            </span>
-
-            <span class="line-through text-gray-500">
-              ${{ item.originalPrice }}
-            </span>
-          </div>
-
-          <button
-            class="btn-primary w-full mt-4 group-hover:scale-[1.02] transition"
-          >
-            Grab Deal
-          </button>
-        </div>
+      <!-- Deals Grid -->
+      <div
+        v-else
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"
+      >
+        <ProductCard
+          v-for="p in deals"
+          :key="p.id"
+          :product="p"
+        />
       </div>
     </section>
 
@@ -82,30 +70,24 @@
 
 <script setup>
 import Navbar from "@/components/Navbar.vue";
+import ProductCard from "@/modules/product/_components/ProductCard.vue";
 import Footer from "@/components/Footer.vue";
 import { Flame } from 'lucide-vue-next';
+import { onMounted, ref } from "vue";
+import axios from "axios";
+import { RouterLink } from "vue-router";
 
-const deals = [
-  {
-    name: "iPhone 16 Pro Max",
-    image: "/products/iphone.png",
-    discount: 25,
-    salePrice: 1299,
-    originalPrice: 1699,
-  },
-  {
-    name: "MacBook Pro M3",
-    image: "/products/macbook.jpg",
-    discount: 18,
-    salePrice: 1899,
-    originalPrice: 2299,
-  },
-  {
-    name: "Sony WH-1000XM5",
-    image: "/products/headphone.jpg",
-    discount: 30,
-    salePrice: 279,
-    originalPrice: 399,
-  },
-];
+const deals = ref([]);
+const loading = ref(true)
+
+onMounted(async () => {
+  try {
+    const res = await axios.get("/products/deals");
+    deals.value = res.data;
+  } catch (err) {
+    console.log("Failed to load deals", err);
+  } finally {
+    loading.value = false;
+  }
+});
 </script>

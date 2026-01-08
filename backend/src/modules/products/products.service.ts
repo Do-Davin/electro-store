@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { Category } from '../categories/entities/category.entity';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -104,5 +104,17 @@ export class ProductsService {
     await this.findOne(id);
     await this.productsRepo.delete(id);
     return { message: 'Deleted successfully' };
+  }
+
+  async fetchDeals() {
+    const products = await this.productsRepo.find({
+      relations: ['category'],
+      where: { discountPercent: MoreThan(0) },
+    });
+
+    return products.map((p) => ({
+      ...p,
+      finalPrice: Number(p.price) - Number(p.price) * (p.discountPercent / 100),
+    }));
   }
 }

@@ -21,11 +21,7 @@
         <ProductCard
           v-for="p in products"
           :key="p.id"
-          :title="p.name"
-          :price="'$' + p.price"
-          :image="p.imageUrl"
-          :rating="p.rating || 4"
-          :category="p.category"
+          :product="p"
         />
       </div>
 

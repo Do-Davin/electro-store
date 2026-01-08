@@ -41,6 +41,8 @@ const multerOptions: MulterOptions = {
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  // ------------------- POST -------------------
+
   @UseInterceptors(FileInterceptor('image', multerOptions))
   @Post()
   createProduct(
@@ -49,6 +51,8 @@ export class ProductsController {
   ) {
     return this.productsService.create(body, file);
   }
+
+  // ------------------- GET -------------------
 
   @Get()
   findAllProduct(
@@ -65,10 +69,17 @@ export class ProductsController {
     });
   }
 
+  @Get('deals')
+  getDeals() {
+    return this.productsService.fetchDeals();
+  }
+
   @Get(':id')
   findOneProduct(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
+
+  // ------------------- PATCH -------------------
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image', multerOptions))
@@ -79,6 +90,8 @@ export class ProductsController {
   ) {
     return this.productsService.update(id, body, file);
   }
+
+  // ------------------- DELETE -------------------
 
   @Delete(':id')
   deleteProduct(@Param('id') id: string) {
