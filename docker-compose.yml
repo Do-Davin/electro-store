@@ -6,11 +6,11 @@ services:
     container_name: electro_pg
     restart: always
     environment:
-      POSTGRES_DB: electro_db
-      POSTGRES_USER: electro_user
-      POSTGRES_PASSWORD: electro_pass
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5434:5432"
+      - "5434:5432" # host:container
     volumes:
       - pgdata:/var/lib/postgresql/data
 

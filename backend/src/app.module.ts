@@ -17,11 +17,7 @@ import { AuthModule } from './modules/auth/auth.module';
     UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'postgres',
-      port: 5432,
-      username: 'electro_user',
-      password: 'electro_pass',
-      database: 'electro_db',
+      url: process.env.DATABASE_URL,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
       synchronize: true,
