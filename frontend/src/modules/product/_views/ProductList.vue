@@ -1,194 +1,138 @@
 <template>
   <Navbar />
-  <div class="flex justify-between items-center p-5 gap-5 pt-20">
-    <h1 class="text-primary text-2xl font-bold">All Product</h1>
 
-    <!-- Filter -->
-     <div class="flex items-center gap-4">
-      <SearchBar v-model="search" @search="fetchProducts" />
-      <Select v-model="selectedCategory" @update:modelValue="fetchProducts">
-        <SelectTrigger class="w-50">
-          <SelectValue placeholder="All Categories"/>
-        </SelectTrigger>
+  <div class="container pt-20">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-primary">All Products</h1>
+      <SearchBar v-model="search" />
+    </div>
 
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Categories</SelectLabel>
-
-            <!-- dynamic categories -->
-             <SelectItem value="all">
-              All
-            </SelectItem>
-
-            <SelectItem
-              v-for="c in categories"
-              :key="c.id"
-              :value="c.id"
-            >
-              {{ c.name }}
-            </SelectItem>
-
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-     </div>
-
-     <div class="flex gap-2.5">
-       <button @click="viewMode='list'">
-         <TextAlignJustify class="w-6 h-8" />
-        </button>
-
-        <button @click="viewMode='grid'">
-         <LayoutPanelLeft class="w-6 h-8" />
-       </button>
-     </div>
-  </div>
-  <div class="container">
-     <!-- Product -->
-      <div v-if="loading">Loading...</div>
-
-      <div v-else-if="products.length === 0">
-        No product found
-      </div>
-
-      <!-- GRID VIEW -->
-      <!-- grid-cols-3 = grid-template-columns: repeat(3, 1fr); [Don't delete this] -->
-      <div v-else-if="viewMode==='grid'" class="grid mt-7.5 gap-6.25 grid-cols-3">
-        <ProductCard
-          v-for="p in products"
-          :key="p.id"
-          :product="p"
+      <!-- Category Cards -->
+      <div class="flex justify-center items-center">
+        <CategoryScroller
+          v-model="selectedCategory"
+          :categories="categories"
         />
       </div>
 
-      <!-- LIST VIEW -->
-       <div v-else class="flex mt-7.5 flex-col gap-4.5">
+      <!-- Products -->
+      <div class="relative mt-8">
         <div
-          v-for="p in products"
-          :key="p.id"
-          class="flex items-center justify-between border border-[#ddd] p-3 rounded-lg"
+          v-if="loading"
+          class="absolute inset-0 bg-white/70 flex items-center justify-center z-10"
         >
-          <img class="w-21.25 h-21.25 object-cover rounded-md" :src="p.imageUrl">
-          <div>
-            <h3 class="m-0 font-semibold">{{ p.name }}</h3>
-            <p>${{ p.price }}</p>
-          </div>
+          Loading...
+        </div>
 
-          <button class="buy-btn">Buy Now</button>
+        <div v-if="products.length === 0 && !loading">
+          No product found
+        </div>
+
+        <div
+          v-if="products.length > 0"
+          class="grid grid-cols-3 gap-6"
+        >
+          <ProductCard
+            v-for="p in products"
+            :key="p.id"
+            :product="p"
+          />
         </div>
       </div>
 
-    </div>
     <!-- Pagination -->
-     <div class="flex justify-center items-center text-[30px]">
-       <Pagination
+    <div class="flex justify-center mt-12">
+      <Pagination
         :page="page"
         :totalPages="totalPages"
         @change="changePage"
-       />
-     </div>
+      />
+    </div>
+  </div>
+  <Footer />
 </template>
 
-<script>
-import axios from 'axios';
-// import CategoryFilter from '../_components/CategoryFilter.vue';
-import Pagination from '../_components/Pagination.vue';
-import ProductCard from '../_components/ProductCard.vue';
-import SearchBar from '../_components/SearchBar.vue';
-import Navbar from '@/components/Navbar.vue';
-import { LayoutPanelLeft, TextAlignJustify } from 'lucide-vue-next';
+<script setup>
+import axios from 'axios'
+import { ref, onMounted, watch } from 'vue'
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import Navbar from '@/components/Navbar.vue'
+import SearchBar from '../_components/SearchBar.vue'
+import CategoryScroller from '../_components/CategoryScroller.vue'
+import ProductCard from '../_components/ProductCard.vue'
+import Pagination from '../_components/Pagination.vue'
+import Footer from '@/components/Footer.vue'
 
-export default {
-  name: "ProductList",
+const loading = ref(false)
+const products = ref([])
+const categories = ref([])
 
-  components: {
-    Navbar,
-    ProductCard,
-    // CategoryFilter,
-    SearchBar,
-    Pagination,
+const page = ref(1)
+const limit = ref(12)
+const totalPages = ref(1)
 
-    // From tailwindcss
-    // eslint-disable-next-line vue/no-reserved-component-names
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-    LayoutPanelLeft,
-    TextAlignJustify,
-  },
+const search = ref('')
+const selectedCategory = ref('all')
 
-  data() {
-    return {
-      loading: false,
-      products: [],
-      categories: [],
-      page: 1,
-      limit: 12,
-      totalPages: 1,
-      search: "",
-      selectedCategory: "",
-      viewMode: "grid"
-    };
-  },
+const fetchProducts = async () => {
+  loading.value = true
 
-  created() {
-    this.fetchCategories()
-    this.fetchProducts()
-  },
+  const params = {
+    page: page.value,
+    limit: limit.value,
+  }
 
-  methods: {
-    async fetchProducts() {
-      this.loading = true
+  if (search.value) params.search = search.value
+  if (selectedCategory.value !== 'all') {
+    params.category = selectedCategory.value
+  }
 
-      const params = {
-        page: this.page,
-        limit: this.limit,
-      }
+  const res = await axios.get('/products', { params })
 
-      if (this.search) params.search = this.search
-      if (this.selectedCategory && this.selectedCategory !== "all") {
-        params.category = this.selectedCategory
-      }
-
-
-      const res = await axios.get("/products", { params })
-
-      this.products = res.data.data
-      this.totalPages = res.data.totalPages
-      this.loading = false
-    },
-
-    async fetchCategories() {
-      const res = await axios.get("/categories")
-      this.categories = res.data
-    },
-
-    changePage(newPage) {
-      this.page = newPage
-      this.fetchProducts()
-    },
-  },
+  products.value = res.data.data
+  totalPages.value = res.data.totalPages
+  loading.value = false
 }
+
+const fetchCategories = async () => {
+  const res = await axios.get('/categories')
+  categories.value = [
+    { id: 'all', name: 'All', icon: '/icons/all.svg' },
+    ...res.data,
+  ]
+}
+
+const changePage = (p) => {
+  page.value = p
+  fetchProducts()
+}
+
+onMounted(() => {
+  fetchCategories()
+  fetchProducts()
+})
+
+let searchTimeout = null
+
+watch(search, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    page.value = 1
+    fetchProducts()
+  }, 400)
+})
+
+watch(selectedCategory, () => {
+  page.value = 1
+  fetchProducts()
+})
 </script>
 
 <style scoped>
 .container {
   max-width: 1200px;
-  margin: 40px auto;
+  margin: 70px auto;
   padding: 30px 20px;
 }
 
