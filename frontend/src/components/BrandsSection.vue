@@ -1,7 +1,10 @@
 <template>
   <section class="w-full py-14 bg-white dark:bg-[#0b2447]">
     <div class="max-w-6xl mx-auto px-6">
-      <h2 class="text-3xl font-bold text-primary text-center mb-10">
+      <h2
+        class="text-3xl font-bold text-primary text-center mb-10"
+        v-aos
+      >
         Trusted By Top Brands
       </h2>
 
@@ -12,8 +15,11 @@
         <div
           v-for="(brand, i) in brands"
           :key="i"
+          v-aos="{ delay: i * 100 }"
           class="w-36 grayscale hover:grayscale-0 transition
-          duration-300 opacity-80 hover:opacity-100"
+          duration-300 opacity-80
+          hover:scale-[1.025]
+          hover:opacity-100"
         >
           <img :src="brand.logo" :alt="brand.name" class="w-full
           object-contain" />

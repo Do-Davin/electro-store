@@ -11,10 +11,11 @@
         <div
           v-for="(stat, i) in stats"
           :key="i"
+          v-aos="{ delay: i * 120 }"
           class="flex flex-col items-center text-center border rounded-xl p-6
           shadow-lg bg-white dark:bg-[#132a4f]
           transition-all duration-300 ease-out
-          hover:-translate-y-1 hover:scale-[1.02]
+          hover:-translate-y-1 hover:scale-[1.03]
           hover:shadow-[0_25px_50px_rgba(0,0,0,0.15)]
           hover:border-primary/60 hover:bg-white/90 dark:hover:bg-[#1b376d]
           hover:ring-1 hover:ring-primary/40 hover:ring-offset-2"
