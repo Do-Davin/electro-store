@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="visible"
-    class="w-full bg-linear-to-r from-[#003465] to-[#00529b] text-white
-    py-2.5 flex items-center justify-center gap-4 text-sm sm:text-base
-    font-medium shadow-ms"
+    class="relative w-full bg-linear-to-r from-[#003465] to-[#00529b] text-white
+    py-3 px-4 flex flex-wrap items-center justify-center gap-3
+    font-medium shadow-md"
   >
     <!-- Left Badge -->
     <span class="bg-white text-[#003465] font-bold px-3 py-1 rounded-full
@@ -11,7 +11,7 @@
       LIMITED OFFER
     </span>
 
-    <p class="tracking-wide">
+    <p class="tracking-wide text-center sm:text-left">
       🎉 New Year Sale — <span class="font-bold underline">
       Up to 30% OFF</span> on selected products!
     </p>
@@ -19,9 +19,9 @@
     <!-- CTA Button -->
     <RouterLink to="/products">
       <button
-        class="hidden sm:block bg-white text-primary font-semibold px-4 py-1
-        rounded-lg hover:bg-green-200 transition-transform duration-200 ease-out
-        hover:scale-105 active:scale-95"
+        class="bg-white text-primary font-semibold px-3 py-1
+      rounded-lg hover:bg-green-200 transition-transform
+      hover:scale-105 active:scale-95 text-xs sm:text-sm"
       >
         Shop Now
       </button>
@@ -29,19 +29,20 @@
 
     <!-- Close Button -->
     <button
-      class="absolute right-10 sm:right-8 text-white/80 hover:text-white
-      transition"
+      class="w-8 h-8 grid place-items-center
+      rounded-full bg-white/10 backdrop-blur
+      hover:bg-white/20 active:bg-white/30
+      transition-all duration-200"
       @click="visible = false"
     >
-      <CircleX class="text-red-500 w-5 h-5 hover:text-red-600 transition-transform
-      duration-200 ease-out hover:scale-105 active:scale-95" />
+      <X class="w-4 h-4 text-white/80" />
     </button>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { CircleX } from 'lucide-vue-next';
+import { X } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
 const visible = ref(true)

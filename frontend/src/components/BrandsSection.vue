@@ -9,8 +9,7 @@
       </h2>
 
       <div
-        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5
-        gap-8 place-items-center"
+        class="flex justify-center items-center flex-wrap gap-20"
       >
         <div
           v-for="(brand, i) in brands"

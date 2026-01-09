@@ -155,4 +155,52 @@ const backgroundImage = ''
   display: block;
   overflow: hidden;
 }
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column-reverse;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    gap: 40px;
+  }
+
+  .hero__content {
+    max-width: 100%;
+  }
+
+  .hero__title {
+    font-size: 32px;
+    line-height: 1.3;
+    margin: 16px 0 24px;
+    min-height: calc(1.3em * 2);
+  }
+
+  .hero__actions {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .hero__image img {
+    max-width: 260px;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__title {
+    font-size: 26px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-link {
+    width: 100%;
+    text-align: center;
+  }
+}
 </style>

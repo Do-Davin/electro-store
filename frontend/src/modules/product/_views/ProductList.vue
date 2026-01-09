@@ -35,7 +35,7 @@
 
         <div
           v-if="products.length > 0"
-          class="grid grid-cols-3 gap-6"
+          class="flex justify-center items-center flex-wrap gap-10"
         >
           <ProductCard
             v-for="p in products"
