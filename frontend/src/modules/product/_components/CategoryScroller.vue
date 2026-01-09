@@ -9,7 +9,13 @@
     >
       <component
         :is="getIcon(c.name)"
-        class="category-icon"
+        class="category-icon
+        text-primary
+        transition-all duration-300 ease-out
+        hover:-translate-y-0.5
+        hover:scale-[1.05]
+        active:translate-y-0
+        active:scale-[0.96]"
       />
 
       <span>{{ c.name }}</span>
