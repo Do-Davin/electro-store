@@ -26,7 +26,11 @@
         </div>
 
         <div v-if="products.length === 0 && !loading">
-          No product found
+          <img
+            :src="notFoundImg"
+            alt="Not found"
+            class="mx-auto w-220 max-w-[85vw]"
+          >
         </div>
 
         <div
@@ -63,6 +67,7 @@ import CategoryScroller from '../_components/CategoryScroller.vue'
 import ProductCard from '../_components/ProductCard.vue'
 import Pagination from '../_components/Pagination.vue'
 import Footer from '@/components/Footer.vue'
+import notFoundImg from '@/assets/empty/not-found-404.svg'
 
 const loading = ref(false)
 const products = ref([])

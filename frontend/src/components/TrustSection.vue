@@ -12,7 +12,7 @@
         <div
           v-for="(item, i) in features"
           :key="i"
-          v-aos="{ delay: i * 100 }"
+          v-aos="{ delay: i * 120 }"
           class="flex flex-col items-center text-center border rounded-xl p-6
           shadow-lg bg-white dark:bg-[#132a4f]
           transition-all duration-300 ease-out

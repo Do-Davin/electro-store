@@ -15,7 +15,7 @@
         <div
           v-for="(brand, i) in brands"
           :key="i"
-          v-aos="{ delay: i * 100 }"
+          v-aos="{ delay: i * 120 }"
           class="w-36 grayscale hover:grayscale-0 transition
           duration-300 opacity-80
           hover:scale-[1.025]

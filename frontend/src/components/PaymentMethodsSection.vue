@@ -23,7 +23,7 @@
         <div
           v-for="(item, i) in payments"
           :key="i"
-          v-aos
+          v-aos="{ delay: i * 120 }"
           class="flex flex-col items-center justify-center border rounded-xl p-6
                  bg-white dark:bg-[#132a4f]
                  shadow-md transition-all duration-300 ease-out

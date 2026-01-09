@@ -1,0 +1,59 @@
+<svg width="640" height="420" viewBox="0 0 640 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="640" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7FAFF"></stop>
+      <stop offset="1" stop-color="#EEF4FF"></stop>
+    </linearGradient>
+    <filter id="shadow" x="-50" y="-50" width="740" height="520" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#003465" flood-opacity="0.12"></feDropShadow>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="640" height="420" rx="28" fill="url(#bg)"></rect>
+
+  <!-- Card -->
+  <g filter="url(#shadow)">
+    <rect x="110" y="70" width="420" height="280" rx="24" fill="#FFFFFF"></rect>
+    <rect x="110" y="70" width="420" height="280" rx="24" stroke="#003465" stroke-opacity="0.12"></rect>
+  </g>
+
+  <!-- Decorative dots -->
+  <circle cx="145" cy="105" r="5" fill="#003465" fill-opacity="0.18"></circle>
+  <circle cx="163" cy="105" r="5" fill="#003465" fill-opacity="0.12"></circle>
+  <circle cx="181" cy="105" r="5" fill="#003465" fill-opacity="0.08"></circle>
+
+  <!-- 404 Text -->
+  <text x="320" y="185" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-size="88" font-weight="800" fill="#003465" fill-opacity="0.92">
+    404
+  </text>
+
+  <!-- Magnifier -->
+  <g transform="translate(0,0)">
+    <circle cx="330" cy="235" r="44" stroke="#003465" stroke-width="10" stroke-opacity="0.9" fill="#FFFFFF"></circle>
+    <circle cx="330" cy="235" r="26" fill="#003465" fill-opacity="0.08"></circle>
+    <path d="M362 268 L401 307" stroke="#003465" stroke-width="12" stroke-linecap="round" stroke-opacity="0.9"></path>
+    <path d="M399 305 L416 322" stroke="#003465" stroke-width="16" stroke-linecap="round" stroke-opacity="0.35"></path>
+  </g>
+
+  <!-- Small "product cards" icons -->
+  <g opacity="0.9">
+    <rect x="175" y="220" width="70" height="64" rx="14" fill="#003465" fill-opacity="0.07"></rect>
+    <rect x="188" y="234" width="44" height="10" rx="5" fill="#003465" fill-opacity="0.20"></rect>
+    <rect x="188" y="252" width="34" height="8" rx="4" fill="#003465" fill-opacity="0.16"></rect>
+    <rect x="188" y="266" width="28" height="8" rx="4" fill="#003465" fill-opacity="0.12"></rect>
+
+    <rect x="395" y="220" width="70" height="64" rx="14" fill="#003465" fill-opacity="0.07"></rect>
+    <rect x="408" y="234" width="44" height="10" rx="5" fill="#003465" fill-opacity="0.20"></rect>
+    <rect x="408" y="252" width="34" height="8" rx="4" fill="#003465" fill-opacity="0.16"></rect>
+    <rect x="408" y="266" width="28" height="8" rx="4" fill="#003465" fill-opacity="0.12"></rect>
+  </g>
+
+  <!-- Message -->
+  <text x="320" y="315" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-size="18" font-weight="700" fill="#003465" fill-opacity="0.92">
+    No product found
+  </text>
+  <text x="320" y="342" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-size="14" font-weight="500" fill="#003465" fill-opacity="0.55">
+    Try a different keyword or category
+  </text>
+</svg>

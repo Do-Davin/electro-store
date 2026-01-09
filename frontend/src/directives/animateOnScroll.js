@@ -22,7 +22,7 @@ export default {
           observer.unobserve(el)
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.50 }
     )
 
     observer.observe(el)
