@@ -1,1 +1,1 @@
-![alt text](image.png)
+![alt text](/frontend/public/electro-store.png)
