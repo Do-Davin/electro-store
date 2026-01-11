@@ -1,3 +1,4 @@
+import { getRole, isLoggedIn } from '@/lib/auth';
 import authRoutes from '@/modules/auth/_routes/auth.routes'
 import cartRoutes from '@/modules/cart/_routes/cart.routes';
 import categoryRoutes from '@/modules/category/_routes/category.routes';
@@ -32,12 +33,42 @@ const routes = [
   // Register Order Routes in Root Router
   ...dealsRoutes,
     // Register dashboard Routes in Root Router
-  ...dashboardRoutes
-]
+  ...dashboardRoutes,
+];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-})
+});
+
+// Guards
+router.beforeEach((to) => {
+  const loggedIn = isLoggedIn();
+
+  // guest only pages (login/register) -> block if logged in
+  if (to.meta?.guestOnly && loggedIn) {
+    const role = getRole();
+    return role === 'ADMIN' ? '/dashboard' : '/';
+  }
+
+  // requires auth pages -> force login
+  if (to.meta?.requiresAuth && !loggedIn) {
+    return '/auth/login';
+  }
+
+  // role protected pages
+  if (to.meta?.role) {
+    if (!loggedIn) return '/auth/login';
+
+    const role = getRole();
+    if (!role || role.toUpperCase() !== to.meta.role.toUpperCase()) {
+      // optional: logout if token is invalid/outdated
+      // logout();
+      return '/';
+    }
+  }
+
+  return true;
+});
 
 export default router;

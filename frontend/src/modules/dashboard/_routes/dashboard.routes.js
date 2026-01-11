@@ -2,7 +2,7 @@ export default [
   {
     path: '/dashboard',
     component: () => import('@/views/DashboardLayout.vue'),
-    meta: { requiresAuth: true, role: 'admin' },
+    meta: { requiresAuth: true, role: 'ADMIN' },
     children: [
       {
         path: '',
@@ -12,22 +12,22 @@ export default [
       {
         path: 'products',
         name: 'dashboard-products',
-        component: () => import('../_pages/DashboardProducts.vue')
+        component: () => import('../_pages/DashboardProducts.vue'),
       },
       {
         path: 'orders',
         name: 'dashboard-orders',
-        component: () => import('../_pages/DashboardOrders.vue')
+        component: () => import('../_pages/DashboardOrders.vue'),
       },
       {
         path: 'users',
         name: 'dashboard-users',
-        component: () => import('../_pages/DashboardUsers.vue')
+        component: () => import('../_pages/DashboardUsers.vue'),
       },
       {
         path: 'deals',
         name: 'dashboard-deals',
-        component: () => import('../_pages/DashboardDeals.vue')
+        component: () => import('../_pages/DashboardDeals.vue'),
       },
     ],
   },
