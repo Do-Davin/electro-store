@@ -1,123 +1,183 @@
 <template>
-    <aside class="sidebar">
-        <div class="profile">
-            <div class="avatar">&lt;DT /&gt;</div>
-        </div>
+  <aside class="sidebar">
+    <!-- Profile / Logo -->
+    <div class="profile">
+      <div class="avatar">&lt;DT /&gt;</div>
+    </div>
 
-        <nav class="nav">
-            <ul>
-                <li>
-                    <a href="#/dashboard" class="nav-link active">
-                        <Home class="icon" />
-                        <span class="label">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#/dashboard/add-product" class="nav-link">
-                        <PlusSquare class="icon" />
-                        <span class="label">Add Product</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#/dashboard/manage-product" class="nav-link">
-                        <Edit3 class="icon" />
-                        <span class="label">Manage Product</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#/dashboard/orders" class="nav-link">
-                        <ShoppingCart class="icon" />
-                        <span class="label">Orders</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#/dashboard/coupons" class="nav-link">
-                        <Tag class="icon" />
-                        <span class="label">Coupons</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#/logout" class="nav-link">
-                        <LogOut class="icon" />
-                        <span class="label">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+    <!-- Nav -->
+    <nav class="nav">
+      <ul>
+        <li>
+          <RouterLink
+            to="/dashboard"
+            class="nav-link"
+            active-class="active"
+            exact-active-class="active"
+          >
+            <Home class="icon" />
+            <span class="label">Dashboard</span>
+          </RouterLink>
+        </li>
 
-        <div class="spacer"></div>
-    </aside>
+        <li>
+          <RouterLink
+            to="/dashboard/products"
+            class="nav-link"
+            active-class="active"
+          >
+            <Package class="icon" />
+            <span class="label">Products</span>
+          </RouterLink>
+        </li>
+
+        <li>
+          <RouterLink
+            to="/dashboard/orders"
+            class="nav-link"
+            active-class="active"
+          >
+            <ShoppingCart class="icon" />
+            <span class="label">Orders</span>
+          </RouterLink>
+        </li>
+
+        <li>
+          <RouterLink
+            to="/dashboard/users"
+            class="nav-link"
+            active-class="active"
+          >
+            <Users class="icon" />
+            <span class="label">Users</span>
+          </RouterLink>
+        </li>
+
+        <li>
+          <RouterLink
+            to="/dashboard/deals"
+            class="nav-link"
+            active-class="active"
+          >
+            <Tag class="icon" />
+            <span class="label">Deals</span>
+          </RouterLink>
+        </li>
+
+        <li class="logout">
+          <!-- If you have a logout route, use RouterLink. Otherwise use a button -->
+          <button class="nav-link" type="button" @click="onLogout">
+            <LogOut class="icon" />
+            <span class="label">Logout</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="spacer"></div>
+  </aside>
 </template>
 
 <script setup>
-import { Home, PlusSquare, Edit3, ShoppingCart, Tag, LogOut } from 'lucide-vue-next'
+import { useRouter } from 'vue-router';
+import { Home, Package, ShoppingCart, Tag, LogOut, Users } from 'lucide-vue-next';
+
+const router = useRouter();
+
+function onLogout() {
+  // ✅ Adjust to your auth storage key
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('user');
+
+  router.push('/auth/login');
+}
 </script>
 
 <style scoped>
+/* Sidebar */
 .sidebar {
-    width: 220px;
-    min-height: 100vh;
-    background: #0B3F6B;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 28px 12px;
-    box-sizing: border-box;
+  width: 240px;
+  min-height: 100vh;
+  background: #0b3f6b; /* like your old sidebar */
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 14px;
+  box-sizing: border-box;
 }
+
+/* Profile */
 .profile {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 18px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
 }
+
 .avatar {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #00a2ff;
-    font-weight: 700;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00a2ff;
+  font-weight: 800;
+  letter-spacing: 0.3px;
 }
+
+/* Nav */
 .nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 6px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
 }
 
 .nav-link:hover {
-    background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .icon {
-    width: 20px;
-    height: 20px;
-    color: #FFF3CD;
+  width: 20px;
+  height: 20px;
+  color: #fff3cd; /* your old accent */
+  flex: 0 0 auto;
 }
 
 .label {
-    font-size: 14px;
-    opacity: 0.95;
-    color: #ffffff;
+  font-size: 14px;
+  opacity: 0.95;
 }
 
+/* Active */
 .nav-link.active {
-    background: rgba(173, 214, 241, 0.12);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+  background: rgba(173, 214, 241, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
+
+.logout {
+  margin-top: 8px;
+}
+
 .spacer {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 </style>
