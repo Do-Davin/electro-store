@@ -64,6 +64,7 @@
           </RouterLink>
         </li>
 
+        <!-- Logout -->
         <li class="logout">
           <!-- If you have a logout route, use RouterLink. Otherwise use a button -->
           <button class="nav-link" type="button" @click="onLogout">
@@ -81,24 +82,21 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { Home, Package, ShoppingCart, Tag, LogOut, Users } from 'lucide-vue-next';
+import { logout } from '@/lib/auth';
 
 const router = useRouter();
 
 function onLogout() {
-  // ✅ Adjust to your auth storage key
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('user');
-
-  router.push('/auth/login');
+  logout(); // clears access_token & auth_payload
+  router.replace('/auth/login') // replace prevent back-navigation
 }
 </script>
 
 <style scoped>
-/* Sidebar */
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background: #0b3f6b; /* like your old sidebar */
+  background: #0b3f6b;
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -106,7 +104,6 @@ function onLogout() {
   box-sizing: border-box;
 }
 
-/* Profile */
 .profile {
   display: flex;
   justify-content: center;
@@ -126,7 +123,6 @@ function onLogout() {
   letter-spacing: 0.3px;
 }
 
-/* Nav */
 .nav ul {
   list-style: none;
   padding: 0;
@@ -158,8 +154,7 @@ function onLogout() {
 .icon {
   width: 20px;
   height: 20px;
-  color: #fff3cd; /* your old accent */
-  flex: 0 0 auto;
+  color: #fff3cd;
 }
 
 .label {
@@ -167,7 +162,6 @@ function onLogout() {
   opacity: 0.95;
 }
 
-/* Active */
 .nav-link.active {
   background: rgba(173, 214, 241, 0.14);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
