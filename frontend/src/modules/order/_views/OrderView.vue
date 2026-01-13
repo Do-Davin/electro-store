@@ -1,16 +1,21 @@
 <template>
-  <Navbar />
+  <div class="min-h-screen flex flex-col">
+    <Navbar />
 
-  <div class="h-249 w-full flex justify-center items-center flex-col text-4xl text-white bg-primary">
-    This is Order Page!
-    <OrderListComponent />
+    <main class="flex-1 flex items-start justify-center pt-28 pb-12 px-4">
+      <div class="w-full max-w-6xl">
+        <h1 class="text-3xl font-bold text-primary mb-6">Order List</h1>
+
+        <OrderListComponent />
+      </div>
+    </main>
+
+    <Footer />
   </div>
-
-  <Footer />
 </template>
 
 <script setup>
-import Navbar from '@/components/Navbar.vue';
-import OrderListComponent from '../_components/OrderListComponent.vue';
-import Footer from '@/components/Footer.vue';
+import Navbar from '@/components/Navbar.vue'
+import OrderListComponent from '../_components/OrderListComponent.vue'
+import Footer from '@/components/Footer.vue'
 </script>
