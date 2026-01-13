@@ -7,7 +7,7 @@
         <p class="mb-4 text-lg font-semibold">Follow Us On</p>
 
         <div class="flex items-center gap-6 text-2xl">
-          <a href="#" class="hover:text-gray-300 transition">
+          <a href="https://github.com/Do-Davin" class="hover:text-gray-300 transition" target="_blank" rel="noopener noreferrer">
             <Github />
           </a>
           <a href="#" class="hover:text-gray-300 transition">

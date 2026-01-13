@@ -83,18 +83,27 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import placeholderImg from '@/assets/img/placeholder.png'
-import { ShoppingCart } from 'lucide-vue-next';
-import { Heart } from 'lucide-vue-next';
+import { ShoppingCart, Heart } from 'lucide-vue-next'
+import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store'
 
 const props = defineProps({
   product: {
     type: Object,
-    required: true,
-    default: () => ({})
+    required: true
   }
 })
+
+const wishlist = useWishlistStore()
+
+const isFavorite = computed(() =>
+  wishlist.isInWishlist(props.product.id)
+)
+
+function toggleFavorite() {
+  wishlist.toggle(props.product)
+}
 
 const API = 'http://localhost:3000'
 
@@ -111,7 +120,6 @@ const onImageError = () => {
   currentImage.value = placeholderImg
 }
 
-// if image changes dynamically
 watch(
   () => props.product?.imageUrl,
   newImage => {
@@ -119,9 +127,6 @@ watch(
   },
   { immediate: true }
 )
-
-const isFavorite = ref(false)
-const toggleFavorite = () => (isFavorite.value = !isFavorite.value)
 </script>
 
 <style scoped>

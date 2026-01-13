@@ -14,6 +14,10 @@ const routes = [
     name: 'HomeView',
     component: () => import('@/views/HomeView.vue'),
   },
+  {
+    path: '/wishlist',
+    component: () => import('@/modules/wishlist/_views/WishlistView.vue')
+  },
   // {
   //   path: '/dashboard',
   //   name: 'DashboardView',
