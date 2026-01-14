@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
@@ -31,13 +32,13 @@ export class ProductsService {
   }
 
   async findAll({
-    page = 1,
-    limit = 12,
+    page,
+    limit,
     search,
     category,
   }: {
-    page?: number;
-    limit?: number;
+    page: number;
+    limit: number;
     search?: string;
     category?: string;
   }) {
@@ -80,8 +81,23 @@ export class ProductsService {
     return this.withFinalPrice(product);
   }
 
-  async update(id: string, dto: UpdateProductDto, file?: Express.Multer.File) {
-    const product = await this.findOne(id);
+  // Internal entity fetch
+  private async findEntity(id: string): Promise<Product> {
+    const product = await this.productsRepo.findOne({
+      where: { id },
+      relations: ['category'],
+    });
+    if (!product) throw new NotFoundException('Product not found!');
+
+    return product;
+  }
+
+  async update(
+    id: string,
+    dto: UpdateProductDto,
+    file?: Express.Multer.File
+  ) {
+    const product = await this.findEntity(id);
 
     // Update category if provided
     if (dto.categoryId) {
@@ -104,11 +120,12 @@ export class ProductsService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    await this.findEntity(id);
     await this.productsRepo.delete(id);
     return { message: 'Deleted successfully' };
   }
 
+  // Deals
   async fetchDeals() {
     const products = await this.productsRepo.find({
       relations: ['category'],

@@ -12,7 +12,7 @@ export default [
       {
         path: 'products',
         name: 'dashboard-products',
-        component: () => import('../_pages/DashboardProducts.vue'),
+        component: () => import('../_pages/DashboardAddProduct.vue'),
       },
       {
         path: 'orders',

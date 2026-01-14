@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,6 +9,7 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
@@ -16,6 +18,9 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import multer from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 // const storage = multer.diskStorage({
 //   destination: './public/uploads/products',
@@ -43,12 +48,17 @@ export class ProductsController {
 
   // ------------------- POST -------------------
 
-  @UseInterceptors(FileInterceptor('image', multerOptions))
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Post()
+  @UseInterceptors(FileInterceptor('image', multerOptions))
   createProduct(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: CreateProductDto,
   ) {
+    if (!file) {
+      throw new BadRequestException('Product image is required');
+    }
     return this.productsService.create(body, file);
   }
 
@@ -62,8 +72,8 @@ export class ProductsController {
     @Query('category') category?: string,
   ) {
     return this.productsService.findAll({
-      page,
-      limit,
+      page: Number(page),
+      limit: Number(limit),
       search,
       category,
     });
@@ -81,6 +91,8 @@ export class ProductsController {
 
   // ------------------- PATCH -------------------
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image', multerOptions))
   updateProduct(
@@ -93,6 +105,8 @@ export class ProductsController {
 
   // ------------------- DELETE -------------------
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   @Delete(':id')
   deleteProduct(@Param('id') id: string) {
     return this.productsService.remove(id);
