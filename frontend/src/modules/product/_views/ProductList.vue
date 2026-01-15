@@ -5,27 +5,27 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-primary">All Products</h1>
-      <SearchBar v-model="search" />
+      <SearchBar v-model="searchLocal" />
     </div>
 
       <!-- Category Cards -->
       <div class="flex justify-center items-center">
         <CategoryScroller
-          v-model="selectedCategory"
-          :categories="categories"
+          v-model="selectedCategoryLocal"
+          :categories="productStore.categories"
         />
       </div>
 
       <!-- Products -->
       <div class="relative mt-8">
         <div
-          v-if="loading"
+          v-if="productStore.loadingProducts"
           class="absolute inset-0 bg-white/70 flex items-center justify-center z-10"
         >
           Loading...
         </div>
 
-        <div v-if="products.length === 0 && !loading">
+        <div v-if="productStore.products.length === 0 && !productStore.loadingProducts">
           <img
             :src="notFoundImg"
             alt="Not found"
@@ -34,11 +34,11 @@
         </div>
 
         <div
-          v-if="products.length > 0"
+          v-if="productStore.products.length > 0"
           class="flex justify-center items-center flex-wrap gap-10"
         >
           <ProductCard
-            v-for="p in products"
+            v-for="p in productStore.products"
             :key="p.id"
             :product="p"
           />
@@ -48,8 +48,8 @@
     <!-- Pagination -->
     <div class="flex justify-center mt-12">
       <Pagination
-        :page="page"
-        :totalPages="totalPages"
+        :page="productStore.page"
+        :totalPages="productStore.totalPages"
         @change="changePage"
       />
     </div>
@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import axios from 'axios'
+// import axios from 'axios'
 import { ref, onMounted, watch } from 'vue'
 
 import Navbar from '@/components/Navbar.vue'
@@ -69,69 +69,107 @@ import Pagination from '../_components/Pagination.vue'
 import Footer from '@/components/Footer.vue'
 import notFoundImg from '@/assets/empty/not-found-404.svg'
 
-const loading = ref(false)
-const products = ref([])
-const categories = ref([])
+import { useProductStore } from '../_stores/product.store'
 
-const page = ref(1)
-const limit = ref(12)
-const totalPages = ref(1)
+const productStore = useProductStore()
 
-const search = ref('')
-const selectedCategory = ref('all')
+// Local v-models (keeps UI components unchanged)
+const searchLocal = ref(productStore.search)
+const selectedCategoryLocal = ref(productStore.selectedCategory)
 
-const fetchProducts = async () => {
-  loading.value = true
+onMounted(async () => {
+  // store initializes from cache then refreshes from API
+  await productStore.init()
 
-  const params = {
-    page: page.value,
-    limit: limit.value,
-  }
-
-  if (search.value) params.search = search.value
-  if (selectedCategory.value !== 'all') {
-    params.category = selectedCategory.value
-  }
-
-  const res = await axios.get('/products', { params })
-
-  products.value = res.data.data
-  totalPages.value = res.data.totalPages
-  loading.value = false
-}
-
-const fetchCategories = async () => {
-  const res = await axios.get('/categories')
-  categories.value = [
-    { id: 'all', name: 'All', icon: '/icons/all.svg' },
-    ...res.data,
-  ]
-}
-
-const changePage = (p) => {
-  page.value = p
-  fetchProducts()
-}
-
-onMounted(() => {
-  fetchCategories()
-  fetchProducts()
+  // Sync local refs from store (if cache filled)
+  searchLocal.value = productStore.search
+  selectedCategoryLocal.value = productStore.selectedCategory
 })
 
-let searchTimeout = null
+const changePage = async (p) => {
+  productStore.setPage(p)
+  await productStore.fetchProducts()
+}
 
-watch(search, () => {
+// Debounced search
+let searchTimeout = null
+watch(searchLocal, () => {
   clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    page.value = 1
-    fetchProducts()
+  searchTimeout = setTimeout(async () => {
+    productStore.setSearch(searchLocal.value)
+    await productStore.fetchProducts()
   }, 400)
 })
 
-watch(selectedCategory, () => {
-  page.value = 1
-  fetchProducts()
+// Category change
+watch(selectedCategoryLocal, async () => {
+  productStore.setCategory(selectedCategoryLocal.value)
+  await productStore.fetchProducts()
 })
+
+// const loading = ref(false)
+// const products = ref([])
+// const categories = ref([])
+
+// const page = ref(1)
+// const limit = ref(12)
+// const totalPages = ref(1)
+
+// const search = ref('')
+// const selectedCategory = ref('all')
+
+// const fetchProducts = async () => {
+//   loading.value = true
+
+//   const params = {
+//     page: page.value,
+//     limit: limit.value,
+//   }
+
+//   if (search.value) params.search = search.value
+//   if (selectedCategory.value !== 'all') {
+//     params.category = selectedCategory.value
+//   }
+
+//   const res = await axios.get('/products', { params })
+
+//   products.value = res.data.data
+//   totalPages.value = res.data.totalPages
+//   loading.value = false
+// }
+
+// const fetchCategories = async () => {
+//   const res = await axios.get('/categories')
+//   categories.value = [
+//     { id: 'all', name: 'All', icon: '/icons/all.svg' },
+//     ...res.data,
+//   ]
+// }
+
+// const changePage = (p) => {
+//   page.value = p
+//   fetchProducts()
+// }
+
+// onMounted(() => {
+//   fetchCategories()
+//   fetchProducts()
+// })
+
+// let searchTimeout = null
+
+// watch(search, () => {
+//   clearTimeout(searchTimeout)
+//   searchTimeout = setTimeout(() => {
+//     page.value = 1
+//     fetchProducts()
+//   }, 400)
+// })
+
+// watch(selectedCategory, () => {
+//   page.value = 1
+//   fetchProducts()
+// })
 </script>
 
 <style scoped>

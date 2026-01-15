@@ -28,6 +28,10 @@ export const useWishlistStore = defineStore('wishlist', () => {
     return items.value.some(p => p.id === productId)
   }
 
+  function clearAll() {
+    items.value = []
+  }
+
   watch(
     items,
     () => {
@@ -40,6 +44,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
     items,
     toggle,
     remove,
-    isInWishlist
+    isInWishlist,
+    clearAll
   }
 })

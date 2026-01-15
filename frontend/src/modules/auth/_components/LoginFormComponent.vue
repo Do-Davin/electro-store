@@ -1,6 +1,6 @@
 <template>
   <div class="login-form">
-    <UsernameFieldComponent v-model="email" placeholder="Username" />
+    <UsernameFieldComponent v-model="email" placeholder="Email" />
     <PasswordFieldComponent v-model="password" placeholder="Password"/>
 
     <p v-if="error" class="error">{{ error }}</p>

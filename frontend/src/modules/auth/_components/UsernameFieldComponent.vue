@@ -9,8 +9,9 @@
       stroke="currentColor"
       stroke-width="2"
     >
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-      <circle cx="12" cy="7" r="4"></circle>
+      <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+      <path d="M22 6l-10 7L2 6"></path>
+
     </svg>
 
     <input
@@ -28,7 +29,7 @@
 defineProps({
   modelValue: { type: String, default: '' },
   type: { type: String, default: 'text' },
-  placeholder: { type: String, default: 'Username' },
+  placeholder: { type: String, default: 'Email' },
 });
 
 defineEmits(['update:modelValue']);

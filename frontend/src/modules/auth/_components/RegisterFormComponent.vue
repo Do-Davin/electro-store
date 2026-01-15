@@ -1,8 +1,8 @@
 <template>
   <div class="register-form">
-    <UsernameFieldComponent v-model="email" placeholder="Username" />
+    <UsernameFieldComponent v-model="email" placeholder="Email" />
     <PasswordFieldComponent v-model="password" placeholder="Password"/>
-    <PasswordFieldComponent v-model="confirmPassword" placeholder="Password again"/>
+    <PasswordFieldComponent v-model="confirmPassword" placeholder="Confirm Password"/>
 
     <p v-if="error" class="error">{{ error }}</p>
     <p v-if="success" class="success">{{ success }}</p>

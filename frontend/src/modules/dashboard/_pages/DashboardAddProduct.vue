@@ -1,4 +1,3 @@
-```vue
 <template>
   <section class="add-product">
     <h1 class="title">Add New Product</h1>
@@ -75,10 +74,13 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import axios from '@/lib/axios'
 import { Upload } from 'lucide-vue-next'
+import { useProductStore } from '@/modules/product/_stores/product.store'
+
+const productStore = useProductStore()
 
 const fileInput = ref(null)
 const file = ref(null)
@@ -109,11 +111,24 @@ function triggerFile() {
 }
 
 function onFileChange(e) {
-  const f = e.target.files[0]
+  const f = e.target.files?.[0]
   if (!f) return
 
   file.value = f
   preview.value = URL.createObjectURL(f)
+}
+
+function resetForm() {
+  form.value = {
+    name: '',
+    description: '',
+    price: 0,
+    discountPercent: 0,
+    categoryId: '',
+  }
+  offerPrice.value = 0
+  file.value = null
+  preview.value = null
 }
 
 async function submit() {
@@ -123,23 +138,52 @@ async function submit() {
 
   loading.value = true
 
-  const fd = new FormData()
-  fd.append('image', file.value)
-  fd.append('name', form.value.name)
-  fd.append('description', form.value.description)
-  fd.append('price', form.value.price)
-  fd.append('discountPercent', discountPercent.value)
-  fd.append('categoryId', form.value.categoryId)
+  try {
+    const fd = new FormData()
+    fd.append('image', file.value)
+    fd.append('name', form.value.name)
+    fd.append('description', form.value.description)
+    fd.append('price', String(form.value.price))
+    fd.append('discountPercent', String(discountPercent.value))
+    fd.append('categoryId', form.value.categoryId)
 
-  await axios.post('/products', fd)
+    const res = await axios.post('/products', fd)
 
-  loading.value = false
-  alert('Product added successfully')
+    // backend responses vary. Handle both common shapes.
+    const created =
+      res.data?.data ??
+      res.data?.product ??
+      res.data
+
+    // Update store immediately (so user ProductList updates without reload)
+    if (created?.id) {
+      productStore.upsertProduct(created, 'prepend')
+    } else {
+      // If backend doesn't return product object, just refresh list
+      await productStore.fetchProducts()
+    }
+    alert('Product added successfully')
+    resetForm()
+  } catch (e) {
+    alert(e?.message ?? 'Failed to add product')
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(async () => {
-  const res = await axios.get('/categories')
-  categories.value = res.data
+  // Use store categories first (fast), then refresh if needed
+  if (productStore.categories?.length > 0) {
+    categories.value = productStore.categories.filter(c => c.id !== 'all')
+  }
+
+  try {
+    // Refresh categories (if backend is off, store will keep cached)
+    await productStore.fetchCategories()
+    categories.value = productStore.categories.filter(c => c.id !== 'all')
+  } catch {
+    // ignore - categories may already exist from cache
+  }
 })
 </script>
 
@@ -220,4 +264,3 @@ textarea {
   font-weight: 600;
 }
 </style>
-```

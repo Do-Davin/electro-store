@@ -3,39 +3,45 @@
     class="w-75 bg-white rounded-2xl p-4 shadow-[0_10px_25px_rgba(0,0,0,0.15)]
     transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
   >
-    <!-- Image Box -->
-    <div
-      class="relative w-full h-48 bg-white rounded-2xl flex items-center
-      justify-center overflow-hidden mb-4"
+    <!-- Clickale Area -->
+    <RouterLink
+      :to="`/products/${product.id}`"
+      class="block"
     >
-      <!-- Stock -->
-      <span
-        class="absolute top-2 left-38 text-xs font-bold px-3 py-1 rounded-full"
-        :class="product.stock > 0
-        ? 'bg-green-100 text-green-700'
-        : 'bg-red-100 text-red-700'"
+      <!-- Image Box -->
+      <div
+        class="relative w-full h-48 bg-white rounded-2xl flex items-center
+        justify-center overflow-hidden mb-4"
       >
-        {{ product.stock > 0 ? 'INSTOCK' : 'OUT OF STOCK' }}
-      </span>
+        <!-- Stock -->
+        <span
+          class="absolute top-2 left-38 text-xs font-bold px-3 py-1 rounded-full"
+          :class="product.stock > 0
+          ? 'bg-green-100 text-green-700'
+          : 'bg-red-100 text-red-700'"
+        >
+          {{ product.stock > 0 ? 'INSTOCK' : 'OUT OF STOCK' }}
+        </span>
 
-      <img
-        :src="currentImage"
-        :alt="product.name"
-        class="w-full h-full object-contain"
-        draggable="false"
-        @error="onImageError"
-      />
-    </div>
+        <img
+          :src="currentImage"
+          :alt="product.name"
+          class="w-full h-full object-contain"
+          draggable="false"
+          @error="onImageError"
+        />
+      </div>
 
-    <!-- Category -->
-    <p class="text-gray-500 text-sm mb-1">
-      {{ product.category?.name || 'Unknown' }}
-    </p>
+      <!-- Category -->
+      <p class="text-gray-500 text-sm mb-1">
+        {{ product.category?.name || 'Unknown' }}
+      </p>
 
-    <!-- Title -->
-    <p class="text-2xl font-bold text-[#0b2c5f] mb-2">
-      {{ product.name }}
-    </p>
+      <!-- Title -->
+      <p class="text-2xl font-bold text-[#0b2c5f] mb-2">
+        {{ product.name }}
+      </p>
+    </RouterLink>
 
     <!-- Price + Rating Row -->
     <div class="flex justify-between items-center mb-4">
