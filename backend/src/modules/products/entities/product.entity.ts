@@ -1,3 +1,4 @@
+import { Brand } from 'src/modules/brands/entities/brand.entity';
 import { Category } from 'src/modules/categories/entities/category.entity';
 import {
   Column,
@@ -39,6 +40,12 @@ export class Product {
 
   @Column({ type: 'int', default: 0 })
   discountPercent: number;
+
+  @ManyToOne(() => Brand, (brand) => brand.products, {
+    eager: true,
+    onDelete: 'RESTRICT',
+  })
+  brand: Brand;
 
   @CreateDateColumn()
   createdAt: Date;
