@@ -111,6 +111,63 @@
             {{ product.description }}
           </p>
         </div>
+
+        <!-- Specs Table -->
+        <div v-if="product && hasSpecs" class="mt-12">
+          <h2 class="text-xl font-semibold text-primary mb-4 opacity-80">
+            Specifications
+          </h2>
+
+          <div
+          class="bg-white rounded-2xl shadow-sm border border-gray-100
+          overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left font-semibold text-gray-700 px-6
+                    py-4 w-[40%]">
+                      Key
+                    </th>
+                    <th class="text-left font-semibold text-gray-700
+                    px-6 py-4">
+                      Value
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr
+                    v-for="row in specsRows"
+                    :key="row.key"
+                    class="border-t border-gray-100"
+                  >
+                    <td class="px-6 py-4 text-gray-700 font-medium whitespace-nowrap">
+                      {{ row.label }}
+                    </td>
+                    <td class="px-6 py-4 text-gray-500">
+                      {{ row.value }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="text-xs text-gray-400 mt-3">
+            Specs are provided by the seller/manufacturer and may vary by region.
+          </p>
+        </div>
+
+        <!-- No specs (optional UX) -->
+        <div v-else-if="product" class="mt-12">
+          <h2 class="text-xl font-semibold text-primary mb-4 opacity-80">
+            Specifications
+          </h2>
+          <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 text-sm text-gray-500">
+            No specifications available for this product yet.
+          </div>
+        </div>
       </div>
     </main>
 
@@ -133,18 +190,50 @@ const wishlist = useWishlistStore()
 const product = ref(null)
 const loading = ref(true)
 
-/* Rating */
+// Rating
 const roundedRating = computed(() => Math.round(Number(product.value?.rating ?? 0)))
 
-/* Prices */
+// Prices
 const finalPrice = computed(() => Number(product.value?.finalPrice ?? 0).toFixed(2))
 
 const originalPrice = computed(() => Number(product.value?.price ?? 0).toFixed(2))
 
 const hasDiscount = computed(() => product.value?.discountPercent > 0)
 
-/* Wishlist */
+// Wishlist
 const isWishlisted = computed(() => product.value && wishlist.isInWishlist(product.value.id))
+
+// Specs
+const hasSpecs = computed(() => {
+  const specs = product.value?.specs
+  return specs && typeof specs === 'object' && !Array.isArray(specs) && Object.keys(specs).length > 0
+})
+
+function formatSpecLabel(key) {
+  // resolution -> Resolution, screen_size -> Screen Size, cpu-model -> Cpu Model
+  return String(key)
+    .replace(/[_-]+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+function formatSpecValue(value) {
+  if (value === null || value === undefined) return '-'
+  if (Array.isArray(value)) return value.map(formatSpecValue).join(', ')
+  if (typeof value === 'object') return JSON.stringify(value)
+  return String(value)
+}
+
+const specsRows = computed(() => {
+  const specs = product.value?.specs
+  if (!specs || typeof specs !== 'object' || Array.isArray(specs)) return []
+
+  return Object.entries(specs).map(([key, value]) => ({
+    key,
+    label: formatSpecLabel(key),
+    value: formatSpecValue(value),
+  }))
+})
 
 onMounted(async () => {
   try {

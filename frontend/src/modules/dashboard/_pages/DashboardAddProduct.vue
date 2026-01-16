@@ -81,6 +81,8 @@
         </select>
       </div>
 
+      <SpecsEditor v-model="form.specs" :allowCustom="false" />
+
       <div class="action-row">
         <button
           class="submit"
@@ -103,10 +105,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/lib/axios'
 import { Upload } from 'lucide-vue-next'
 import { useProductStore } from '@/modules/product/_stores/product.store'
+import SpecsEditor from '../_components/SpecsEditor.vue'
+import { CATEGORY_SPEC_PRESETS } from '@/modules/product/_documents/category-spec-presets'
+
+const CATEGORY_PRESET_MAP = {
+  smartphones: 'phone',
+  laptops: 'laptop',
+  tablets: 'tablet',
+  accessories: 'accessories',
+  smartwatch: 'smartwatch',
+}
 
 const productStore = useProductStore()
 
@@ -130,6 +142,7 @@ const form = ref({
   discountPercent: 0,
   categoryId: '',
   brandId: '',
+  specs: {},
 })
 
 const offerPrice = ref(0)
@@ -161,6 +174,7 @@ function resetForm() {
     discountPercent: 0,
     categoryId: '',
     brandId: '',
+    specs: {},
   }
   offerPrice.value = 0
   file.value = null
@@ -184,6 +198,7 @@ async function submit() {
     fd.append('discountPercent', String(discountPercent.value))
     fd.append('categoryId', form.value.categoryId)
     fd.append('brandId', form.value.brandId)
+    fd.append('specs', JSON.stringify(form.value.specs))
 
     const res = await axios.post('/products', fd)
 
@@ -208,6 +223,23 @@ async function submit() {
     loading.value = false
   }
 }
+
+watch(
+  () => form.value.categoryId,
+  (id) => {
+    const category = categories.value.find(c => c.id === id)
+    if (!category) return
+
+    const normalized = category.name.toLowerCase().replace(/\s+/g, '')
+    const presetKey = CATEGORY_PRESET_MAP[normalized]
+
+    if (presetKey && CATEGORY_SPEC_PRESETS[presetKey]) {
+      form.value.specs = structuredClone(CATEGORY_SPEC_PRESETS[presetKey])
+    } else {
+      form.value.specs = {}
+    }
+  }
+)
 
 // onMounted(async () => {
 //   // Use store categories first (fast), then refresh if needed
