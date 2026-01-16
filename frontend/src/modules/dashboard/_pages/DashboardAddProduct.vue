@@ -49,6 +49,24 @@
         </div>
       </div>
 
+      <!-- Brand Picker -->
+      <div class="field">
+        <label>Brand</label>
+
+        <div class="brand-picker">
+          <div
+            v-for="b in brands"
+            :key="b.id"
+            class="brand-card"
+            :class="{ active: form.brandId === b.id }"
+            @click="form.brandId = b.id"
+          >
+            <img :src="toUrl(b.logoUrl)" draggable="false" />
+            <span>{{ b.name }}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="field">
         <label>Category</label>
         <select v-model="form.categoryId">
@@ -63,13 +81,23 @@
         </select>
       </div>
 
-      <button
-        class="submit"
-        :disabled="loading"
-        @click="submit"
-      >
-        {{ loading ? 'Adding...' : 'Add Product' }}
-      </button>
+      <div class="action-row">
+        <button
+          class="submit"
+          :disabled="loading"
+          @click="submit"
+        >
+          {{ loading ? 'Adding...' : 'Add Product' }}
+        </button>
+
+        <button
+          class="clear"
+          type="button"
+          @click="resetForm"
+        >
+          Clear Form
+        </button>
+      </div>
     </div>
   </section>
 </template>
@@ -82,12 +110,18 @@ import { useProductStore } from '@/modules/product/_stores/product.store'
 
 const productStore = useProductStore()
 
-const fileInput = ref(null)
-const file = ref(null)
+const fileInput = ref<HTMLInputElement | null>(null)
+const file = ref<File | null>(null)
 const preview = ref(null)
 const loading = ref(false)
 
 const categories = ref([])
+const brands = ref([])
+
+const API = 'http://localhost:3000'
+
+const toUrl = (img) =>
+  img?.startsWith('http') ? img : API + img
 
 const form = ref({
   name: '',
@@ -95,6 +129,7 @@ const form = ref({
   price: 0,
   discountPercent: 0,
   categoryId: '',
+  brandId: '',
 })
 
 const offerPrice = ref(0)
@@ -125,6 +160,7 @@ function resetForm() {
     price: 0,
     discountPercent: 0,
     categoryId: '',
+    brandId: '',
   }
   offerPrice.value = 0
   file.value = null
@@ -135,6 +171,7 @@ async function submit() {
   if (!file.value) return alert('Image required')
   if (!form.value.name) return alert('Name required')
   if (!form.value.categoryId) return alert('Category required')
+  if (!form.value.brandId) return alert('Brand required')
 
   loading.value = true
 
@@ -146,6 +183,7 @@ async function submit() {
     fd.append('price', String(form.value.price))
     fd.append('discountPercent', String(discountPercent.value))
     fd.append('categoryId', form.value.categoryId)
+    fd.append('brandId', form.value.brandId)
 
     const res = await axios.post('/products', fd)
 
@@ -171,19 +209,28 @@ async function submit() {
   }
 }
 
-onMounted(async () => {
-  // Use store categories first (fast), then refresh if needed
-  if (productStore.categories?.length > 0) {
-    categories.value = productStore.categories.filter(c => c.id !== 'all')
-  }
+// onMounted(async () => {
+//   // Use store categories first (fast), then refresh if needed
+//   if (productStore.categories?.length > 0) {
+//     categories.value = productStore.categories.filter(c => c.id !== 'all')
+//   }
 
-  try {
-    // Refresh categories (if backend is off, store will keep cached)
-    await productStore.fetchCategories()
-    categories.value = productStore.categories.filter(c => c.id !== 'all')
-  } catch {
-    // ignore - categories may already exist from cache
-  }
+//   try {
+//     // Refresh categories (if backend is off, store will keep cached)
+//     await productStore.fetchCategories()
+//     categories.value = productStore.categories.filter(c => c.id !== 'all')
+//   } catch {
+//     // ignore - categories may already exist from cache
+//   }
+// })
+
+onMounted(async () => {
+  await Promise.all([
+    productStore.fetchCategories(),
+    axios.get('/brands').then(r => (brands.value = r.data)),
+  ])
+
+  categories.value = productStore.categories.filter(c => c.id !== 'all')
 })
 </script>
 
@@ -234,6 +281,71 @@ onMounted(async () => {
   gap: 6px;
 }
 
+.brand-picker {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 10px 4px;
+  scroll-snap-type: x mandatory;
+}
+
+/* Hide scrollbar (Chrome, Edge, Safari) */
+.brand-picker::-webkit-scrollbar {
+  height: 6px;
+}
+.brand-picker::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+}
+
+/* Firefox */
+.brand-picker {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+.brand-card {
+  flex-shrink: 0;
+  width: 120px;
+  height: 90px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  scroll-snap-align: start;
+}
+
+.brand-card:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+.brand-card.active {
+  border-color: #3da9ff;
+  background: rgba(61,169,255,0.25);
+}
+
+.brand-card img {
+  max-width: 48px;
+  max-height: 32px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.brand-card span {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
 input,
 textarea,
 select {
@@ -255,12 +367,64 @@ textarea {
   gap: 16px;
 }
 
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+
 .submit {
-  margin-top: 12px;
-  background: #3da9ff;
+  height: 48px;
+  background: linear-gradient(135deg, #3da9ff, #1e88e5);
   color: white;
-  padding: 14px;
   border-radius: 12px;
   font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(61, 169, 255, 0.35);
+}
+
+.submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(61, 169, 255, 0.45);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.submit:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(61, 169, 255, 0.3);
+  background: linear-gradient(135deg, #2f8de4, #1976d2);
+}
+
+.clear {
+  height: 48px;
+  background: linear-gradient(135deg, #ff4d4f, #d9363e);
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(255, 77, 79, 0.35);
+}
+
+.clear:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(255, 77, 79, 0.45);
+  background: linear-gradient(135deg, #ff7875, #f5222d);
+}
+
+.clear:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
 }
 </style>
