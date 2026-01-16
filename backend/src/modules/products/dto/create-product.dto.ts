@@ -48,4 +48,11 @@ export class CreateProductDto {
   @IsInt()
   @Min(0)
   discountPercent?: number;
+
+  @IsUUID()
+  brandId: string;
+
+  @IsOptional()
+  @IsString()
+  specs?: string; // JSON specs
 }

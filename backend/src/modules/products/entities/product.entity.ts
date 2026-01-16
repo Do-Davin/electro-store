@@ -47,6 +47,9 @@ export class Product {
   })
   brand: Brand;
 
+  @Column({ type: 'json', nullable: true })
+  specs: Record<string, any>;
+
   @CreateDateColumn()
   createdAt: Date;
 

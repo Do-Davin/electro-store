@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { Category } from '../categories/entities/category.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Brand } from '../brands/entities/brand.entity';
 
 @Injectable()
 export class ProductsService {
@@ -14,6 +15,8 @@ export class ProductsService {
     private productsRepo: Repository<Product>,
     @InjectRepository(Category)
     private categoriesRepo: Repository<Category>,
+    @InjectRepository(Brand)
+    private brandsRepo: Repository<Brand>,
   ) {}
 
   async create(dto: CreateProductDto, file: Express.Multer.File) {
@@ -22,10 +25,33 @@ export class ProductsService {
     });
     if (!category) throw new NotFoundException('Category not found');
 
+    const brand = await this.brandsRepo.findOneBy({
+      id: dto.brandId,
+    });
+    if (!brand) throw new NotFoundException('Brand not found');
+
+    let specs: Record<string, unknown> | undefined;
+
+    if (dto.specs) {
+      try {
+        specs =
+          typeof dto.specs === 'string'
+          ? JSON.parse(dto.specs) as Record<string, unknown>
+          : dto.specs;
+      } catch {
+        throw new BadRequestException('Invalid specs JSON format');
+      }
+    }
+
     const product = this.productsRepo.create({
-      ...dto,
+      name: dto.name,
+      description: dto.description,
+      price: dto.price,
+      discountPercent: dto.discountPercent ?? 0,
+      specs: specs,
       imageUrl: `http://localhost:3000/uploads/products/${file.filename}`,
       category,
+      brand,
     });
 
     return this.productsRepo.save(product);
@@ -104,18 +130,40 @@ export class ProductsService {
       const category = await this.categoriesRepo.findOneBy({
         id: dto.categoryId,
       });
-
       if (!category) throw new NotFoundException('Category not found');
-
       product.category = category;
     }
+
+    if (dto.brandId) {
+      const brand = await this.brandsRepo.findOneBy({
+        id: dto.brandId,
+      });
+      if (!brand) throw new NotFoundException('Brand not found');
+      product.brand = brand;
+    }
+
+    if (dto.specs !== undefined) {
+    try {
+      product.specs =
+        typeof dto.specs === 'string'
+          ? JSON.parse(dto.specs) as Record<string, unknown>
+          : dto.specs;
+    } catch {
+      throw new BadRequestException('Invalid specs JSON format');
+    }
+  }
 
     // Update image only if new one uploaded
     if (file) {
       product.imageUrl = `http://localhost:3000/uploads/products/${file.filename}`;
     }
 
-    Object.assign(product, dto);
+    if (dto.name !== undefined) product.name = dto.name;
+    if (dto.description !== undefined) product.description = dto.description;
+    if (dto.price !== undefined) product.price = dto.price;
+    if (dto.discountPercent !== undefined)
+      product.discountPercent = dto.discountPercent;
+    
     return this.productsRepo.save(product);
   }
 
