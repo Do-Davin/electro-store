@@ -4,46 +4,11 @@
     :style="{ backgroundImage: `url(${backgroundImage})` }"
   >
     <!-- Angkor Wat SVG Background (Corrected Proportions) -->
-    <svg
-      class="angkor-wat-bg"
-      viewBox="0 0 1000 400"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <!-- ===== Central Main Tower ===== -->
-      <path class="temple-path" d="M500 60 L535 120 L535 240 L465 240 L465 120 Z" />
-      <path class="temple-path" d="M480 120 L500 90 L520 120 Z" />
-
-      <!-- ===== Inner Left Tower ===== -->
-      <path class="temple-path" d="M380 120 L410 160 L410 240 L350 240 L350 160 Z" />
-      <path class="temple-path" d="M365 160 L380 140 L395 160 Z" />
-
-      <!-- ===== Outer Left Tower ===== -->
-      <path class="temple-path" d="M260 150 L285 185 L285 240 L235 240 L235 185 Z" />
-      <path class="temple-path" d="M248 185 L260 168 L272 185 Z" />
-
-      <!-- ===== Inner Right Tower ===== -->
-      <path class="temple-path" d="M620 120 L650 160 L650 240 L590 240 L590 160 Z" />
-      <path class="temple-path" d="M605 160 L620 140 L635 160 Z" />
-
-      <!-- ===== Outer Right Tower ===== -->
-      <path class="temple-path" d="M740 150 L765 185 L765 240 L715 240 L715 185 Z" />
-      <path class="temple-path" d="M728 185 L740 168 L752 185 Z" />
-
-      <!-- ===== Upper Terrace ===== -->
-      <path class="temple-path" d="M300 240 L700 240 L720 260 L280 260 Z" />
-
-      <!-- ===== Lower Terrace (Main Base) ===== -->
-      <path class="temple-path" d="M180 260 L820 260 L860 300 L140 300 Z" />
-
-      <!-- ===== Connecting Galleries ===== -->
-      <path class="temple-path" d="M410 200 L465 200" />
-      <path class="temple-path" d="M535 200 L590 200" />
-      <path class="temple-path" d="M285 210 L350 210" />
-      <path class="temple-path" d="M650 210 L715 210" />
-
-      <!-- ===== Central Stair Detail ===== -->
-      <path class="temple-path" d="M480 240 L490 260 L510 260 L520 240" />
-    </svg>
+    <img
+      src="/angkor-wat.png"
+      alt="Angkor Wat"
+      class="angkor-wat-bg angkor-orange"
+    />
 
     <div class="hero__content">
       <span class="hero__tag">Hurry up only fews left!</span>
@@ -138,10 +103,21 @@ const backgroundImage = ''
   left: 50%;
   transform: translate(-50%, -50%);
   width: 80%;
-  height: 60%;
+  height: 80%;
   opacity: 0.15;
   z-index: 0;
   pointer-events: none;
+}
+
+.angkor-orange {
+  opacity: 0.18;
+  filter:
+    invert(60%)
+    sepia(90%)
+    saturate(800%)
+    hue-rotate(340deg)
+    brightness(95%)
+    contrast(95%);
 }
 
 .temple-path {
