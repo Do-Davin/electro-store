@@ -164,6 +164,7 @@ onMounted(() => {
   display: grid;
   align-content: center;
   row-gap: 2rem;
+  overflow: hidden;
 }
 
 .carousel-card {
