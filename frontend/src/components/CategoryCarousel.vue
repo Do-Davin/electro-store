@@ -1,232 +1,136 @@
 <template>
-  <div class="carousel-container">
-    <div class="fade fade-left" />
-    <div class="fade fade-right" />
-
-    <div
-      ref="viewport"
-      class="carousel-viewport"
-      @mouseenter="isHovered = true"
-      @mouseleave="isHovered = false"
-    >
+  <div class="carousel">
+    <div ref="track" class="group">
       <div
-        ref="track"
-        class="carousel-track"
-        :style="{ transform: `translateX(${-offset}px)` }"
+        v-for="(item, index) in categories"
+        :key="index"
+        class="card"
       >
-        <div
-          v-for="(item, i) in categories"
-          :key="'a' + i"
-          class="item"
-        >
-          <component :is="item.icon" class="icon" />
-        </div>
-
-        <div
-          v-for="(item, i) in categories"
-          :key="'b' + i"
-          class="item"
-          aria-hidden="true"
-        >
-          <component :is="item.icon" class="icon" />
-        </div>
-
-        <div
-          v-for="(item, i) in categories"
-          :key="'c' + i"
-          class="item"
-          aria-hidden="true"
-        >
-          <component :is="item.icon" class="icon" />
-        </div>
+        <img
+          :src="item.img"
+          :alt="item.name"
+          class="card-img"
+          :style="{
+            transform: item.scale ? `scale(${item.scale})` : 'scale(1)',
+            '--base-scale': item.scale || 1
+          }"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import {
-  Smartphone,
-  Laptop,
-  Headphones,
-  Watch,
-  Monitor,
-  Gamepad2,
-} from 'lucide-vue-next'
+import { ref, onMounted } from 'vue';
 
 const categories = [
-  { icon: Smartphone },
-  { icon: Laptop },
-  { icon: Headphones },
-  { icon: Watch },
-  { icon: Monitor },
-  { icon: Gamepad2 },
-]
+  { name: 'Controller', img: '/category/controller.png' },
+  { name: 'Phone', img: '/category/phone.webp', scale: 1.55 },
+  { name: 'Laptop', img: '/category/laptop.png', scale: 1.15 },
+  { name: 'Headphones', img: '/category/headphones.png', scale: 1.95 },
+  { name: 'Watch', img: '/category/watch.png', scale: 1.15 },
+  { name: 'Monitor', img: '/category/monitor.png' },
+];
 
-const viewport = ref(null)
-const track = ref(null)
-const offset = ref(0)
+const track = ref(null);
 
-let raf = null
-let last = 0
-let loopWidth = 0
+// Duplicate cards multiple times for seamless infinite scroll
+onMounted(() => {
+  if (track.value) {
+    const cards = [...track.value.children];
 
-const SPEED = 60
-const isHovered = ref(false)
-
-const animate = (t) => {
-  if (!last) last = t
-  const dt = (t - last) / 1000
-  last = t
-
-  const currentSpeed = isHovered.value ? SPEED * 0.3 : SPEED
-  offset.value += currentSpeed * dt
-
-  if (offset.value >= loopWidth) {
-    offset.value = offset.value - loopWidth
+    // Duplicate cards 5 times for extra smooth loop on mobile
+    for (let i = 0; i < 5; i++) {
+      cards.forEach(card => {
+        track.value.appendChild(card.cloneNode(true));
+      });
+    }
   }
-
-  raf = requestAnimationFrame(animate)
-}
-
-onMounted(async () => {
-  await nextTick()
-
-  const items = track.value.querySelectorAll('.item')
-  const itemsPerSet = categories.length
-
-  if (items.length > 0) {
-    const firstItem = items[0]
-    const lastItemOfFirstSet = items[itemsPerSet - 1]
-    const gap = parseFloat(getComputedStyle(track.value).gap) || 16
-
-    loopWidth = lastItemOfFirstSet.offsetLeft - firstItem.offsetLeft + lastItemOfFirstSet.offsetWidth + gap
-  }
-
-  raf = requestAnimationFrame(animate)
-})
-
-onBeforeUnmount(() => {
-  if (raf) {
-    cancelAnimationFrame(raf)
-  }
-})
+});
 </script>
 
 <style scoped>
-.carousel-container {
-  position: relative;
+.carousel {
+  margin: 100px auto;
   width: 100%;
-  margin: 80px auto;
-}
-
-.carousel-viewport {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
   overflow: hidden;
+  display: flex;
+  position: relative;
 }
 
-.carousel-track {
+.carousel::before,
+.carousel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 150px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.carousel::before {
+  left: 0;
+  background: linear-gradient(90deg,
+              #ffffff 0%,
+              rgba(255, 255, 255, 0) 100%);
+}
+
+.carousel::after {
+  right: 0;
+  background: linear-gradient(90deg,
+              rgba(255, 255, 255, 0) 0%,
+              #ffffff 100%);
+}
+
+.group {
   display: flex;
-  gap: 1rem;
   width: max-content;
+  gap: 1em;
+  animation: scroll 20s linear infinite;
   will-change: transform;
 }
 
-.item {
+.group:hover {
+  animation-play-state: paused;
+}
+
+.card {
   flex: 0 0 auto;
-  width: 5rem;
-  height: 5rem;
+  width: 5em;
+  height: 5em;
   background: #f6f6f6;
-  border-radius: 0.5rem;
+  font-size: 3rem;
+  border-radius: 0.2em;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
-.icon {
-  width: 2.4rem;
-  height: 2.4rem;
-  color: #111;
+.card:hover {
+  background: #e8e8e8;
 }
 
-.fade {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 150px;
-  pointer-events: none;
-  z-index: 10;
+.card-img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  --base-scale: 1;
 }
 
-.fade-left {
-  left: 0;
-  background: linear-gradient(
-    to right,
-    #ffffff 0%,
-    #ffffff 20%,
-    rgba(255, 255, 255, 0.8) 40%,
-    rgba(255, 255, 255, 0.4) 70%,
-    rgba(255, 255, 255, 0) 100%
-  );
+.card:hover .card-img {
+  transform: scale(calc(var(--base-scale) * 1.15)) !important;
 }
 
-.fade-right {
-  right: 0;
-  background: linear-gradient(
-    to left,
-    #ffffff 0%,
-    #ffffff 20%,
-    rgba(255, 255, 255, 0.8) 40%,
-    rgba(255, 255, 255, 0.4) 70%,
-    rgba(255, 255, 255, 0) 100%
-  );
-}
-
-@media (max-width: 768px) {
-  .carousel-viewport {
-    max-width: 100%;
-    padding: 0 20px;
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
   }
-
-  .fade {
-    width: 100px;
-  }
-
-  .item {
-    width: 4rem;
-    height: 4rem;
-  }
-
-  .icon {
-    width: 2rem;
-    height: 2rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .carousel-viewport {
-    padding: 0 10px;
-  }
-
-  .fade {
-    width: 60px;
-  }
-
-  .item {
-    width: 3.5rem;
-    height: 3.5rem;
-  }
-
-  .icon {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-
-  .carousel-track {
-    gap: 0.75rem;
+  100% {
+    transform: translateX(calc(-100% / 6));
   }
 }
 </style>
