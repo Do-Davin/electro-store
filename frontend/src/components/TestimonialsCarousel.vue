@@ -95,38 +95,38 @@ const props = defineProps({
 
 const defaultTestimonials = [
   {
-    name: 'Sarah Mitchell',
-    image: 'https://i.pravatar.cc/150?img=5',
+    name: 'Do Davin',
+    image: 'users/dodavin.jpg',
     rating: '5.0',
     review: 'Best electronics store! Got my new laptop at an amazing price. Fast shipping and excellent customer service. Highly recommend!'
   },
   {
-    name: 'James Rodriguez',
-    image: 'https://i.pravatar.cc/150?img=12',
+    name: 'Tath Chansereyvong',
+    image: 'users/vong.jpeg',
     rating: '5.0',
     review: 'The iPhone I ordered arrived in perfect condition. Great deals and authentic products. Will definitely shop here again!'
   },
   {
-    name: 'Emily Chen',
-    image: 'https://i.pravatar.cc/150?img=9',
+    name: 'Bro Code',
+    image: 'users/brocode.jpg',
     rating: '5.0',
     review: 'Amazing selection of tech products! Found exactly what I needed for my home office setup. Professional service all the way.'
   },
   {
-    name: 'Michael Johnson',
-    image: 'https://i.pravatar.cc/150?img=8',
+    name: 'Tom',
+    image: 'users/tom.png',
     rating: '5.0',
     review: 'Top-notch quality products and competitive prices. The gaming headset I purchased exceeded my expectations. Five stars!'
   },
   {
-    name: 'Lisa Anderson',
-    image: 'https://i.pravatar.cc/150?img=47',
+    name: 'Cristiano Ronaldo',
+    image: 'users/ronaldo.gif',
     rating: '5.0',
     review: 'Excellent shopping experience! The website is easy to navigate and checkout was smooth. My smartwatch arrived faster than expected.'
   },
   {
-    name: 'David Kim',
-    image: 'https://i.pravatar.cc/150?img=14',
+    name: 'Leo Messi',
+    image: 'users/messi.jpg',
     rating: '5.0',
     review: 'Reliable and trustworthy store. Purchased a tablet for my kids and they love it! Great customer support team too.'
   }
@@ -164,7 +164,6 @@ onMounted(() => {
   display: grid;
   align-content: center;
   row-gap: 2rem;
-  overflow: hidden;
 }
 
 .carousel-card {
