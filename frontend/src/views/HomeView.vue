@@ -1,12 +1,15 @@
 <template>
   <Navbar />
   <HeroSection />
+  <HeroSection_v2/>
   <PromoBanner />
   <CategoryCarousel />
+  <CategoryCarousel_v2 />
   <FeaturedProductComponent />
   <BestSellerComponent />
   <BrandsSection />
   <TrustSection />
+  <TestimonialsCarousel />
   <PaymentMethodsSection />
   <StatsSection />
   <NewsletterSection />
@@ -18,14 +21,15 @@ import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getRole } from '@/lib/auth';
 
-import CategoryCarousel from '@/components/CategoryCarousel.vue';
 import HeroSection from '@/components/HeroSection.vue';
 import PromoBanner from '@/components/PromoBanner.vue';
+import CategoryCarousel from '@/components/CategoryCarousel.vue';
 import Navbar from '@/components/Navbar.vue';
 import FeaturedProductComponent from '@/components/FeaturedProductComponent.vue';
 import BestSellerComponent from '@/components/BestSellerComponent.vue';
 import BrandsSection from '@/components/BrandsSection.vue';
 import TrustSection from '@/components/TrustSection.vue';
+import TestimonialsCarousel from '@/components/TestimonialsCarousel.vue';
 import PaymentMethodsSection from '@/components/PaymentMethodsSection.vue';
 import StatsSection from '@/components/StatsSection.vue';
 import NewsletterSection from '@/components/NewsletterSection.vue';
