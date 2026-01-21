@@ -6,6 +6,7 @@
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold text-primary">All Products</h1>
       <SearchBar v-model="searchLocal" />
+      <ProductFilterButton />
     </div>
 
       <!-- Category Cards -->
@@ -68,6 +69,7 @@ import ProductCard from '../_components/ProductCard.vue'
 import Pagination from '../_components/Pagination.vue'
 import Footer from '@/components/Footer.vue'
 import notFoundImg from '@/assets/empty/not-found-404.svg'
+import ProductFilterButton from '../_components/ProductFilterButton.vue'
 
 import { useProductStore } from '../_stores/product.store'
 
