@@ -8,6 +8,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BrandsModule } from './modules/brands/brands.module';
+import { NewsletterModule } from './modules/newsletter/newsletter.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { BrandsModule } from './modules/brands/brands.module';
     BrandsModule,
     OrdersModule,
     UsersModule,
+    NewsletterModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
