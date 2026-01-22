@@ -4,13 +4,27 @@
     <PasswordFieldComponent v-model="password" placeholder="Password"/>
     <PasswordFieldComponent v-model="confirmPassword" placeholder="Confirm Password"/>
 
-    <p v-if="error" class="error">{{ error }}</p>
-    <p v-if="success" class="success">{{ success }}</p>
+    <div v-if="error" class="message error-message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ error }}</span>
+    </div>
+
+    <div v-if="success" class="message success-message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span>{{ success }}</span>
+    </div>
 
     <AuthButtonComponent
-      label="Sign Up"
+      label="Create Account"
       :loading="loading"
-      loading-text="Creating..."
+      loading-text="Creating account..."
       :disabled="!canSubmit"
       @click="onRegister"
     />
@@ -75,25 +89,50 @@ async function onRegister() {
 }
 </script>
 
-<style>
+<style scoped>
 .register-form {
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.message {
+  display: flex;
   align-items: center;
-  gap: 1.25rem;
-  margin-top: 60px;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s ease-out;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.error {
-  margin-top: 8px;
-  color: #ffb4b4;
-  font-size: 0.95rem;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.success {
-  margin-top: 8px;
-  color: #7dffb4;
-  font-size: 0.95rem;
+.error-message {
+  background: rgba(254, 178, 178, 0.25);
+  color: #ffffff;
+  border: 1px solid rgba(254, 178, 178, 0.4);
+}
+
+.success-message {
+  background: rgba(154, 230, 180, 0.25);
+  color: #ffffff;
+  border: 1px solid rgba(154, 230, 180, 0.4);
+}
+
+.message svg {
+  flex-shrink: 0;
 }
 </style>

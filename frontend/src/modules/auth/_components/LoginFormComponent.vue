@@ -3,12 +3,19 @@
     <UsernameFieldComponent v-model="email" placeholder="Email" />
     <PasswordFieldComponent v-model="password" placeholder="Password"/>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <div v-if="error" class="message error-message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ error }}</span>
+    </div>
 
     <AuthButtonComponent
-      label="Login"
+      label="Sign In"
       :loading="loading"
-      loading-text="Logging in..."
+      loading-text="Signing in..."
       :disabled="!canSubmit"
       @click="onLogin"
     />
@@ -72,14 +79,39 @@ async function onLogin() {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.25rem;
-  margin-top: 60px;
 }
 
-.error {
-  margin-top: 8px;
-  color: #ffb4b4;
-  font-size: 0.95rem;
+.message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s ease-out;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-message {
+  background: rgba(254, 178, 178, 0.25);
+  color: #ffffff;
+  border: 1px solid rgba(254, 178, 178, 0.4);
+}
+
+.error-message svg {
+  flex-shrink: 0;
 }
 </style>
