@@ -18,15 +18,25 @@
       </div>
 
       <!-- Products -->
-      <div class="relative mt-8">
-        <div
+      <div class="relative mt-8 min-h-150">
+        <!-- <div
           v-if="productStore.loadingProducts"
           class="absolute inset-0 bg-white/70 flex items-center justify-center z-10"
         >
           Loading...
-        </div>
+        </div> -->
+        <!-- <div
+          v-if="productStore.loadingProducts"
+          class="absolute inset-0 pointer-events-none flex items-center
+          justify-center z-10"
+        >
+          <span class="text-sm text-gray-400">Updating...</span>
+        </div> -->
 
-        <div v-if="productStore.products.length === 0 && !productStore.loadingProducts">
+        <div
+          v-if="productStore.products.length === 0 && !productStore.loadingProducts"
+          class="absolute inset-0 flex items-center justify-center"
+        >
           <img
             :src="notFoundImg"
             alt="Not found"
@@ -35,14 +45,27 @@
         </div>
 
         <div
-          v-if="productStore.products.length > 0"
-          class="flex justify-center items-center flex-wrap gap-10"
+          v-show="productStore.products.length > 0"
+          class="flex justify-center items-center flex-wrap gap-10
+          transition-opacity duration-200"
+          :class="{ 'opacity-60': productStore.loadingProducts }"
         >
-          <ProductCard
+          <!-- <ProductCard
             v-for="p in productStore.products"
             :key="p.id"
             :product="p"
-          />
+          /> -->
+          <div
+            class="flex justify-center items-center flex-wrap gap-10
+                  transition-opacity duration-200"
+            :class="{ 'opacity-60': productStore.loadingProducts }"
+          >
+            <ProductCard
+              v-for="p in productStore.products"
+              :key="p.id"
+              :product="p"
+            />
+          </div>
         </div>
       </div>
 

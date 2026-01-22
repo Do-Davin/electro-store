@@ -70,12 +70,16 @@ export class ProductsController {
     @Query('limit') limit: number = 12,
     @Query('search') search?: string,
     @Query('category') category?: string,
+    @Query('minPrice') minPrice?: number,
+    @Query('maxPrice') maxPrice?: number,
   ) {
     return this.productsService.findAll({
       page: Number(page),
       limit: Number(limit),
       search,
       category,
+      minPrice: minPrice !== undefined ? Number(minPrice) : undefined,
+      maxPrice: maxPrice !== undefined ? Number(maxPrice) : undefined,
     });
   }
 

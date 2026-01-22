@@ -50,6 +50,9 @@ export const useProductStore = defineStore('product', () => {
   const search = ref('')
   const selectedCategory = ref<string>('all')
 
+  const minPrice = ref<number | null>(null)
+  const maxPrice = ref<number | null>(null)
+
   // LocalStorage helpers
   function safeParse<T>(raw: string | null): T | null {
     if (!raw) return null
@@ -119,9 +122,12 @@ export const useProductStore = defineStore('product', () => {
     }
 
     if (search.value?.trim()) params.search = search.value.trim()
-    if (selectedCategory.value && selectedCategory.value !== 'all') {
+    if (selectedCategory.value !== 'all') {
       params.category = selectedCategory.value
     }
+
+    if (minPrice.value !== null) params.minPrice = minPrice.value
+    if (maxPrice.value !== null) params.maxPrice = maxPrice.value
 
     return params
   }
@@ -129,7 +135,7 @@ export const useProductStore = defineStore('product', () => {
   // Actions
   async function fetchCategories() {
     loadingCategories.value = true
-    error.value = null
+    // error.value = null
 
     try {
       // Load cache first (fast UX)
@@ -202,6 +208,18 @@ export const useProductStore = defineStore('product', () => {
     page.value = 1
   }
 
+  function setPriceRange(min: number | null, max: number | null) {
+    minPrice.value = min
+    maxPrice.value = max
+    page.value = 1
+  }
+
+  function clearPriceRange() {
+    minPrice.value = null
+    maxPrice.value = null
+    page.value = 1
+  }
+
   function setPage(p: number) {
     page.value = p
   }
@@ -246,6 +264,9 @@ export const useProductStore = defineStore('product', () => {
     search,
     selectedCategory,
 
+    minPrice,
+    maxPrice,
+
     // actions
     init,
     fetchProducts,
@@ -254,5 +275,7 @@ export const useProductStore = defineStore('product', () => {
     setCategory,
     setPage,
     upsertProduct,
+    setPriceRange,
+    clearPriceRange,
   }
 })

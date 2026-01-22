@@ -62,11 +62,15 @@ export class ProductsService {
     limit,
     search,
     category,
+    minPrice,
+    maxPrice,
   }: {
     page: number;
     limit: number;
     search?: string;
     category?: string;
+    minPrice?: number;
+    maxPrice?: number;
   }) {
     const qb = this.productsRepo
       .createQueryBuilder('product')
@@ -80,6 +84,20 @@ export class ProductsService {
 
     if (category) {
       qb.andWhere('category.id = :categoryId', { categoryId: category });
+    }
+
+    if (minPrice !== undefined) {
+      qb.andWhere(
+        '("product"."price" * (1 - "product"."discountPercent"::decimal / 100)) >= :minPrice',
+        { minPrice }
+      );
+    }
+
+    if (maxPrice !== undefined) {
+      qb.andWhere(
+        '("product"."price" * (1 - "product"."discountPercent"::decimal / 100)) <= :maxPrice',
+        { maxPrice }
+      );
     }
 
     qb.skip((page - 1) * limit).take(limit);
