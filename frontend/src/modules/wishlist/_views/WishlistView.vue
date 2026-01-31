@@ -1,7 +1,8 @@
 <template>
-  <Navbar />
+  <div class="min-h-screen flex flex-col">
+    <Navbar />
 
-  <div class="pt-24 px-6 max-w-7xl mx-auto mb-24">
+    <div class="flex-1 pt-24 px-6 max-w-7xl mx-auto mb-24 w-full">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
       <h1 class="text-3xl text-primary font-bold">
@@ -86,9 +87,10 @@
         </div>
       </div>
     </div>
-  </div>
+    </div>
 
-  <Footer />
+    <Footer />
+  </div>
 </template>
 
 <script setup>
