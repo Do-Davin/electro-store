@@ -6,6 +6,7 @@ import dashboardRoutes from '@/modules/dashboard/_routes/dashboard.routes';
 import dealsRoutes from '@/modules/deal/_router/deals.routes';
 import orderRoutes from '@/modules/order/_routes/order.routes';
 import productRoutes from '@/modules/product/_routes/product.routes';
+import profileRoutes from '@/modules/profile/_routes/profile.routes';
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -34,9 +35,11 @@ const routes = [
   ...cartRoutes,
   // Register Order Routes in Root Router
   ...orderRoutes,
+  // Register Profile Routes in Root Router
+  ...profileRoutes,
   // Register Order Routes in Root Router
   ...dealsRoutes,
-    // Register dashboard Routes in Root Router
+  // Register dashboard Routes in Root Router
   ...dashboardRoutes,
 ];
 

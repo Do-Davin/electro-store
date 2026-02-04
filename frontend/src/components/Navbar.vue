@@ -57,7 +57,7 @@
 
 
       <!-- Profile -->
-      <RouterLink to="/" class="nav-link transition-colors">
+      <RouterLink to="/profile" class="nav-link transition-colors">
         <UserCircle class="w-6 h-6" />
       </RouterLink>
 
