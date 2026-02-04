@@ -98,7 +98,8 @@
       <button
         v-if="!isAdmin"
         @click="toggleMobileMenu"
-        class="md:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        class="md:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5
+        transition-colors touch-manipulation"
         aria-label="Toggle menu"
       >
         <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 navbar-icon" />
