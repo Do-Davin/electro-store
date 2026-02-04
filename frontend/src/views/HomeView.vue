@@ -1,10 +1,8 @@
 <template>
   <Navbar />
   <HeroSection />
-  <HeroSection_v2/>
   <PromoBanner />
   <CategoryCarousel />
-  <CategoryCarousel_v2 />
   <FeaturedProductComponent />
   <BestSellerComponent />
   <BrandsSection />

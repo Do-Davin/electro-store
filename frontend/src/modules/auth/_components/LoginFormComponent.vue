@@ -1,24 +1,25 @@
 <template>
   <div class="login-form">
-    <UsernameFieldComponent v-model="email" placeholder="Email" />
-    <PasswordFieldComponent v-model="password" placeholder="Password"/>
+    <form @submit.prevent="onLogin">
+      <UsernameFieldComponent v-model="email" placeholder="Email" />
+      <PasswordFieldComponent v-model="password" placeholder="Password"/>
 
-    <div v-if="error" class="message error-message">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="12"></line>
-        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-      </svg>
-      <span>{{ error }}</span>
-    </div>
+      <div v-if="error" class="message error-message">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ error }}</span>
+      </div>
 
-    <AuthButtonComponent
+      <AuthButtonComponent
       label="Sign In"
-      :loading="loading"
-      loading-text="Signing in..."
-      :disabled="!canSubmit"
-      @click="onLogin"
-    />
+          :loading="loading"
+          loading-text="Signing in..."
+          :disabled="!canSubmit"
+      />
+    </form>
   </div>
 </template>
 
@@ -43,6 +44,8 @@ const canSubmit = computed(() => {
 });
 
 async function onLogin() {
+  if (loading.value || !canSubmit.value) return;
+
   error.value = '';
   if (!canSubmit.value) return;
 

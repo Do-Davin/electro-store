@@ -35,9 +35,11 @@ const routes = [
   ...cartRoutes,
   // Register Order Routes in Root Router
   ...orderRoutes,
+  // Register Profile Routes in Root Router
+  ...profileRoutes,
   // Register Order Routes in Root Router
   ...dealsRoutes,
-    // Register dashboard Routes in Root Router
+  // Register dashboard Routes in Root Router
   ...dashboardRoutes,
   // Register Profile Routes in Root Router
   ...profileRoutes,
