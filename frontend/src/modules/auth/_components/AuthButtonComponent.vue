@@ -2,12 +2,13 @@
   <div class="button-wrap">
     <button
       class="auth-button"
-      :type="type"
+      type="submit"
       :disabled="disabled || loading"
-      @click="$emit('click')"
     >
       <span v-if="loading" class="spinner"></span>
-      <span class="button-text">{{ loading ? loadingText : label }}</span>
+      <span class="button-text">
+        {{ loading ? loadingText : label }}
+      </span>
     </button>
   </div>
 </template>
@@ -15,13 +16,11 @@
 <script setup>
 defineProps({
   label: { type: String, required: true },
-  type: { type: String, default: 'button' },
+  // type: { type: String, default: 'button' },
   disabled: { type: Boolean, default: false },
   loading: { type: Boolean, default: false },
   loadingText: { type: String, default: 'Please wait...' },
 });
-
-defineEmits(['click']);
 </script>
 
 <style scoped>

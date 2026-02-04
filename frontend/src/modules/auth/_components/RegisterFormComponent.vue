@@ -1,33 +1,34 @@
 <template>
   <div class="register-form">
-    <UsernameFieldComponent v-model="email" placeholder="Email" />
-    <PasswordFieldComponent v-model="password" placeholder="Password"/>
-    <PasswordFieldComponent v-model="confirmPassword" placeholder="Confirm Password"/>
+    <form @submit.prevent="onRegister">
+      <UsernameFieldComponent v-model="email" placeholder="Email" />
+      <PasswordFieldComponent v-model="password" placeholder="Password"/>
+      <PasswordFieldComponent v-model="confirmPassword" placeholder="Confirm Password"/>
 
-    <div v-if="error" class="message error-message">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="12"></line>
-        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-      </svg>
-      <span>{{ error }}</span>
-    </div>
+      <div v-if="error" class="message error-message">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>{{ error }}</span>
+      </div>
 
-    <div v-if="success" class="message success-message">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-      </svg>
-      <span>{{ success }}</span>
-    </div>
+      <div v-if="success" class="message success-message">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>{{ success }}</span>
+      </div>
 
-    <AuthButtonComponent
-      label="Create Account"
-      :loading="loading"
-      loading-text="Creating account..."
-      :disabled="!canSubmit"
-      @click="onRegister"
-    />
+      <AuthButtonComponent
+        label="Create Account"
+        :loading="loading"
+        loading-text="Creating account..."
+        :disabled="!canSubmit"
+      />
+    </form>
   </div>
 </template>
 
@@ -57,6 +58,7 @@ const canSubmit = computed(() => {
 });
 
 async function onRegister() {
+  if (loading.value || !canSubmit.value) return;
   error.value = '';
   success.value = '';
 
