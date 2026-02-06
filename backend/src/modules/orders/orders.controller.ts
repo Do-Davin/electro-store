@@ -83,6 +83,11 @@ export class OrdersController {
     return this.ordersService.pay(id, req.user.sub, req.user.role);
   }
 
+  @Post(':id/cancel')
+  cancelOrder(@Param('id') id: string, @NestRequest() req: AuthRequest) {
+    return this.ordersService.cancel(id, req.user.sub, req.user.role);
+  }
+
   @Patch(':id/status')
   @Roles('ADMIN')
   updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto) {

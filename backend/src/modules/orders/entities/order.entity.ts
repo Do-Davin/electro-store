@@ -39,6 +39,12 @@ export class Order {
   @Column({ type: 'varchar', default: 'PENDING' })
   status: OrderStatus;
 
+  @Column({ type: 'varchar', nullable: true })
+  stripeSessionId: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  stripePaymentIntentId: string;
+
   @CreateDateColumn()
   createdAt: Date;
 }

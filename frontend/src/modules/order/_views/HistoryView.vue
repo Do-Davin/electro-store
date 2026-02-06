@@ -4,7 +4,7 @@
 
     <main class="flex-1 flex items-start justify-center pt-28 pb-12 px-4">
       <div class="w-full max-w-6xl">
-        <h1 class="text-3xl font-bold text-primary mb-6">Order List</h1>
+        <h1 class="text-3xl font-bold text-primary mb-6">Order History</h1>
 
         <OrderListComponent />
       </div>

@@ -67,13 +67,7 @@
 
     <!-- Buy Button + Wishlist -->
     <div class="flex items-center gap-3">
-      <button
-        :disabled="product.stock <= 0"
-        class="flex-1 bg-primary text-white py-2 rounded-xl flex justify-center
-        items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <ShoppingCart /> Add To Cart
-      </button>
+      <AddToCartButton :product="product" />
 
       <button
         class="w-11 h-11 border border-gray-200 bg-white
@@ -91,8 +85,9 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import placeholderImg from '@/assets/img/placeholder.png'
-import { ShoppingCart, Heart } from 'lucide-vue-next'
+import { Heart } from 'lucide-vue-next'
 import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store'
+import AddToCartButton from '@/modules/cart/_components/AddToCartButton.vue'
 
 const props = defineProps({
   product: {
@@ -111,7 +106,7 @@ function toggleFavorite() {
   wishlist.toggle(props.product)
 }
 
-const API = 'http://localhost:3000'
+const API = import.meta.env.VITE_API_URL
 
 const toUrl = (img) => {
   if (!img) return placeholderImg

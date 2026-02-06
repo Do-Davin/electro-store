@@ -47,11 +47,13 @@ export class ProductsService {
       name: dto.name,
       description: dto.description,
       price: dto.price,
-      discountPercent: dto.discountPercent ?? 0,
-      specs: specs,
       imageUrl: `http://localhost:3000/uploads/products/${file.filename}`,
       category,
+      stock: dto.stock ?? 0,
+      rating: dto.rating ?? 0,
+      discountPercent: dto.discountPercent ?? 0,
       brand,
+      specs: specs,
     });
 
     return this.productsRepo.save(product);
@@ -179,6 +181,8 @@ export class ProductsService {
     if (dto.name !== undefined) product.name = dto.name;
     if (dto.description !== undefined) product.description = dto.description;
     if (dto.price !== undefined) product.price = dto.price;
+    if (dto.stock !== undefined) product.stock = dto.stock;
+    if (dto.rating !== undefined) product.rating = dto.rating;
     if (dto.discountPercent !== undefined)
       product.discountPercent = dto.discountPercent;
     

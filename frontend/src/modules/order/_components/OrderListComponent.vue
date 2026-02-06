@@ -1,171 +1,255 @@
 <template>
-  <div class="bg-white rounded-lg shadow-sm p-6 mx-auto mt-4" style="max-width: 1200px">
-    <!-- Title -->
-    
-    <!-- Table header -->
-    <div class="hidden md:grid grid-cols-12 gap-4 items-center text-sm text-primary font-semibold mb-6 px-2">
-      <div class="col-span-3">Product</div>
-      <div class="col-span-3 text-center">Address</div>
-      <div class="col-span-1 text-center">Quantity</div>
-      <div class="col-span-2 text-center">Total Price</div>
-      <div class="col-span-2 text-center">Date</div>
-      <div class="col-span-1 text-center">Status</div>
+  <div>
+    <!-- Loading State -->
+    <div v-if="orderStore.loading && orders.length === 0" class="text-center py-12">
+      <Loader2 class="w-10 h-10 text-primary animate-spin mx-auto" />
+      <p class="text-gray-500 mt-4">Loading your orders...</p>
     </div>
 
-    <!-- Items -->
-    <div class="space-y-4">
+    <!-- Not Logged In -->
+    <div
+      v-else-if="!loggedIn"
+      class="bg-white rounded-2xl shadow-md p-12 text-center"
+    >
+      <LogIn class="w-16 h-16 text-gray-300 mx-auto mb-4" />
+      <h2 class="text-xl font-bold text-gray-500 mb-2">Please log in</h2>
+      <p class="text-gray-400 mb-6">Log in to view your order history.</p>
+      <RouterLink
+        to="/auth/login"
+        class="inline-block px-6 py-3 bg-primary text-white rounded-xl
+        font-semibold hover:bg-primary/90 transition-colors"
+      >
+        Log In
+      </RouterLink>
+    </div>
+
+    <!-- Empty State -->
+    <div
+      v-else-if="orders.length === 0 && !orderStore.loading"
+      class="bg-white rounded-2xl shadow-md p-12 text-center"
+    >
+      <Package class="w-16 h-16 text-gray-300 mx-auto mb-4" />
+      <h2 class="text-xl font-bold text-gray-500 mb-2">No orders yet</h2>
+      <p class="text-gray-400 mb-6">Your order history will appear here.</p>
+      <RouterLink
+        to="/products"
+        class="inline-block px-6 py-3 bg-primary text-white rounded-xl
+        font-semibold hover:bg-primary/90 transition-colors"
+      >
+        Start Shopping
+      </RouterLink>
+    </div>
+
+    <!-- Order List -->
+    <div v-else class="space-y-4">
+      <!-- Order Cards -->
       <div
         v-for="order in orders"
         :key="order.id"
-        class="grid grid-cols-12 items-center gap-4 py-5 px-2 border-b border-slate-100 hover:bg-slate-50 transition-colors rounded-lg"
+        class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
       >
-        <!-- Product -->
-        <div class="col-span-12 md:col-span-3 flex items-center gap-4">
-          <img :src="order.product.image" alt="product" class="w-16 h-16 rounded-lg object-cover bg-slate-100" />
-          <div>
-            <div class="text-slate-800 font-semibold">{{ order.product.name }}</div>
-            <div class="text-xs text-slate-400">{{ order.product.subtitle }}</div>
-            <div class="text-sm text-primary font-semibold mt-1">${{ order.product.price.toFixed(2) }}</div>
+        <!-- Order Header -->
+        <div class="flex flex-wrap justify-between items-center gap-3 px-6 py-4 bg-gray-50 border-b border-gray-100">
+          <div class="flex items-center gap-4">
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wider">Order</p>
+              <p class="font-bold text-[#0b2c5f]">#{{ order.id.slice(0, 8).toUpperCase() }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase tracking-wider">Date</p>
+              <p class="text-sm text-gray-600">{{ formatDate(order.createdAt) }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span :class="statusClass(order.status)">{{ order.status }}</span>
+            <p class="text-lg font-bold text-[#0b2c5f]">${{ Number(order.totalAmount).toFixed(2) }}</p>
           </div>
         </div>
 
-        <!-- Address -->
-        <div class="col-span-12 md:col-span-3 text-sm text-slate-500 text-center">
-          <div v-for="(line, idx) in order.addressLines" :key="idx">{{ line }}</div>
+        <!-- Order Items -->
+        <div class="px-6 py-4">
+          <div
+            v-for="item in order.items"
+            :key="item.id"
+            class="flex items-center gap-4 py-3 border-b border-gray-50 last:border-0"
+          >
+            <!-- Image -->
+            <div class="w-14 h-14 shrink-0 bg-gray-50 rounded-xl overflow-hidden">
+              <img
+                :src="getImageUrl(item.product?.imageUrl)"
+                :alt="item.product?.name"
+                class="w-full h-full object-contain"
+                @error="onImageError($event)"
+              />
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-[#0b2c5f] truncate">{{ item.product?.name }}</p>
+              <p class="text-sm text-gray-400">
+                {{ item.quantity }} × ${{ Number(item.priceAtTime).toFixed(2) }}
+              </p>
+            </div>
+
+            <!-- Item Total -->
+            <p class="font-semibold text-[#0b2c5f]">
+              ${{ (item.quantity * Number(item.priceAtTime)).toFixed(2) }}
+            </p>
+          </div>
         </div>
 
-        <!-- Quantity -->
-        <div class="col-span-12 md:col-span-1 text-center text-slate-700 font-medium">{{ order.quantity }}</div>
-
-        <!-- Total Price -->
-        <div class="col-span-12 md:col-span-2 text-center text-slate-800 font-semibold">${{ order.total.toFixed(2) }}</div>
-
-        <!-- Date -->
-        <div class="col-span-12 md:col-span-2 text-center text-slate-500 text-sm">{{ order.date }}</div>
-
-        <!-- Status -->
-        <div class="col-span-12 md:col-span-1 text-center">
-          <span
-            :class="['inline-block px-4 py-1.5 rounded-full text-xs font-medium', statusClass(order.status)]"
+        <!-- Order Footer -->
+        <div class="flex justify-between items-center px-6 py-3 bg-gray-50 border-t border-gray-100">
+          <RouterLink
+            :to="`/orders/${order.id}/confirmation`"
+            class="text-primary hover:underline text-sm font-medium"
           >
-            {{ order.status }}
-          </span>
+            View Details
+          </RouterLink>
+
+          <div class="flex items-center gap-3">
+            <button
+              v-if="order.status === 'PENDING'"
+              @click="handlePay(order.id)"
+              class="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1"
+            >
+              <CreditCard class="w-4 h-4" />
+              Pay Now
+            </button>
+
+            <button
+              v-if="canCancel(order.status)"
+              @click="handleCancel(order.id)"
+              class="text-red-500 hover:text-red-600 text-sm font-medium flex items-center gap-1"
+            >
+              <XCircle class="w-4 h-4" />
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- Pagination -->
+      <div
+        v-if="orderStore.totalPages > 1"
+        class="flex justify-center items-center gap-4 pt-6"
+      >
+        <button
+          :disabled="orderStore.page <= 1"
+          @click="goToPage(orderStore.page - 1)"
+          class="px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200
+          transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+
+        <span class="text-sm text-gray-500">
+          Page {{ orderStore.page }} of {{ orderStore.totalPages }}
+        </span>
+
+        <button
+          :disabled="orderStore.page >= orderStore.totalPages"
+          @click="goToPage(orderStore.page + 1)"
+          class="px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200
+          transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div
+      v-if="orderStore.error"
+      class="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm"
+    >
+      {{ orderStore.error }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, onMounted } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import { Loader2, Package, LogIn, XCircle, CreditCard } from 'lucide-vue-next'
+import { useOrderStore } from '../_stores/order.store'
+import { isLoggedIn } from '@/lib/auth'
+import placeholderImg from '@/assets/img/placeholder.png'
 
-const orders = ref([
-  {
-    id: 1,
-    product: {
-      name: 'Airpod',
-      subtitle: 'Wireless Earbuds',
-      price: 299.99,
-      image: '/products/airpod.png',
-    },
-    addressLines: ['No. 128, Street 271,', 'Sangkat Teuk Thla, Khan Sen Sok, Phnom Penh'],
-    quantity: 7,
-    total: 2129.93,
-    date: 'Sun Dec 11 2026',
-    status: 'Pending',
-  },
-  {
-    id: 2,
-    product: {
-      name: 'Airpod',
-      subtitle: 'Wireless Earbuds',
-      price: 299.99,
-      image: '/products/airpod.png',
-    },
-    addressLines: ['No. 128, Street 271,', 'Sangkat Teuk Thla, Khan Sen Sok, Phnom Penh'],
-    quantity: 7,
-    total: 2129.93,
-    date: 'Sun Dec 11 2026',
-    status: 'Delivered',
-  },
-  {
-    id: 3,
-    product: {
-      name: 'Airpod',
-      subtitle: 'Wireless Earbuds',
-      price: 299.99,
-      image: '/products/airpod.png',
-    },
-    addressLines: ['No. 128, Street 271,', 'Sangkat Teuk Thla, Khan Sen Sok, Phnom Penh'],
-    quantity: 7,
-    total: 2129.93,
-    date: 'Sun Dec 11 2026',
-    status: 'Delivered',
-  },
-  {
-    id: 4,
-    product: {
-      name: 'Galaxy Buds',
-      subtitle: 'Wireless Earbuds',
-      price: 199.99,
-      image: '/products/galaxy-buds.png',
-    },
-    addressLines: ['No. 128, Street 271,', 'Sangkat Teuk Thla, Khan Sen Sok, Phnom Penh'],
-    quantity: 3,
-    total: 599.97,
-    date: 'Mon Dec 12 2026',
-    status: 'Delivered',
-  },
-  {
-    id: 5,
-    product: {
-      name: 'Sony Headset',
-      subtitle: 'Over-ear Headphones',
-      price: 149.99,
-      image: '/products/sony-headset.png',
-    },
-    addressLines: ['No. 128, Street 271,', 'Sangkat Teuk Thla, Khan Sen Sok, Phnom Penh'],
-    quantity: 2,
-    total: 299.98,
-    date: 'Tue Dec 13 2026',
-    status: 'Pending',
-  },
-  {
-    id: 6,
-    product: {
-      name: 'MacBook Pro',
-      subtitle: 'Laptop 14-inch M3',
-      price: 1999.99,
-      image: '/products/macbook.png',
-    },
-    addressLines: ['No. 128, Street 271,', 'Sangkat Teuk Thla, Khan Sen Sok, Phnom Penh'],
-    quantity: 1,
-    total: 1999.99,
-    date: 'Wed Dec 14 2026',
-    status: 'Pending',
-  },
-  {
-    id: 7,
-    product: {
-      name: 'iPhone 15 Pro',
-      subtitle: 'Smartphone 256GB',
-      price: 1199.99,
-      image: '/products/iphone.png',
-    },
-    addressLines: ['No. 128, Street 271,', 'Sangkat Teuk Thla, Khan Sen Sok, Phnom Penh'],
-    quantity: 2,
-    total: 2399.98,
-    date: 'Thu Dec 15 2026',
-    status: 'Delivered',
-  },
-])
+const router = useRouter()
 
-const statusClass = (s) => {
-  if (s.toLowerCase() === 'pending') return 'bg-amber-50 text-amber-600 border border-amber-200'
-  if (s.toLowerCase() === 'delivered') return 'bg-cyan-50 text-cyan-600 border border-cyan-200'
-  return 'bg-slate-100 text-slate-600'
+const orderStore = useOrderStore()
+
+const loggedIn = computed(() => isLoggedIn())
+const orders = computed(() => orderStore.orders)
+
+const API = import.meta.env.VITE_API_URL
+
+function getImageUrl(img) {
+  if (!img) return placeholderImg
+  return img.startsWith('http') ? img : API + img
 }
-</script>
 
-<style scoped>
-</style>
+function onImageError(event) {
+  event.target.src = placeholderImg
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+function statusClass(status) {
+  const base = 'inline-block px-3 py-1 rounded-full text-xs font-semibold'
+  switch (status) {
+    case 'PENDING':
+      return `${base} bg-yellow-100 text-yellow-700`
+    case 'PAID':
+      return `${base} bg-green-100 text-green-700`
+    case 'PROCESSING':
+      return `${base} bg-blue-100 text-blue-700`
+    case 'SHIPPED':
+      return `${base} bg-purple-100 text-purple-700`
+    case 'DELIVERED':
+    case 'COMPLETED':
+      return `${base} bg-emerald-100 text-emerald-700`
+    case 'CANCELLED':
+      return `${base} bg-red-100 text-red-700`
+    default:
+      return `${base} bg-gray-100 text-gray-600`
+  }
+}
+
+function canCancel(status) {
+  return ['PENDING', 'PAID', 'PROCESSING'].includes(status)
+}
+
+async function handleCancel(orderId) {
+  if (!confirm('Are you sure you want to cancel this order?')) return
+
+  try {
+    await orderStore.cancelOrder(orderId)
+    await orderStore.fetchMyOrders(orderStore.page)
+  } catch (error) {
+    alert(`Failed to cancel: ${error.message}`)
+  }
+}
+
+function handlePay(orderId) {
+  router.push(`/checkout?orderId=${orderId}`)
+}
+
+function goToPage(pageNum) {
+  orderStore.fetchMyOrders(pageNum)
+}
+
+onMounted(() => {
+  if (loggedIn.value) {
+    orderStore.fetchMyOrders()
+  }
+})
+</script>

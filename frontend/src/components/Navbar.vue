@@ -49,8 +49,18 @@
       </RouterLink>
 
       <!-- Cart -->
-      <RouterLink to="/carts" class="nav-link transition-all hover:scale-110">
+      <RouterLink to="/carts" class="nav-link relative transition-all hover:scale-110">
         <ShoppingCart class="w-5 h-5 lg:w-6 lg:h-6" />
+        <span
+          v-if="cart.itemCount > 0"
+          class="absolute -top-2 -right-2
+        bg-primary text-white
+          text-[10px] font-bold
+          w-5 h-5 flex items-center justify-center
+          rounded-full shadow-lg"
+        >
+          {{ cart.itemCount > 99 ? '99+' : cart.itemCount }}
+        </span>
       </RouterLink>
 
       <!-- Orders / Transactions -->
@@ -163,10 +173,17 @@
         <RouterLink
           to="/carts"
           @click="closeMobileMenu"
-          class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all active:scale-95"
+          class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all relative active:scale-95"
         >
           <ShoppingCart class="w-5 h-5" />
           <span class="font-medium">Cart</span>
+          <span
+            v-if="cart.itemCount > 0"
+            class="ml-auto bg-primary text-white
+            text-xs font-bold px-2 py-1 rounded-full"
+          >
+            {{ cart.itemCount > 99 ? '99+' : cart.itemCount }}
+          </span>
         </RouterLink>
 
         <RouterLink
@@ -198,10 +215,12 @@ import { RouterLink, useRouter, useRoute } from 'vue-router';
 import { Home, Box, ShoppingCart, Heart, LayoutGrid, Receipt, UserCircle, Menu, X } from 'lucide-vue-next';
 import { getRole, isLoggedIn, logout } from '@/lib/auth';
 import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store';
+import { useCartStore } from '@/modules/cart/_stores/cart.store';
 
 const router = useRouter();
 const route = useRoute();
 const wishlist = useWishlistStore();
+const cart = useCartStore();
 
 const loggedIn = computed(() => isLoggedIn());
 const isAdmin = computed(() => getRole() === 'ADMIN');

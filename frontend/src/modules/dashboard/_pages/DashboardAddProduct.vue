@@ -131,6 +131,7 @@ const categories = ref([])
 const brands = ref([])
 
 const API = 'http://localhost:3000'
+// const API = import.meta.env.VITE_API_URL
 
 const toUrl = (img) =>
   img?.startsWith('http') ? img : API + img
