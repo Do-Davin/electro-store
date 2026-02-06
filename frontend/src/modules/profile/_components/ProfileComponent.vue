@@ -1,105 +1,148 @@
 <template>
-  <div class="bg-white rounded-lg shadow-sm p-6 mx-auto mt-4" style="max-width: 1200px">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="mx-auto mt-4" style="max-width: 1200px">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Left Column - Profile Card -->
-      <div class="lg:col-span-1">
-        <div class="bg-slate-50 rounded-xl p-6 text-center">
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Profile Card -->
+        <div class="profile-card relative overflow-hidden rounded-2xl bg-white border border-slate-100">
+          <!-- Accent Banner -->
+          <div class="h-24 bg-gradient-to-br from-primary to-primary/70"></div>
+
           <!-- Avatar -->
-          <div class="relative inline-block mb-4">
-            <img
-              :src="user.avatar"
-              alt="Profile"
-              class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
-            />
-            <button
-              class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full hover:bg-primary/90 transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-            </button>
+          <div class="flex flex-col items-center -mt-14 px-6 pb-6">
+            <div class="relative group">
+              <div v-if="hasAvatar" class="w-24 h-24 rounded-full overflow-hidden border-[3px] border-white shadow-lg ring-2 ring-primary/10">
+                <img
+                  :src="avatarSrc"
+                  alt=""
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div v-else class="w-24 h-24 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20 border-[3px] border-white shadow-lg ring-2 ring-primary/10">
+                <User :size="40" class="text-primary/60" />
+              </div>
+              <button
+                class="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+              >
+                <Camera :size="20" class="text-white" />
+              </button>
+            </div>
+
+            <!-- Name & Email -->
+            <h2 class="mt-3 text-lg font-semibold text-slate-800 tracking-tight">
+              {{ user.firstName }} {{ user.lastName }}
+            </h2>
+            <p class="text-sm text-slate-400 mt-0.5">{{ user.email }}</p>
+
+            <!-- Member Badge -->
+            <div class="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 text-primary text-xs font-medium">
+              <Clock :size="14" />
+              Member since {{ user.memberSince }}
+            </div>
           </div>
+        </div>
 
-          <!-- Name & Email -->
-          <h2 class="text-xl font-bold text-slate-800">{{ user.firstName }} {{ user.lastName }}</h2>
-          <p class="text-sm text-slate-500 mt-1">{{ user.email }}</p>
-
-          <!-- Member Since -->
-          <div class="mt-4 pt-4 border-t border-slate-200">
-            <p class="text-xs text-slate-400">Member since</p>
-            <p class="text-sm font-medium text-slate-600">{{ user.memberSince }}</p>
+        <!-- Quick Stats -->
+        <div class="bg-white rounded-2xl border border-slate-100 p-5">
+          <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Quick Info</h4>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Phone :size="16" class="text-blue-500" />
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs text-slate-400">Phone</p>
+                <p class="text-sm font-medium text-slate-700 truncate">{{ user.phone }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <MapPin :size="16" class="text-emerald-500" />
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs text-slate-400">Location</p>
+                <p class="text-sm font-medium text-slate-700 truncate">{{ user.address.city }}, {{ user.address.country }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex-shrink-0 w-9 h-9 rounded-lg bg-violet-50 flex items-center justify-center">
+                <Calendar :size="16" class="text-violet-500" />
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs text-slate-400">Date of Birth</p>
+                <p class="text-sm font-medium text-slate-700 truncate">{{ user.dateOfBirth }}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Right Column - Profile Details -->
-      <div class="lg:col-span-2">
+      <div class="lg:col-span-2 space-y-6">
         <!-- Personal Information -->
-        <div class="mb-8">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-slate-800">Personal Information</h3>
+        <div class="bg-white rounded-2xl border border-slate-100 p-6">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <User :size="16" class="text-primary" />
+              </div>
+              <h3 class="text-base font-semibold text-slate-800">Personal Information</h3>
+            </div>
             <button
               v-if="!isEditing"
               @click="isEditing = true"
-              class="text-sm text-primary hover:underline font-medium"
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer"
             >
-              Edit
+              <Edit :size="14" />
+              Edit Profile
             </button>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
             <!-- First Name -->
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">First Name</label>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-slate-500 mb-1.5">First Name</label>
               <input
                 v-model="user.firstName"
                 :disabled="!isEditing"
                 type="text"
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                class="profile-input"
+                :class="{ 'profile-input--active': isEditing }"
               />
             </div>
 
             <!-- Last Name -->
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Last Name</label>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-slate-500 mb-1.5">Last Name</label>
               <input
                 v-model="user.lastName"
                 :disabled="!isEditing"
                 type="text"
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
-              />
-            </div>
-
-            <!-- Email -->
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Email Address</label>
-              <input
-                v-model="user.email"
-                :disabled="!isEditing"
-                type="email"
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                class="profile-input"
+                :class="{ 'profile-input--active': isEditing }"
               />
             </div>
 
             <!-- Phone -->
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Phone Number</label>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-slate-500 mb-1.5">Phone Number</label>
               <input
                 v-model="user.phone"
                 :disabled="!isEditing"
                 type="tel"
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                class="profile-input"
+                :class="{ 'profile-input--active': isEditing }"
               />
             </div>
 
             <!-- Gender -->
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Gender</label>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-slate-500 mb-1.5">Gender</label>
               <select
                 v-model="user.gender"
                 :disabled="!isEditing"
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                class="profile-input"
+                :class="{ 'profile-input--active': isEditing }"
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -108,77 +151,88 @@
             </div>
 
             <!-- Date of Birth -->
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Date of Birth</label>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-slate-500 mb-1.5">Date of Birth</label>
               <input
                 v-model="user.dateOfBirth"
                 :disabled="!isEditing"
                 type="date"
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                class="profile-input"
+                :class="{ 'profile-input--active': isEditing }"
               />
             </div>
           </div>
         </div>
 
         <!-- Address Information -->
-        <div class="mb-8">
-          <h3 class="text-lg font-semibold text-slate-800 mb-4">Address Information</h3>
+        <div class="bg-white rounded-2xl border border-slate-100 p-6">
+          <div class="flex items-center gap-2.5 mb-5">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <MapPin :size="16" class="text-emerald-600" />
+            </div>
+            <h3 class="text-base font-semibold text-slate-800">Address Information</h3>
+          </div>
 
           <div class="grid grid-cols-1 gap-4">
             <!-- Street Address -->
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Street Address</label>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-slate-500 mb-1.5">Street Address</label>
               <input
                 v-model="user.address.street"
                 :disabled="!isEditing"
                 type="text"
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                class="profile-input"
+                :class="{ 'profile-input--active': isEditing }"
               />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <!-- City -->
-              <div>
-                <label class="block text-xs text-slate-400 mb-1">City</label>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">City</label>
                 <input
                   v-model="user.address.city"
                   :disabled="!isEditing"
                   type="text"
-                  class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                  class="profile-input"
+                  :class="{ 'profile-input--active': isEditing }"
                 />
               </div>
 
               <!-- State -->
-              <div>
-                <label class="block text-xs text-slate-400 mb-1">State/Province</label>
+              <div class="form-group">
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">State/Province</label>
                 <input
                   v-model="user.address.state"
                   :disabled="!isEditing"
                   type="text"
-                  class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                  class="profile-input"
+                  :class="{ 'profile-input--active': isEditing }"
                 />
               </div>
 
-              <!-- Zip Code -->
-              <div>
-                <label class="block text-xs text-slate-400 mb-1">Zip Code</label>
+              <!-- PostCode -->
+              <div class="form-group">
+                <label class="block text-xs font-medium text-slate-500 mb-1.5">PostCode</label>
                 <input
-                  v-model="user.address.zipCode"
+                  v-model="user.address.postCode"
                   :disabled="!isEditing"
                   type="text"
-                  class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                  class="profile-input"
+                  :class="{ 'profile-input--active': isEditing }"
                 />
               </div>
             </div>
 
             <!-- Country -->
-            <div>
-              <label class="block text-xs text-slate-400 mb-1">Country</label>
+            <div class="form-group">
+              <label class="block text-xs font-medium text-slate-500 mb-1.5">Country</label>
               <input
                 v-model="user.address.country"
                 :disabled="!isEditing"
                 type="text"
-                class="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm focus:outline-none focus:border-primary disabled:bg-slate-50 disabled:cursor-not-allowed"
+                class="profile-input"
+                :class="{ 'profile-input--active': isEditing }"
               />
             </div>
           </div>
@@ -188,35 +242,36 @@
         <div v-if="isEditing" class="flex items-center gap-3">
           <button
             @click="saveProfile"
-            class="px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 transition-all shadow-sm shadow-primary/20 cursor-pointer"
           >
+            <Check :size="16" />
             Save Changes
           </button>
           <button
             @click="cancelEdit"
-            class="px-6 py-2.5 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
+            class="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:bg-slate-50 transition-all cursor-pointer"
           >
+            <X :size="16" />
             Cancel
           </button>
         </div>
 
-        <!-- Account Actions -->
-        <div class="pt-6 border-t border-slate-100 mt-6">
-          <h3 class="text-lg font-semibold text-slate-800 mb-4">Account Settings</h3>
+        <!-- Account Settings -->
+        <div class="bg-white rounded-2xl border border-slate-100 p-6">
+          <div class="flex items-center gap-2.5 mb-5">
+            <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+              <Settings :size="16" class="text-slate-500" />
+            </div>
+            <h3 class="text-base font-semibold text-slate-800">Account Settings</h3>
+          </div>
+
           <div class="flex flex-wrap gap-3">
-            <button class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
+            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:border-slate-300 hover:bg-slate-50 transition-all cursor-pointer">
+              <Lock :size="16" />
               Change Password
             </button>
-            <button class="px-4 py-2 border border-red-200 text-red-500 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 6h18"/>
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-              </svg>
+            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-red-100 text-red-500 text-sm font-medium hover:bg-red-50 hover:border-red-200 transition-all cursor-pointer">
+              <Trash2 :size="16" />
               Delete Account
             </button>
           </div>
@@ -227,7 +282,21 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
+import { 
+  Camera, 
+  Clock, 
+  Phone, 
+  MapPin, 
+  Calendar, 
+  User, 
+  Edit, 
+  Check, 
+  X, 
+  Settings, 
+  Lock, 
+  Trash2 
+} from 'lucide-vue-next'
 
 const isEditing = ref(false)
 
@@ -251,6 +320,10 @@ const originalUser = {
 
 const user = reactive({ ...originalUser, address: { ...originalUser.address } })
 
+// Computed property for avatar display
+const avatarSrc = computed(() => user.avatar || '')
+const hasAvatar = computed(() => !!user.avatar && user.avatar !== '/users/default-avatar.png')
+
 const saveProfile = () => {
   // Here you would typically send the data to the backend
   console.log('Saving profile:', user)
@@ -266,4 +339,35 @@ const cancelEdit = () => {
 </script>
 
 <style scoped>
+.profile-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  color: #334155;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.profile-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.profile-input--active {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.profile-input--active:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 52, 101, 0.08);
+}
+
+.profile-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
 </style>
