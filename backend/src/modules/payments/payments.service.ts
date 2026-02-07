@@ -141,25 +141,65 @@ export class PaymentsService {
       throw new BadRequestException('Invalid webhook signature');
     }
 
-    this.logger.log(`Received Stripe event: ${event.type}`);
+    // --- LOG POINT 1: Event received ---
+    const receivedPaymentIntent = (event.data.object as Stripe.PaymentIntent);
+    this.logger.log(
+      `[Webhook Received] eventId=${event.id} eventType=${event.type} ` +
+      `paymentIntentId=${receivedPaymentIntent?.id ?? 'N/A'} ` +
+      `paymentIntentStatus=${receivedPaymentIntent?.status ?? 'N/A'} ` +
+      `orderId=${receivedPaymentIntent?.metadata?.orderId ?? 'N/A'}`,
+    );
 
     switch (event.type) {
       case 'payment_intent.succeeded': {
         const paymentIntent = event.data.object;
+        // --- LOG POINT 2: Before handling ---
+        this.logger.log(
+          `[Webhook Before Handle] eventId=${event.id} eventType=${event.type} ` +
+          `paymentIntentId=${paymentIntent.id} ` +
+          `paymentIntentStatus=${paymentIntent.status} ` +
+          `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'}`,
+        );
         await this.handlePaymentSucceeded(paymentIntent);
+        // --- LOG POINT 3: After handling ---
+        this.logger.log(
+          `[Webhook After Handle] eventId=${event.id} eventType=${event.type} ` +
+          `paymentIntentId=${paymentIntent.id} ` +
+          `paymentIntentStatus=${paymentIntent.status} ` +
+          `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'} result=success`,
+        );
         break;
       }
 
       case 'payment_intent.payment_failed': {
         const paymentIntent = event.data.object;
+        // --- LOG POINT 2: Before handling ---
+        this.logger.log(
+          `[Webhook Before Handle] eventId=${event.id} eventType=${event.type} ` +
+          `paymentIntentId=${paymentIntent.id} ` +
+          `paymentIntentStatus=${paymentIntent.status} ` +
+          `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'}`,
+        );
         this.logger.log(
           `Payment failed for order: ${paymentIntent.metadata?.orderId}`,
+        );
+        // --- LOG POINT 3: After handling ---
+        this.logger.log(
+          `[Webhook After Handle] eventId=${event.id} eventType=${event.type} ` +
+          `paymentIntentId=${paymentIntent.id} ` +
+          `paymentIntentStatus=${paymentIntent.status} ` +
+          `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'} result=payment_failed`,
         );
         break;
       }
 
       default:
-        this.logger.log(`Unhandled event type: ${event.type}`);
+        this.logger.log(
+          `[Webhook Unhandled] eventId=${event.id} eventType=${event.type} ` +
+          `paymentIntentId=${receivedPaymentIntent?.id ?? 'N/A'} ` +
+          `paymentIntentStatus=${receivedPaymentIntent?.status ?? 'N/A'} ` +
+          `orderId=${receivedPaymentIntent?.metadata?.orderId ?? 'N/A'}`,
+        );
     }
 
     return { received: true };

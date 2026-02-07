@@ -61,7 +61,7 @@
             </div>
           </div>
           <div class="flex items-center gap-4">
-            <span :class="statusClass(order.status)">{{ order.status }}</span>
+            <OrderStatusBadge :status="order.status" />
             <p class="text-lg font-bold text-[#0b2c5f]">${{ Number(order.totalAmount).toFixed(2) }}</p>
           </div>
         </div>
@@ -175,6 +175,7 @@ import { Loader2, Package, LogIn, XCircle, CreditCard } from 'lucide-vue-next'
 import { useOrderStore } from '../_stores/order.store'
 import { isLoggedIn } from '@/lib/auth'
 import placeholderImg from '@/assets/img/placeholder.png'
+import OrderStatusBadge from './OrderStatusBadge.vue'
 
 const router = useRouter()
 
@@ -201,27 +202,6 @@ function formatDate(dateStr) {
     month: 'short',
     day: 'numeric',
   })
-}
-
-function statusClass(status) {
-  const base = 'inline-block px-3 py-1 rounded-full text-xs font-semibold'
-  switch (status) {
-    case 'PENDING':
-      return `${base} bg-yellow-100 text-yellow-700`
-    case 'PAID':
-      return `${base} bg-green-100 text-green-700`
-    case 'PROCESSING':
-      return `${base} bg-blue-100 text-blue-700`
-    case 'SHIPPED':
-      return `${base} bg-purple-100 text-purple-700`
-    case 'DELIVERED':
-    case 'COMPLETED':
-      return `${base} bg-emerald-100 text-emerald-700`
-    case 'CANCELLED':
-      return `${base} bg-red-100 text-red-700`
-    default:
-      return `${base} bg-gray-100 text-gray-600`
-  }
 }
 
 function canCancel(status) {

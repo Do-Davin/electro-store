@@ -28,9 +28,9 @@
         <Box class="w-5 h-5 lg:w-6 lg:h-6" />
       </RouterLink>
 
-      <!-- Categories -->
-      <RouterLink to="/categories" class="nav-link transition-all hover:scale-110">
-        <LayoutGrid class="w-5 h-5 lg:w-6 lg:h-6" />
+      <!-- Brands -->
+      <RouterLink to="/brands" class="nav-link transition-all hover:scale-110">
+        <Crown class="w-5 h-5 lg:w-6 lg:h-6" />
       </RouterLink>
 
       <!-- Wishlist -->
@@ -146,12 +146,12 @@
         </RouterLink>
 
         <RouterLink
-          to="/categories"
+          to="/brands"
           @click="closeMobileMenu"
           class="mobile-nav-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all active:scale-95"
         >
-          <LayoutGrid class="w-5 h-5" />
-          <span class="font-medium">Categories</span>
+          <Crown class="w-5 h-5" />
+          <span class="font-medium">Brands</span>
         </RouterLink>
 
         <RouterLink
@@ -212,7 +212,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { RouterLink, useRouter, useRoute } from 'vue-router';
-import { Home, Box, ShoppingCart, Heart, LayoutGrid, Receipt, UserCircle, Menu, X } from 'lucide-vue-next';
+import { Home, Box, ShoppingCart, Heart, Crown, Receipt, UserCircle, Menu, X } from 'lucide-vue-next';
 import { getRole, isLoggedIn, logout } from '@/lib/auth';
 import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store';
 import { useCartStore } from '@/modules/cart/_stores/cart.store';

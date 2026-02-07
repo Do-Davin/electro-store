@@ -1,7 +1,7 @@
 import { getRole, isLoggedIn } from '@/lib/auth';
 import authRoutes from '@/modules/auth/_routes/auth.routes'
 import cartRoutes from '@/modules/cart/_routes/cart.routes';
-import categoryRoutes from '@/modules/category/_routes/category.routes';
+import brandRoutes from '@/modules/brand/_routes/brand.routes';
 import checkoutRoutes from '@/modules/checkout/_routes/checkout.routes';
 import dashboardRoutes from '@/modules/dashboard/_routes/dashboard.routes';
 import dealsRoutes from '@/modules/deal/_router/deals.routes';
@@ -30,8 +30,8 @@ const routes = [
   ...authRoutes,
   // Register Product Routes in Root Router
   ...productRoutes,
-  // Register Category Routes in Root Router
-  ...categoryRoutes,
+  // Register Brand Routes in Root Router
+  ...brandRoutes,
   // Register Cart Routes in Root Router
   ...cartRoutes,
   // Register Checkout Routes in Root Router
