@@ -1,17 +1,23 @@
 <template>
-  <Navbar />
-  <HeroSection />
-  <PromoBanner />
-  <CategoryCarousel />
-  <FeaturedProductComponent />
-  <BestSellerComponent />
-  <BrandsSection />
-  <TrustSection />
-  <TestimonialsCarousel />
-  <PaymentMethodsSection />
-  <StatsSection />
-  <NewsletterSection />
-  <Footer />
+  <div class="min-h-screen flex flex-col">
+    <Navbar />
+
+    <main class="flex-1">
+      <HeroSection />
+      <PromoBanner />
+      <CategoryCarousel />
+      <FeaturedProductComponent />
+      <BestSellerComponent />
+      <BrandsSection />
+      <TrustSection />
+      <TestimonialsCarousel />
+      <PaymentMethodsSection />
+      <StatsSection />
+      <NewsletterSection />
+    </main>
+
+    <Footer />
+  </div>
 </template>
 
 <script setup>

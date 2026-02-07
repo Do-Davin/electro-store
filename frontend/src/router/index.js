@@ -52,23 +52,12 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior() {
-    // Return a promise that resolves after a short delay
-    // to ensure the DOM has updated before scrolling
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ top: 0, left: 0, behavior: 'instant' })
-      }, 50)
-    })
+    return { top: 0, left: 0, behavior: 'instant' }
   },
 });
 
 // Guards
-router.beforeEach((to, from) => {
-  // Scroll to top immediately before navigation
-  window.scrollTo(0, 0)
-  document.documentElement.scrollTop = 0
-  document.body.scrollTop = 0
-
+router.beforeEach((to) => {
   const loggedIn = isLoggedIn();
 
   // guest only pages (login/register) -> block if logged in

@@ -1,10 +1,11 @@
 <template>
   <div>
     <!-- Loading State -->
-    <div v-if="orderStore.loading && orders.length === 0" class="text-center py-12">
-      <Loader2 class="w-10 h-10 text-primary animate-spin mx-auto" />
-      <p class="text-gray-500 mt-4">Loading your orders...</p>
-    </div>
+    <SkeletonLoader
+      v-if="orderStore.loading && orders.length === 0"
+      variant="list"
+      :count="3"
+    />
 
     <!-- Not Logged In -->
     <div
@@ -24,21 +25,23 @@
     </div>
 
     <!-- Empty State -->
-    <div
-      v-else-if="orders.length === 0 && !orderStore.loading"
-      class="bg-white rounded-2xl shadow-md p-12 text-center"
-    >
-      <Package class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-      <h2 class="text-xl font-bold text-gray-500 mb-2">No orders yet</h2>
-      <p class="text-gray-400 mb-6">Your order history will appear here.</p>
-      <RouterLink
-        to="/products"
-        class="inline-block px-6 py-3 bg-primary text-white rounded-xl
-        font-semibold hover:bg-primary/90 transition-colors"
-      >
-        Start Shopping
-      </RouterLink>
-    </div>
+    <StateView
+      v-else-if="orders.length === 0 && !orderStore.loading && !orderStore.error"
+      icon="order"
+      title="No orders yet"
+      subtitle="Your order history will appear here."
+      action-to="/products"
+      action-text="Start Shopping"
+    />
+
+    <!-- Error -->
+    <StateView
+      v-else-if="orderStore.error && orders.length === 0"
+      variant="error"
+      title="Failed to load orders"
+      :subtitle="orderStore.error"
+      @retry="orderStore.fetchMyOrders()"
+    />
 
     <!-- Order List -->
     <div v-else class="space-y-4">
@@ -158,20 +161,15 @@
       </div>
     </div>
 
-    <!-- Error -->
-    <div
-      v-if="orderStore.error"
-      class="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm"
-    >
-      {{ orderStore.error }}
-    </div>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { Loader2, Package, LogIn, XCircle, CreditCard } from 'lucide-vue-next'
+import { LogIn, XCircle, CreditCard } from 'lucide-vue-next'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
+import StateView from '@/components/StateView.vue'
 import { useOrderStore } from '../_stores/order.store'
 import { isLoggedIn } from '@/lib/auth'
 import placeholderImg from '@/assets/img/placeholder.png'

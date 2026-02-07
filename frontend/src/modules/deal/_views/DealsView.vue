@@ -1,7 +1,9 @@
 <template>
-  <div class="w-full min-h-screen bg-[#f8f9fc] dark:bg-[#0b2447]">
+  <div class="w-full min-h-screen flex flex-col bg-[#f8f9fc] dark:bg-[#0b2447]">
 
     <Navbar />
+
+    <main class="flex-1">
 
     <section class="max-w-6xl mx-auto px-6 py-16 mt-10">
       <!-- Header -->
@@ -36,20 +38,30 @@
       </div>
 
       <!-- Loading -->
-      <div
+      <SkeletonLoader
         v-if="loading"
-        class="text-center text-gray-500 text-lg py-10"
-      >
-        Loading deals...
-      </div>
+        variant="card"
+        :count="3"
+      />
 
       <!-- Empty -->
-      <div
-        v-else-if="deals.length === 0"
-        class="text-center text-gray-500 text-lg py-10"
-      >
-        No deals available right now.
-      </div>
+      <StateView
+        v-else-if="deals.length === 0 && !error"
+        icon="deal"
+        title="No deals available"
+        subtitle="Check back soon for exclusive offers and discounts."
+        action-to="/products"
+        action-text="Browse Products"
+      />
+
+      <!-- Error -->
+      <StateView
+        v-else-if="error"
+        variant="error"
+        title="Failed to load deals"
+        :subtitle="error"
+        @retry="fetchDeals"
+      />
 
       <!-- Deals Grid -->
       <div
@@ -64,6 +76,8 @@
       </div>
     </section>
 
+    </main>
+
     <Footer />
   </div>
 </template>
@@ -72,6 +86,8 @@
 import Navbar from "@/components/Navbar.vue";
 import ProductCard from "@/modules/product/_components/ProductCard.vue";
 import Footer from "@/components/Footer.vue";
+import SkeletonLoader from "@/components/SkeletonLoader.vue";
+import StateView from "@/components/StateView.vue";
 import { Flame } from 'lucide-vue-next';
 import { onMounted, ref } from "vue";
 import axios from "axios";
@@ -79,15 +95,20 @@ import { RouterLink } from "vue-router";
 
 const deals = ref([]);
 const loading = ref(true)
+const error = ref('')
 
-onMounted(async () => {
+async function fetchDeals() {
+  loading.value = true
+  error.value = ''
   try {
     const res = await axios.get("/products/deals");
     deals.value = res.data;
   } catch (err) {
-    console.log("Failed to load deals", err);
+    error.value = err.message || 'Failed to load deals.'
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(fetchDeals);
 </script>

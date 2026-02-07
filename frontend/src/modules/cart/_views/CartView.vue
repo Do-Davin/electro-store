@@ -1,8 +1,10 @@
 <template>
-  <Navbar />
+  <div class="min-h-screen flex flex-col">
+    <Navbar />
 
-  <!-- Page Header -->
-  <div class="bg-primary py-8 pt-24">
+    <main class="flex-1">
+      <!-- Page Header -->
+      <div class="bg-primary py-8 pt-24">
     <div class="max-w-6xl mx-auto px-4">
       <h1 class="text-3xl font-bold text-white">Shopping Cart</h1>
       <p class="text-white/70 mt-1">{{ cart.itemCount }} items in your cart</p>
@@ -46,7 +48,10 @@
     </div>
   </div>
 
+  </main>
+
   <Footer />
+  </div>
 </template>
 
 <script setup>

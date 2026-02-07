@@ -1,88 +1,80 @@
 <template>
-  <Navbar />
+  <div class="page-layout">
+    <Navbar />
 
-  <div class="container pt-20">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-primary">All Products</h1>
-      <SearchBar v-model="searchLocal" />
-      <ProductFilterButton />
-    </div>
-
-      <!-- Category Cards -->
-      <div class="flex justify-center items-center">
-        <CategoryScroller
-          v-model="selectedCategoryLocal"
-          :categories="productStore.categories"
-        />
-      </div>
-
-      <!-- Products -->
-      <div class="relative mt-8 min-h-150">
-        <!-- <div
-          v-if="productStore.loadingProducts"
-          class="absolute inset-0 bg-white/70 flex items-center justify-center z-10"
-        >
-          Loading...
-        </div> -->
-        <!-- <div
-          v-if="productStore.loadingProducts"
-          class="absolute inset-0 pointer-events-none flex items-center
-          justify-center z-10"
-        >
-          <span class="text-sm text-gray-400">Updating...</span>
-        </div> -->
-
-        <div
-          v-if="productStore.products.length === 0 && !productStore.loadingProducts"
-          class="absolute inset-0 flex items-center justify-center"
-        >
-          <img
-            :src="notFoundImg"
-            alt="Not found"
-            class="mx-auto w-220 max-w-[85vw]"
-          >
+    <main class="page-layout__main">
+      <div class="container pt-20">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-primary">All Products</h1>
+          <SearchBar v-model="searchLocal" />
+          <ProductFilterButton />
         </div>
 
-        <div
-          v-show="productStore.products.length > 0"
-          class="flex justify-center items-center flex-wrap gap-10
-          transition-opacity duration-200"
-          :class="{ 'opacity-60': productStore.loadingProducts }"
-        >
-          <!-- <ProductCard
-            v-for="p in productStore.products"
-            :key="p.id"
-            :product="p"
-          /> -->
-          <div
-            class="flex justify-center items-center flex-wrap gap-10
-                  transition-opacity duration-200"
-            :class="{ 'opacity-60': productStore.loadingProducts }"
-          >
-            <ProductCard
-              v-for="p in productStore.products"
-              :key="p.id"
-              :product="p"
+        <!-- Category Cards -->
+        <div class="flex justify-center items-center">
+          <CategoryScroller
+            v-model="selectedCategoryLocal"
+            :categories="productStore.categories"
+          />
+        </div>
+
+        <!-- Initial loading skeleton -->
+        <div v-if="initialLoading" class="mt-8">
+          <SkeletonLoader variant="card" :count="4" />
+        </div>
+
+        <!-- Products (after initial load) -->
+        <template v-else>
+          <div class="relative mt-8 min-h-150">
+            <div
+              v-if="productStore.products.length === 0 && !productStore.loadingProducts"
+              class="absolute inset-0 flex items-center justify-center"
+            >
+              <img
+                :src="notFoundImg"
+                alt="Not found"
+                class="mx-auto w-220 max-w-[85vw]"
+              >
+            </div>
+
+            <div
+              v-show="productStore.products.length > 0"
+              class="flex justify-center items-center flex-wrap gap-10
+              transition-opacity duration-200"
+              :class="{ 'opacity-60': productStore.loadingProducts }"
+            >
+              <div
+                class="flex justify-center items-center flex-wrap gap-10
+                      transition-opacity duration-200"
+                :class="{ 'opacity-60': productStore.loadingProducts }"
+              >
+                <ProductCard
+                  v-for="p in productStore.products"
+                  :key="p.id"
+                  :product="p"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="flex justify-center mt-12">
+            <Pagination
+              :page="productStore.page"
+              :totalPages="productStore.totalPages"
+              @change="changePage"
             />
           </div>
-        </div>
+        </template>
       </div>
+    </main>
 
-    <!-- Pagination -->
-    <div class="flex justify-center mt-12">
-      <Pagination
-        :page="productStore.page"
-        :totalPages="productStore.totalPages"
-        @change="changePage"
-      />
-    </div>
+    <Footer />
   </div>
-  <Footer />
 </template>
 
 <script setup>
-// import axios from 'axios'
 import { ref, onMounted, watch } from 'vue'
 
 import Navbar from '@/components/Navbar.vue'
@@ -91,6 +83,7 @@ import CategoryScroller from '../_components/CategoryScroller.vue'
 import ProductCard from '../_components/ProductCard.vue'
 import Pagination from '../_components/Pagination.vue'
 import Footer from '@/components/Footer.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import notFoundImg from '@/assets/empty/not-found-404.svg'
 import ProductFilterButton from '../_components/ProductFilterButton.vue'
 
@@ -98,17 +91,18 @@ import { useProductStore } from '../_stores/product.store'
 
 const productStore = useProductStore()
 
+const initialLoading = ref(true)
+
 // Local v-models (keeps UI components unchanged)
 const searchLocal = ref(productStore.search)
 const selectedCategoryLocal = ref(productStore.selectedCategory)
 
 onMounted(async () => {
-  // store initializes from cache then refreshes from API
   await productStore.init()
 
-  // Sync local refs from store (if cache filled)
   searchLocal.value = productStore.search
   selectedCategoryLocal.value = productStore.selectedCategory
+  initialLoading.value = false
 })
 
 const changePage = async (p) => {
@@ -198,6 +192,16 @@ watch(selectedCategoryLocal, async () => {
 </script>
 
 <style scoped>
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-layout__main {
+  flex: 1;
+}
+
 .container {
   max-width: 1200px;
   margin: 70px auto;

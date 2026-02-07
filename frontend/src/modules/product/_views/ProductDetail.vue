@@ -9,8 +9,8 @@
           Product Details
         </h2>
 
-        <!-- Loading -->
-        <div v-if="loading" class="text-center py-32 text-gray-500">Loading product...</div>
+        <!-- Loading skeleton -->
+        <SkeletonLoader v-if="loading" variant="detail" />
 
         <!-- Product -->
         <div v-else-if="product" class="grid grid-cols-1 md:grid-cols-2 gap-14">
@@ -181,6 +181,7 @@ import { useRoute } from 'vue-router'
 import { Star, Heart } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import axios from '@/lib/axios'
 import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store'
 

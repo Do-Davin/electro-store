@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col">
     <Navbar />
 
-    <div class="flex-1 pt-24 px-6 max-w-7xl mx-auto mb-24 w-full">
+    <main class="flex-1 pt-24 px-6 max-w-7xl mx-auto mb-24 w-full">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
       <h1 class="text-3xl text-primary font-bold">
@@ -21,13 +21,14 @@
     </div>
 
     <!-- Empty state -->
-    <div
+    <StateView
       v-if="wishlist.items.length === 0"
-      class="flex flex-col items-center justify-center text-gray-500 py-32"
-    >
-      <p class="text-lg font-medium mb-2">Your wishlist is empty</p>
-      <p class="text-sm">Save products you love for later</p>
-    </div>
+      icon="wishlist"
+      title="Your wishlist is empty"
+      subtitle="Save products you love for later."
+      action-to="/products"
+      action-text="Browse Products"
+    />
 
     <!-- Wishlist grid -->
     <div
@@ -87,7 +88,7 @@
         </div>
       </div>
     </div>
-    </div>
+    </main>
 
     <Footer />
   </div>
@@ -98,6 +99,7 @@ import { useWishlistStore } from '../_stores/wishlist.store';
 import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
 import { Trash2 } from 'lucide-vue-next';
+import StateView from '@/components/StateView.vue';
 
 const wishlist = useWishlistStore()
 </script>

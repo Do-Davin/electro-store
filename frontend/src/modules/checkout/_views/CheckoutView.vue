@@ -1,8 +1,10 @@
 <template>
-  <Navbar />
+  <div class="min-h-screen flex flex-col">
+    <Navbar />
 
-  <!-- Page Header -->
-  <div class="bg-primary py-8 pt-24">
+    <main class="flex-1">
+      <!-- Page Header -->
+      <div class="bg-primary py-8 pt-24">
     <div class="max-w-6xl mx-auto px-4">
       <h1 class="text-3xl font-bold text-white">Checkout</h1>
       <p class="text-white/70 mt-1">
@@ -57,30 +59,19 @@
       </div>
 
       <!-- Loading Existing Order (from Pay Now) -->
-      <div
-        v-else-if="loadingExistingOrder"
-        class="bg-white rounded-2xl shadow-md p-12 text-center"
-      >
-        <Loader2 class="w-10 h-10 text-primary animate-spin mx-auto" />
-        <p class="text-gray-500 mt-4">Loading order...</p>
+      <div v-else-if="loadingExistingOrder">
+        <SkeletonLoader variant="list" :count="1" />
       </div>
 
       <!-- Empty Cart Warning (only when not paying an existing order) -->
-      <div
+      <StateView
         v-else-if="cart.isEmpty && !clientSecret && !route.query.orderId"
-        class="bg-white rounded-2xl shadow-md p-12 text-center"
-      >
-        <ShoppingCart class="w-20 h-20 text-gray-300 mx-auto mb-4" />
-        <h2 class="text-xl font-bold text-gray-500 mb-2">Your cart is empty</h2>
-        <p class="text-gray-400 mb-6">Add some products before checking out.</p>
-        <RouterLink
-          to="/products"
-          class="inline-block px-6 py-3 bg-primary text-white rounded-xl
-          font-semibold hover:bg-primary/90 transition-colors"
-        >
-          Browse Products
-        </RouterLink>
-      </div>
+        icon="cart"
+        title="Your cart is empty"
+        subtitle="Add some products before checking out."
+        action-to="/products"
+        action-text="Browse Products"
+      />
 
       <!-- Main Checkout Grid -->
       <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -159,18 +150,23 @@
     </div>
   </div>
 
-  <Footer />
+    </main>
+
+    <Footer />
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import {
-  ShoppingCart, Lock, Loader2, AlertCircle, LogIn,
+  Lock, Loader2, AlertCircle, LogIn,
   CreditCard, ArrowLeft, ChevronRight,
 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
+import StateView from '@/components/StateView.vue'
 import CheckoutForm from '../_components/CheckoutForm.vue'
 import OrderReview from '../_components/OrderReview.vue'
 import StripePaymentForm from '../_components/StripePaymentForm.vue'

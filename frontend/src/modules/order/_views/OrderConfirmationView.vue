@@ -1,8 +1,10 @@
 <template>
-  <Navbar />
+  <div class="min-h-screen flex flex-col">
+    <Navbar />
 
-  <!-- Header Banner -->
-  <div class="bg-gray-50 pt-24 pb-4">
+    <main class="flex-1">
+      <!-- Header Banner -->
+      <div class="bg-gray-50 pt-24 pb-4">
     <div class="max-w-4xl mx-auto px-4" v-if="order">
 
       <!-- CANCELLED — always takes priority regardless of URL params -->
@@ -132,27 +134,18 @@
   <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-4xl mx-auto px-4">
       <!-- Loading State -->
-      <div v-if="orderStore.loading" class="text-center py-12">
-        <Loader2 class="w-12 h-12 text-primary animate-spin mx-auto" />
-        <p class="text-gray-500 mt-4">Loading order details...</p>
-      </div>
+      <SkeletonLoader v-if="orderStore.loading" variant="list" :count="1" />
 
       <!-- Error State -->
-      <div
+      <StateView
         v-else-if="orderStore.error || !order"
-        class="bg-white rounded-2xl shadow-md p-12 text-center"
-      >
-        <AlertCircle class="w-16 h-16 text-red-400 mx-auto mb-4" />
-        <h2 class="text-xl font-bold text-gray-600 mb-2">Order Not Found</h2>
-        <p class="text-gray-400 mb-6">{{ orderStore.error || 'Unable to load order details.' }}</p>
-        <RouterLink
-          to="/orders"
-          class="inline-block px-6 py-3 bg-primary text-white rounded-xl
-          font-semibold hover:bg-primary/90 transition-colors"
-        >
-          View All Orders
-        </RouterLink>
-      </div>
+        variant="error"
+        title="Order Not Found"
+        :subtitle="orderStore.error || 'Unable to load order details.'"
+        action-to="/orders"
+        action-text="View All Orders"
+        @retry="reloadOrder"
+      />
 
       <!-- Order Details -->
       <div v-else class="space-y-6">
@@ -296,7 +289,10 @@
     </div>
   </div>
 
-  <Footer />
+    </main>
+
+    <Footer />
+  </div>
 </template>
 
 <script setup>
@@ -314,6 +310,8 @@ import {
 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
+import StateView from '@/components/StateView.vue'
 import SuccessResult from '../_components/SuccessResult.vue'
 import CancelledResult from '../_components/CancelledResult.vue'
 import { useOrderStore } from '../_stores/order.store'
@@ -406,6 +404,11 @@ function formatDate(dateStr) {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+async function reloadOrder() {
+  const orderId = route.params.id
+  if (orderId) await orderStore.fetchOrderById(orderId)
 }
 
 onMounted(async () => {

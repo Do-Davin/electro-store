@@ -12,9 +12,7 @@
       </div>
 
       <!-- Loading -->
-      <div v-if="loading" class="flex justify-center gap-6 px-10">
-        <div v-for="i in 4" :key="i" class="w-60 h-72 bg-gray-200 animate-pulse rounded-xl"></div>
-      </div>
+      <SkeletonLoader v-if="loading" variant="card" :count="3" />
 
       <!-- Products -->
       <div v-else-if="products.length" class="flex gap-15 flex-wrap justify-center">
@@ -26,9 +24,23 @@
       </div>
 
       <!-- Empty -->
-      <div v-else class="text-center text-gray-500 py-10">
-        No {{ title.toLowerCase() }} available.
-      </div>
+      <StateView
+        v-else-if="!products.length && !error"
+        icon="product"
+        :title="'No ' + title.toLowerCase() + ' available'"
+        subtitle="Check back later for new arrivals."
+        action-to="/products"
+        action-text="View All Products"
+      />
+
+      <!-- Error -->
+      <StateView
+        v-else-if="error"
+        variant="error"
+        title="Failed to load products"
+        :subtitle="error"
+        @retry="fetchProducts"
+      />
     </div>
   </div>
 </template>
@@ -37,6 +49,8 @@
 import axios from "axios"
 import { ref, onMounted } from "vue"
 import ProductCard from "./ProductCard.vue"
+import SkeletonLoader from "@/components/SkeletonLoader.vue"
+import StateView from "@/components/StateView.vue"
 import { RouterLink } from "vue-router"
 
 const props = defineProps({
@@ -50,6 +64,7 @@ const props = defineProps({
 
 const loading = ref(false)
 const products = ref([])
+const error = ref('')
 
 const sectionClass = props.bg === "gray"
   ? "w-full py-16 bg-[#f8f9fc] dark:bg-[#0b2447]"
@@ -57,9 +72,12 @@ const sectionClass = props.bg === "gray"
 
 async function fetchProducts() {
   loading.value = true
+  error.value = ''
   try {
     const res = await axios.get("/products", { params: props.params })
     products.value = res.data.data || res.data
+  } catch (err) {
+    error.value = err.message || 'Failed to load products.'
   } finally {
     loading.value = false
   }
