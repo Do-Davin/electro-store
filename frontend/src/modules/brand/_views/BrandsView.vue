@@ -19,37 +19,31 @@
           </p>
         </div>
 
-        <!-- Loading -->
-        <div v-if="brandStore.loading && brands.length === 0" class="text-center py-16">
-          <Loader2 class="w-10 h-10 text-primary animate-spin mx-auto" />
-          <p class="text-gray-400 mt-4">Loading brands...</p>
-        </div>
+        <!-- Loading (initial only) -->
+        <SkeletonLoader
+          v-if="brandStore.loading && brands.length === 0 && !brandStore.error"
+          variant="card"
+          :count="6"
+          container-class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        />
 
         <!-- Error -->
-        <div
+        <StateView
           v-else-if="brandStore.error"
-          class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center max-w-md mx-auto"
-        >
-          <AlertCircle class="w-12 h-12 text-red-400 mx-auto mb-3" />
-          <p class="text-red-600 font-medium">{{ brandStore.error }}</p>
-          <button
-            @click="brandStore.fetchBrands()"
-            class="mt-4 px-5 py-2 bg-red-500 text-white rounded-xl text-sm
-                   font-medium hover:bg-red-600 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
+          variant="error"
+          title="Failed to load brands"
+          :subtitle="brandStore.error"
+          :loading="brandStore.loading"
+          @retry="brandStore.fetchBrands()"
+        />
 
         <!-- Empty -->
-        <div
+        <StateView
           v-else-if="brands.length === 0"
-          class="bg-white rounded-2xl shadow-md p-12 text-center max-w-md mx-auto"
-        >
-          <Bookmark class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 class="text-xl font-bold text-gray-500 mb-2">No brands yet</h2>
-          <p class="text-gray-400">Brands will appear here once they're added.</p>
-        </div>
+          icon="generic"
+          title="No brands yet"
+          subtitle="Brands will appear here once they're added."
+        />
 
         <!-- Brands Grid -->
         <div
@@ -72,9 +66,11 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { Loader2, AlertCircle, Crown, Bookmark } from 'lucide-vue-next'
+import { Crown } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
+import StateView from '@/components/StateView.vue'
 import BrandCardComponent from '../_components/BrandCardComponent.vue'
 import { useBrandStore } from '../_stores/brand.store'
 

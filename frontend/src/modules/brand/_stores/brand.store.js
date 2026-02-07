@@ -12,10 +12,10 @@ export const useBrandStore = defineStore('brand', () => {
   // ============ ACTIONS ============
   async function fetchBrands() {
     loading.value = true
-    error.value = null
 
     try {
       brands.value = await brandApi.getAll()
+      error.value = null
     } catch (e) {
       error.value = e.message || 'Failed to fetch brands'
     } finally {
@@ -25,10 +25,10 @@ export const useBrandStore = defineStore('brand', () => {
 
   async function fetchBrandById(id) {
     loading.value = true
-    error.value = null
 
     try {
       currentBrand.value = await brandApi.getById(id)
+      error.value = null
     } catch (e) {
       error.value = e.message || 'Failed to fetch brand'
     } finally {

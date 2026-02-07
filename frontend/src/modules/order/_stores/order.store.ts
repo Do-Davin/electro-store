@@ -62,10 +62,10 @@ export const useOrderStore = defineStore('order', () => {
 
   async function fetchMyOrders(pageNum = 1) {
     loading.value = true
-    error.value = null
 
     try {
       const response = await orderApi.getMyOrders(pageNum, limit.value)
+      error.value = null
       orders.value = response.data
       page.value = response.meta.page
       totalPages.value = response.meta.totalPages
@@ -79,10 +79,10 @@ export const useOrderStore = defineStore('order', () => {
 
   async function fetchOrderById(orderId: string) {
     loading.value = true
-    error.value = null
 
     try {
       const order = await orderApi.getById(orderId)
+      error.value = null
       currentOrder.value = order
       return order
     } catch (e: any) {
@@ -95,10 +95,10 @@ export const useOrderStore = defineStore('order', () => {
 
   async function payOrder(orderId: string) {
     loading.value = true
-    error.value = null
 
     try {
       const order = await orderApi.pay(orderId)
+      error.value = null
       currentOrder.value = order
       // Update in list if exists
       const idx = orders.value.findIndex((o) => o.id === orderId)

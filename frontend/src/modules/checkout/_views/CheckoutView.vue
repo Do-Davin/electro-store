@@ -105,18 +105,11 @@
           </template>
 
           <!-- Error Message -->
-          <div
+          <ErrorBanner
             v-if="orderError"
-            class="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3"
-          >
-            <AlertCircle class="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-            <div>
-              <p class="font-medium text-red-700">
-                {{ clientSecret ? 'Payment Error' : 'Order Failed' }}
-              </p>
-              <p class="text-sm text-red-600">{{ orderError }}</p>
-            </div>
-          </div>
+            :title="clientSecret ? 'Payment Error' : 'Order Failed'"
+            :message="orderError"
+          />
         </div>
 
         <!-- Right Column: Order Summary -->
@@ -160,13 +153,14 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import {
-  Lock, Loader2, AlertCircle, LogIn,
+  Lock, Loader2, LogIn,
   CreditCard, ArrowLeft, ChevronRight,
 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import StateView from '@/components/StateView.vue'
+import ErrorBanner from '@/components/ErrorBanner.vue'
 import CheckoutForm from '../_components/CheckoutForm.vue'
 import OrderReview from '../_components/OrderReview.vue'
 import StripePaymentForm from '../_components/StripePaymentForm.vue'

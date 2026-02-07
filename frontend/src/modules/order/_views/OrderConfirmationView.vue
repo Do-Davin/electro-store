@@ -133,8 +133,8 @@
   <!-- Order Details -->
   <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-4xl mx-auto px-4">
-      <!-- Loading State -->
-      <SkeletonLoader v-if="orderStore.loading" variant="list" :count="1" />
+      <!-- Loading State (initial only) -->
+      <SkeletonLoader v-if="orderStore.loading && !orderStore.error" variant="list" :count="1" />
 
       <!-- Error State -->
       <StateView
@@ -142,6 +142,7 @@
         variant="error"
         title="Order Not Found"
         :subtitle="orderStore.error || 'Unable to load order details.'"
+        :loading="orderStore.loading"
         action-to="/orders"
         action-text="View All Orders"
         @retry="reloadOrder"
@@ -261,16 +262,11 @@
         </div>
 
         <!-- Pay Error -->
-        <div
+        <ErrorBanner
           v-if="payError"
-          class="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3"
-        >
-          <AlertCircle class="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-          <div>
-            <p class="font-medium text-red-700">Payment Error</p>
-            <p class="text-sm text-red-600">{{ payError }}</p>
-          </div>
-        </div>
+          title="Payment Error"
+          :message="payError"
+        />
 
         <!-- Cancel Order Button -->
         <div v-if="canCancelOrder" class="flex justify-center">
@@ -303,7 +299,6 @@ import {
   Receipt,
   ShoppingBag,
   Loader2,
-  AlertCircle,
   Info,
   XCircle,
   CreditCard,
@@ -312,6 +307,7 @@ import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import StateView from '@/components/StateView.vue'
+import ErrorBanner from '@/components/ErrorBanner.vue'
 import SuccessResult from '../_components/SuccessResult.vue'
 import CancelledResult from '../_components/CancelledResult.vue'
 import { useOrderStore } from '../_stores/order.store'

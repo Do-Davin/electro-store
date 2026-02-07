@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!-- Loading State -->
+    <!-- Loading State (initial only) -->
     <SkeletonLoader
-      v-if="orderStore.loading && orders.length === 0"
+      v-if="orderStore.loading && orders.length === 0 && !orderStore.error"
       variant="list"
       :count="3"
     />
@@ -40,6 +40,7 @@
       variant="error"
       title="Failed to load orders"
       :subtitle="orderStore.error"
+      :loading="orderStore.loading"
       @retry="orderStore.fetchMyOrders()"
     />
 

@@ -20,8 +20,8 @@
         </div>
 
         <!-- Initial loading skeleton -->
-        <div v-if="initialLoading" class="mt-8">
-          <SkeletonLoader variant="card" :count="4" />
+        <div v-if="showSkeleton" class="mt-8">
+          <SkeletonLoader variant="card" :count="6" />
         </div>
 
         <!-- Products (after initial load) -->
@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 
 import Navbar from '@/components/Navbar.vue'
 import SearchBar from '../_components/SearchBar.vue'
@@ -92,6 +92,22 @@ import { useProductStore } from '../_stores/product.store'
 const productStore = useProductStore()
 
 const initialLoading = ref(true)
+
+// Minimum 500ms skeleton display so fast loads don't flash
+const MIN_SKELETON_MS = 500
+const showSkeleton = ref(true)
+let skeletonTimer = null
+
+watch(initialLoading, (val) => {
+  if (val) {
+    clearTimeout(skeletonTimer)
+    showSkeleton.value = true
+  } else if (showSkeleton.value) {
+    skeletonTimer = setTimeout(() => { showSkeleton.value = false }, MIN_SKELETON_MS)
+  }
+})
+
+onBeforeUnmount(() => clearTimeout(skeletonTimer))
 
 // Local v-models (keeps UI components unchanged)
 const searchLocal = ref(productStore.search)

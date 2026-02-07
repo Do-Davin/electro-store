@@ -11,8 +11,8 @@
         </RouterLink>
       </div>
 
-      <!-- Loading -->
-      <SkeletonLoader v-if="loading" variant="card" :count="3" />
+      <!-- Loading (initial only) -->
+      <SkeletonLoader v-if="showSkeleton && !error" variant="card" :count="3" />
 
       <!-- Products -->
       <div v-else-if="products.length" class="flex gap-15 flex-wrap justify-center">
@@ -39,6 +39,7 @@
         variant="error"
         title="Failed to load products"
         :subtitle="error"
+        :loading="loading"
         @retry="fetchProducts"
       />
     </div>
@@ -47,7 +48,7 @@
 
 <script setup>
 import axios from "axios"
-import { ref, onMounted } from "vue"
+import { ref, onMounted, watch, onBeforeUnmount } from "vue"
 import ProductCard from "./ProductCard.vue"
 import SkeletonLoader from "@/components/SkeletonLoader.vue"
 import StateView from "@/components/StateView.vue"
@@ -66,15 +67,31 @@ const loading = ref(false)
 const products = ref([])
 const error = ref('')
 
+// Minimum 500ms skeleton display so fast loads don't flash
+const MIN_SKELETON_MS = 500
+const showSkeleton = ref(false)
+let skeletonTimer = null
+
+watch(loading, (val) => {
+  if (val) {
+    clearTimeout(skeletonTimer)
+    showSkeleton.value = true
+  } else if (showSkeleton.value) {
+    skeletonTimer = setTimeout(() => { showSkeleton.value = false }, MIN_SKELETON_MS)
+  }
+})
+
+onBeforeUnmount(() => clearTimeout(skeletonTimer))
+
 const sectionClass = props.bg === "gray"
   ? "w-full py-16 bg-[#f8f9fc] dark:bg-[#0b2447]"
   : "w-full py-16"
 
 async function fetchProducts() {
   loading.value = true
-  error.value = ''
   try {
     const res = await axios.get("/products", { params: props.params })
+    error.value = ''
     products.value = res.data.data || res.data
   } catch (err) {
     error.value = err.message || 'Failed to load products.'

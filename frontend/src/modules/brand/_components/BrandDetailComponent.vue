@@ -1,18 +1,15 @@
 <template>
   <div>
     <!-- Loading -->
-    <div v-if="loading" class="flex justify-center items-center py-20">
-      <Loader2 class="w-10 h-10 text-primary animate-spin" />
-    </div>
+    <SkeletonLoader v-if="loading" variant="detail" :count="1" />
 
     <!-- Error -->
-    <div
+    <StateView
       v-else-if="error"
-      class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center"
-    >
-      <AlertCircle class="w-12 h-12 text-red-400 mx-auto mb-3" />
-      <p class="text-red-600 font-medium">{{ error }}</p>
-    </div>
+      variant="error"
+      title="Failed to load brand"
+      :subtitle="error"
+    />
 
     <!-- Brand Detail -->
     <div v-else-if="brand" class="space-y-8">
@@ -173,9 +170,11 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import {
-  Loader2, AlertCircle, Award, Lightbulb, UserCircle,
+  Award, Lightbulb, UserCircle,
   Star, CalendarDays, Sparkles, SearchX,
 } from 'lucide-vue-next'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
+import StateView from '@/components/StateView.vue'
 
 const props = defineProps({
   brand: { type: Object, default: null },

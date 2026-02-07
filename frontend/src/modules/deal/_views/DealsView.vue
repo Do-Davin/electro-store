@@ -37,9 +37,9 @@
         </button>
       </div>
 
-      <!-- Loading -->
+      <!-- Loading (initial only) -->
       <SkeletonLoader
-        v-if="loading"
+        v-if="loading && !error"
         variant="card"
         :count="3"
       />
@@ -60,6 +60,7 @@
         variant="error"
         title="Failed to load deals"
         :subtitle="error"
+        :loading="loading"
         @retry="fetchDeals"
       />
 
@@ -99,9 +100,9 @@ const error = ref('')
 
 async function fetchDeals() {
   loading.value = true
-  error.value = ''
   try {
     const res = await axios.get("/products/deals");
+    error.value = ''
     deals.value = res.data;
   } catch (err) {
     error.value = err.message || 'Failed to load deals.'
