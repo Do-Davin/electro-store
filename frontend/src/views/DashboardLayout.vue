@@ -14,7 +14,8 @@ import SidebarComponent from '@/modules/dashboard/_components/SidebarComponent.v
 
 <style scoped>
 .dashboard-layout {
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
   min-height: 100vh;
   background: #003465;
 }
@@ -22,6 +23,8 @@ import SidebarComponent from '@/modules/dashboard/_components/SidebarComponent.v
 .content {
   flex: 1;
   padding: 24px;
+  min-height: auto !important;
+  overflow-y: auto;
   background: transparent;
 }
 </style>
