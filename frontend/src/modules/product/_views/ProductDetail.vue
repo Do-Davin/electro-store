@@ -10,7 +10,7 @@
         </h2>
 
         <!-- Loading skeleton -->
-        <SkeletonLoader v-if="loading" variant="detail" />
+        <SkeletonLoader v-if="showSkeleton" variant="detail" />
 
         <!-- Product -->
         <div v-else-if="product" class="grid grid-cols-1 md:grid-cols-2 gap-14">
@@ -176,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { Star, Heart } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
@@ -190,6 +190,22 @@ const wishlist = useWishlistStore()
 
 const product = ref(null)
 const loading = ref(true)
+
+// Minimum 500ms skeleton display so fast loads don't flash
+const MIN_SKELETON_MS = 500
+const showSkeleton = ref(true)
+let skeletonTimer = null
+
+watch(loading, (val) => {
+  if (val) {
+    clearTimeout(skeletonTimer)
+    showSkeleton.value = true
+  } else if (showSkeleton.value) {
+    skeletonTimer = setTimeout(() => { showSkeleton.value = false }, MIN_SKELETON_MS)
+  }
+})
+
+onBeforeUnmount(() => clearTimeout(skeletonTimer))
 
 // Rating
 const roundedRating = computed(() => Math.round(Number(product.value?.rating ?? 0)))

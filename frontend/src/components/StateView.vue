@@ -3,13 +3,27 @@
 
   Usage:
     <StateView variant="empty" title="No orders yet" subtitle="Your order history will appear here." action-text="Start Shopping" action-to="/products" />
-    <StateView variant="error" title="Something went wrong" :subtitle="errorMessage" @retry="refetch" />
+    <StateView variant="error" title="Something went wrong" :subtitle="errorMessage" :loading="store.loading" @retry="refetch" />
 -->
 <template>
   <div
-    class="bg-white rounded-2xl shadow-sm p-12 text-center"
-    :class="{ 'min-h-[60vh] flex flex-col items-center justify-center': fullHeight }"
+    class="rounded-2xl p-12 text-center relative overflow-hidden"
+    :class="[
+      containerClass,
+      { 'min-h-[60vh] flex flex-col items-center justify-center': fullHeight },
+    ]"
   >
+    <!-- Loading overlay (shown during retry so we don't jump to skeleton) -->
+    <Transition name="fade">
+      <div
+        v-if="showOverlay"
+        class="absolute inset-0 z-10 flex items-center justify-center bg-white/70
+               backdrop-blur-[2px] rounded-2xl"
+      >
+        <Loader2 class="w-8 h-8 text-primary animate-spin" />
+      </div>
+    </Transition>
+
     <!-- Icon -->
     <div
       class="w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center"
@@ -19,12 +33,12 @@
     </div>
 
     <!-- Title -->
-    <h2 class="text-xl font-bold text-gray-600 mb-2">
+    <h2 class="text-xl font-bold mb-2" :class="titleClass">
       {{ title }}
     </h2>
 
     <!-- Subtitle -->
-    <p class="text-gray-400 mb-6 max-w-sm mx-auto">
+    <p class="mb-6 max-w-sm mx-auto" :class="subtitleClass">
       {{ subtitle }}
     </p>
 
@@ -42,21 +56,21 @@
 
       <button
         v-if="variant === 'error'"
-        :disabled="retrying"
-        @click="handleRetry"
-        class="inline-flex items-center gap-2 px-6 py-3 border border-gray-200
-               rounded-xl font-semibold text-gray-600 hover:bg-gray-50
-               transition-colors disabled:opacity-60 disabled:cursor-wait"
+        :disabled="showOverlay"
+        @click="$emit('retry')"
+        class="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium
+               rounded-xl transition-colors disabled:opacity-60 disabled:cursor-wait"
+        :class="retryBtnClass"
       >
-        <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': retrying }" />
-        {{ retrying ? 'Retrying...' : 'Try Again' }}
+        <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': showOverlay }" />
+        {{ showOverlay ? 'Retrying...' : 'Try Again' }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
 import {
   Package,
@@ -66,12 +80,13 @@ import {
   Search,
   Tag,
   RefreshCw,
+  Loader2,
 } from 'lucide-vue-next'
 
 const props = defineProps({
   /**
    * 'empty'  — no data found (friendly blue/gray tone)
-   * 'error'  — API failure (red/amber tone)
+   * 'error'  — API failure (red tone)
    */
   variant: {
     type: String,
@@ -116,22 +131,38 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  /** Pass the parent's loading state — shows an overlay instead of jumping to skeleton */
+  loading: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-const emit = defineEmits(['retry'])
+defineEmits(['retry'])
 
-const retrying = ref(false)
+// ── Minimum-duration loading overlay ──
+// Keeps the overlay visible for at least 1s so fast retries feel smooth
+const MIN_LOADING_MS = 500
+const showOverlay = ref(false)
+let hideTimer = null
 
-async function handleRetry() {
-  retrying.value = true
-  try {
-    emit('retry')
-    // Give the parent time to finish the async operation
-    await new Promise((resolve) => setTimeout(resolve, 800))
-  } finally {
-    retrying.value = false
-  }
-}
+watch(
+  () => props.loading,
+  (isLoading) => {
+    if (isLoading) {
+      // Show immediately, clear any pending hide
+      clearTimeout(hideTimer)
+      showOverlay.value = true
+    } else if (showOverlay.value) {
+      // Loading finished — wait for the remaining minimum duration
+      hideTimer = setTimeout(() => {
+        showOverlay.value = false
+      }, MIN_LOADING_MS)
+    }
+  },
+)
+
+onBeforeUnmount(() => clearTimeout(hideTimer))
 
 const iconMap = {
   order: Package,
@@ -148,11 +179,42 @@ const iconComponent = computed(() => {
   return iconMap[props.icon] || Package
 })
 
+// ── Variant-driven classes ──
+
+const containerClass = computed(() =>
+  props.variant === 'error'
+    ? 'bg-red-50 border border-red-200 shadow-sm'
+    : 'bg-white shadow-sm',
+)
+
 const iconBgClass = computed(() =>
-  props.variant === 'error' ? 'bg-red-50' : 'bg-gray-100',
+  props.variant === 'error' ? 'bg-red-100' : 'bg-gray-100',
 )
 
 const iconColorClass = computed(() =>
   props.variant === 'error' ? 'text-red-400' : 'text-gray-300',
 )
+
+const titleClass = computed(() =>
+  props.variant === 'error' ? 'text-red-700' : 'text-gray-600',
+)
+
+const subtitleClass = computed(() =>
+  props.variant === 'error' ? 'text-red-500/80' : 'text-gray-400',
+)
+
+const retryBtnClass = computed(() =>
+  'bg-red-500 text-white hover:bg-red-600',
+)
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
