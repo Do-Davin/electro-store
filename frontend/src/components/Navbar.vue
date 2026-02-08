@@ -19,22 +19,22 @@
     >
 
       <!-- Home -->
-      <RouterLink to="/" class="nav-link transition-all hover:scale-110">
+      <RouterLink to="/" draggable="false" class="nav-link transition-all hover:scale-110">
         <Home class="w-5 h-5 lg:w-6 lg:h-6" />
       </RouterLink>
 
       <!-- Product -->
-      <RouterLink to="/products" class="nav-link transition-all hover:scale-110">
+      <RouterLink to="/products" draggable="false" class="nav-link transition-all hover:scale-110">
         <Box class="w-5 h-5 lg:w-6 lg:h-6" />
       </RouterLink>
 
       <!-- Brands -->
-      <RouterLink to="/brands" class="nav-link transition-all hover:scale-110">
+      <RouterLink to="/brands" draggable="false" class="nav-link transition-all hover:scale-110">
         <Crown class="w-5 h-5 lg:w-6 lg:h-6" />
       </RouterLink>
 
       <!-- Wishlist -->
-      <RouterLink to="/wishlist" class="nav-link relative transition-all hover:scale-110">
+      <RouterLink to="/wishlist" draggable="false" class="nav-link relative transition-all hover:scale-110">
         <Heart class="w-5 h-5 lg:w-6 lg:h-6" />
         <span
           v-if="wishlist.items.length > 0"
@@ -49,7 +49,7 @@
       </RouterLink>
 
       <!-- Cart -->
-      <RouterLink to="/carts" class="nav-link relative transition-all hover:scale-110">
+      <RouterLink to="/carts" draggable="false" class="nav-link relative transition-all hover:scale-110">
         <ShoppingCart class="w-5 h-5 lg:w-6 lg:h-6" />
         <span
           v-if="cart.itemCount > 0"
@@ -64,13 +64,13 @@
       </RouterLink>
 
       <!-- Orders / Transactions -->
-      <RouterLink to="/orders" class="nav-link transition-all hover:scale-110">
+      <RouterLink to="/orders" draggable="false" class="nav-link transition-all hover:scale-110">
         <Receipt class="w-5 h-5 lg:w-6 lg:h-6" />
       </RouterLink>
 
 
       <!-- Profile -->
-      <RouterLink to="/profile" class="nav-link transition-all hover:scale-110">
+      <RouterLink to="/profile" draggable="false" class="nav-link transition-all hover:scale-110">
         <UserCircle class="w-5 h-5 lg:w-6 lg:h-6" />
       </RouterLink>
 
@@ -80,7 +80,7 @@
     <div class="flex items-center gap-3">
       <div>
         <!-- Guest -->
-        <RouterLink v-if="!loggedIn" to="/auth/login">
+        <RouterLink v-if="!loggedIn" to="/auth/login" draggable="false">
           <button
             class="px-4 sm:px-6 py-2 rounded-xl
             bg-primary text-white text-xs sm:text-sm font-medium

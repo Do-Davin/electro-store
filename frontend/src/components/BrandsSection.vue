@@ -8,8 +8,18 @@
         Trusted By Top Brands
       </h2>
 
+      <!-- Error State -->
+      <StateView
+        v-if="brandStore.error"
+        variant="error"
+        title="Failed to load brands"
+        :subtitle="brandStore.error"
+        :loading="brandStore.loading"
+        @retry="handleRetry"
+      />
+
       <!-- Loading -->
-      <div v-if="brandStore.loading && brands.length === 0" class="flex justify-center py-8">
+      <div v-else-if="brandStore.loading && brands.length === 0" class="flex justify-center py-8">
         <Loader2 class="w-8 h-8 text-primary animate-spin" />
       </div>
 
@@ -45,6 +55,7 @@ import { computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { Loader2 } from 'lucide-vue-next'
 import { useBrandStore } from '@/modules/brand/_stores/brand.store'
+import StateView from './StateView.vue'
 
 const brandStore = useBrandStore()
 const brands = computed(() => brandStore.brands)
@@ -58,6 +69,10 @@ function getLogoUrl(url) {
 
 function onImageError(e) {
   e.target.src = '/brands/placeholder.png'
+}
+
+function handleRetry() {
+  brandStore.fetchBrands()
 }
 
 onMounted(() => {

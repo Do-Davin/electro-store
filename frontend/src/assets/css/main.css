@@ -1,5 +1,4 @@
 @import "tailwindcss";
-/* @import "./base.css"; */
 @import "tw-animate-css";
 
 /* Dark mode variant */
@@ -29,20 +28,21 @@
 
 /* Base layer */
 @layer base {
-  html, body {
-    overflow-y: auto;
-    scrollbar-gutter: stable;
+  html {
+    background-color: #003465;
+    /* Removed overscroll-behavior-y to allow pull-to-refresh */
   }
 
   body {
     font-size: 16px;
     -webkit-text-size-adjust: 100%;
+    /* Removed overscroll-behavior-y to allow pull-to-refresh */
+    margin: 0;
+    padding: 0;
+    @apply bg-background text-foreground;
   }
 
-  input,
-  textarea,
-  button,
-  select {
+  input, textarea, button, select {
     font-size: 16px;
   }
 
@@ -51,16 +51,8 @@
     height: 0;
   }
 
-  html {
-    scrollbar-width: none;
-  }
   * {
     @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-    margin: 0;
-    padding: 0;
   }
 }
 
@@ -70,31 +62,24 @@
   }
 }
 
-/* ── Sticky-footer layout ── */
-/* The router-view renders each page as a direct child of #app.
-   flex:1 ensures the page root fills the viewport.
-   The <main> content area gets min-h-screen so the <footer>
-   is always pushed below the first viewport (below the fold). */
 #app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100vh; /* App container is at least full viewport */
 }
 
 #app > * {
-  flex: 1;
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
 }
 
-/* Footer never shrinks and always sits at the bottom */
-#app > * > footer {
-  flex-shrink: 0;
-  margin-top: auto;
+#app > * > main {
+  flex: 1; /* Grows to fill space, scrolls naturally when content exceeds viewport */
 }
 
-/* Main content fills at least the full viewport height,
-   guaranteeing the footer is always below the fold. */
-#app > * > main {
-  min-height: 100vh;
+#app > * > footer {
+  flex-shrink: 0;
+  margin-top: auto; /* Pushes to bottom */
+  background-color: #003465;
 }

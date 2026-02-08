@@ -34,18 +34,21 @@
         </button>
       </form>
 
-      <p
-        v-if="successMessage"
-        class="text-sm text-green-600 dark:text-green-400 mt-4"
-      >
-        {{ successMessage }}
-      </p>
-      <p
-        v-if="errorMessage"
-        class="text-sm text-red-600 dark:text-red-400 mt-4"
-      >
-        {{ errorMessage }}
-      </p>
+      <!-- Fixed height message container to prevent layout shift -->
+      <div class="mt-4 min-h-6">
+        <p
+          v-show="successMessage"
+          class="text-sm text-green-600 dark:text-green-400"
+        >
+          {{ successMessage }}
+        </p>
+        <p
+          v-show="errorMessage"
+          class="text-sm text-red-600 dark:text-red-400"
+        >
+          {{ errorMessage }}
+        </p>
+      </div>
 
       <p class="text-xs text-gray-500 dark:text-gray-400 mt-4">
         We care about your privacy. No spam 💙
