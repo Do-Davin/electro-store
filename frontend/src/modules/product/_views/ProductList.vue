@@ -86,6 +86,7 @@ import Footer from '@/components/Footer.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import notFoundImg from '@/assets/empty/not-found-404.svg'
 import ProductFilterButton from '../_components/ProductFilterButton.vue'
+import { MIN_SKELETON_MS } from '../_constants/ui'
 
 import { useProductStore } from '../_stores/product.store'
 
@@ -93,8 +94,6 @@ const productStore = useProductStore()
 
 const initialLoading = ref(true)
 
-// Minimum 500ms skeleton display so fast loads don't flash
-const MIN_SKELETON_MS = 500
 const showSkeleton = ref(true)
 let skeletonTimer = null
 

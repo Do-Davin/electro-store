@@ -184,6 +184,7 @@ import Footer from '@/components/Footer.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import axios from '@/lib/axios'
 import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store'
+import { MIN_SKELETON_MS } from '../_constants/ui'
 
 const route = useRoute()
 const wishlist = useWishlistStore()
@@ -191,8 +192,6 @@ const wishlist = useWishlistStore()
 const product = ref(null)
 const loading = ref(true)
 
-// Minimum 500ms skeleton display so fast loads don't flash
-const MIN_SKELETON_MS = 500
 const showSkeleton = ref(true)
 let skeletonTimer = null
 
