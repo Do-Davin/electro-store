@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#111111] rounded-2xl shadow-md p-6 border border-white/[0.06]">
+  <div class="bg-[#111111] rounded-2xl shadow-md p-6 border border-white/6">
     <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
       <MapPin class="w-5 h-5" />
       Shipping Information
@@ -18,7 +18,7 @@
             :value="checkout.shippingInfo.fullName"
             @input="handleInput('fullName', $event)"
             @blur="handleBlur('fullName')"
-            placeholder="John Doe"
+            placeholder="demo"
             class="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2
             focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
             :class="checkout.errors.fullName ? 'border-red-500' : 'border-white/10'"
@@ -41,7 +41,7 @@
             :value="checkout.shippingInfo.email"
             @input="handleInput('email', $event)"
             @blur="handleBlur('email')"
-            placeholder="john@example.com"
+            placeholder="demo@gmail.com"
             class="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2
             focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
             :class="checkout.errors.email ? 'border-red-500' : 'border-white/10'"
@@ -64,7 +64,7 @@
             :value="checkout.shippingInfo.phone"
             @input="handleInput('phone', $event)"
             @blur="handleBlur('phone')"
-            placeholder="+1 234 567 8900"
+            placeholder="0 123 456 789"
             class="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2
             focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
             :class="checkout.errors.phone ? 'border-red-500' : 'border-white/10'"
@@ -110,7 +110,7 @@
             :value="checkout.shippingInfo.city"
             @input="handleInput('city', $event)"
             @blur="handleBlur('city')"
-            placeholder="New York"
+            placeholder="Phnom Penh"
             class="w-full px-4 py-3 border rounded-xl focus:ring-2
             focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
             :class="checkout.errors.city ? 'border-red-500' : 'border-white/10'"
@@ -150,7 +150,7 @@
           type="text"
           :value="checkout.shippingInfo.country"
           @input="handleInput('country', $event)"
-          placeholder="United States"
+          placeholder="Cambodia"
           class="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2
           focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
         />
