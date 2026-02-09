@@ -16,7 +16,7 @@
           <div class="logo-glow-outer" />
           <div class="logo-glow" />
           <img
-            src="/logo.svg"
+            src="/icons/logo.svg"
             alt="Electro Store"
             class="splash-logo"
           />

@@ -2,7 +2,11 @@
   <aside class="sidebar">
     <!-- Profile / Logo -->
     <div class="profile">
-      <div class="avatar">&lt;DT /&gt;</div>
+      <img
+        src="/icons/logo-white.svg"
+        alt="Electro Store"
+        class="logo-image"
+      />
     </div>
 
     <!-- Nav -->
@@ -110,17 +114,16 @@ function onLogout() {
   margin-bottom: 18px;
 }
 
-.avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #00a2ff;
-  font-weight: 800;
-  letter-spacing: 0.3px;
+.logo-image {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.95;
+  transition: opacity 0.3s ease;
+}
+
+.logo-image:hover {
+  opacity: 1;
 }
 
 .nav ul {

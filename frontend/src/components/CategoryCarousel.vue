@@ -10,6 +10,7 @@
           :src="item.img"
           :alt="item.name"
           class="card-img"
+          draggable="false"
           :style="{
             transform: item.scale ? `scale(${item.scale})` : 'scale(1)',
             '--base-scale': item.scale || 1
