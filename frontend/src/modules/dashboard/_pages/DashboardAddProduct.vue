@@ -40,12 +40,26 @@
       <div class="row">
         <div class="field">
           <label>Actual Price ($)</label>
-          <input type="number" v-model.number="form.price" />
+          <input type="number" v-model.number="form.price" placeholder="0.00" min="0" step="0.01" />
         </div>
 
         <div class="field">
           <label>Offer Price ($)</label>
-          <input type="number" v-model.number="offerPrice" />
+          <input type="number" v-model.number="offerPrice" placeholder="0.00" min="0" step="0.01" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Stock Quantity</label>
+          <input type="number" v-model.number="form.stock" placeholder="0" min="0" />
+        </div>
+
+        <div class="field">
+          <label>Discount</label>
+          <div class="discount-display">
+            <span>{{ discountPercent }}%</span>
+          </div>
         </div>
       </div>
 
@@ -110,6 +124,7 @@ import axios from '@/lib/axios'
 import { Upload } from 'lucide-vue-next'
 import { useProductStore } from '@/modules/product/_stores/product.store'
 import SpecsEditor from '../_components/SpecsEditor.vue'
+import { useToast } from '@/composables/useToast'
 import { CATEGORY_SPEC_PRESETS } from '@/modules/product/_documents/category-spec-presets'
 
 const CATEGORY_PRESET_MAP = {
@@ -121,6 +136,7 @@ const CATEGORY_PRESET_MAP = {
 }
 
 const productStore = useProductStore()
+const toast = useToast()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const file = ref<File | null>(null)
@@ -143,6 +159,7 @@ const form = ref({
   discountPercent: 0,
   categoryId: '',
   brandId: '',
+  stock: 0,
   specs: {},
 })
 
@@ -175,6 +192,7 @@ function resetForm() {
     discountPercent: 0,
     categoryId: '',
     brandId: '',
+    stock: 0,
     specs: {},
   }
   offerPrice.value = 0
@@ -183,10 +201,10 @@ function resetForm() {
 }
 
 async function submit() {
-  if (!file.value) return alert('Image required')
-  if (!form.value.name) return alert('Name required')
-  if (!form.value.categoryId) return alert('Category required')
-  if (!form.value.brandId) return alert('Brand required')
+  if (!file.value) return toast.warning('Please upload a product image.', 'Image Required')
+  if (!form.value.name) return toast.warning('Please enter a product name.', 'Name Required')
+  if (!form.value.categoryId) return toast.warning('Please select a category.', 'Category Required')
+  if (!form.value.brandId) return toast.warning('Please select a brand.', 'Brand Required')
 
   loading.value = true
 
@@ -199,6 +217,7 @@ async function submit() {
     fd.append('discountPercent', String(discountPercent.value))
     fd.append('categoryId', form.value.categoryId)
     fd.append('brandId', form.value.brandId)
+    fd.append('stock', String(form.value.stock))
     fd.append('specs', JSON.stringify(form.value.specs))
 
     const res = await axios.post('/products', fd)
@@ -216,10 +235,10 @@ async function submit() {
       // If backend doesn't return product object, just refresh list
       await productStore.fetchProducts()
     }
-    alert('Product added successfully')
+    toast.success('Product has been added successfully.')
     resetForm()
   } catch (e) {
-    alert(e?.message ?? 'Failed to add product')
+    toast.error(e?.response?.data?.message || e?.message || 'Failed to add product')
   } finally {
     loading.value = false
   }
@@ -283,11 +302,18 @@ onMounted(async () => {
   height: 160px;
   border-radius: 14px;
   background: rgba(255,255,255,0.08);
+  border: 2px dashed rgba(255,255,255,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   margin-bottom: 24px;
+  transition: all 0.25s ease;
+}
+
+.image-upload:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(61, 169, 255, 0.5);
 }
 
 .placeholder {
@@ -383,15 +409,38 @@ input,
 textarea,
 select {
   background: rgba(255,255,255,0.08);
-  border: none;
+  border: 1.5px solid rgba(255,255,255,0.12);
   border-radius: 10px;
   padding: 12px;
   color: white;
+  transition: border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #3da9ff;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255,255,255,0.35);
 }
 
 textarea {
   min-height: 100px;
   resize: none;
+}
+
+.discount-display {
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 12px;
+  color: #3da9ff;
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .row {

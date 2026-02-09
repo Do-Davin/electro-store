@@ -288,6 +288,20 @@
     </main>
 
     <Footer />
+
+    <!-- Cancel Order Confirm Modal -->
+    <ConfirmModal
+      :isOpen="cancelModal.open"
+      type="warning"
+      title="Cancel Order"
+      message="Are you sure you want to cancel this order? This action cannot be undone."
+      confirmText="Cancel Order"
+      cancelText="Keep Order"
+      :loading="cancelModal.loading"
+      @confirm="executeCancelOrder"
+      @cancel="cancelModal = { open: false, loading: false }"
+      @close="cancelModal = { open: false, loading: false }"
+    />
   </div>
 </template>
 
@@ -308,10 +322,12 @@ import Footer from '@/components/Footer.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import StateView from '@/components/StateView.vue'
 import ErrorBanner from '@/components/ErrorBanner.vue'
+import ConfirmModal from '@/components/ConfirmModal.vue'
 import SuccessResult from '../_components/SuccessResult.vue'
 import CancelledResult from '../_components/CancelledResult.vue'
 import { useOrderStore } from '../_stores/order.store'
 import placeholderImg from '@/assets/img/placeholder.png'
+import { useToast } from '@/composables/useToast'
 
 const route = useRoute()
 const router = useRouter()
@@ -324,6 +340,14 @@ const paymentStatus = computed(() => route.query.payment || null)
 
 const payLoading = ref(false)
 const payError = ref('')
+
+const toast = useToast()
+
+// Cancel order modal state
+const cancelModal = ref({
+  open: false,
+  loading: false,
+})
 
 const canCancelOrder = computed(() => {
   if (!order.value) return false
@@ -341,19 +365,21 @@ async function handlePayNow() {
 
 async function handleCancelOrder() {
   if (!order.value) return
+  cancelModal.value = { open: true, loading: false }
+}
 
-  const confirmed = confirm(
-    'Are you sure you want to cancel this order?'
-  )
-
-  if (!confirmed) return
+async function executeCancelOrder() {
+  cancelModal.value.loading = true
 
   try {
     await orderStore.cancelOrder(order.value.id)
     // Re-fetch to get fresh data — the banner will reactively update
     await orderStore.fetchOrderById(order.value.id)
+    toast.success('Order has been cancelled successfully.')
   } catch (error) {
-    alert(`Failed to cancel order: ${error.message}`)
+    toast.error(error?.response?.data?.message || error?.message || 'Failed to cancel order')
+  } finally {
+    cancelModal.value = { open: false, loading: false }
   }
 }
 

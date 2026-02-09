@@ -51,25 +51,48 @@
   </main>
 
   <Footer />
+
+  <!-- Clear Cart Confirm Modal -->
+  <ConfirmModal
+    :isOpen="showClearModal"
+    type="warning"
+    title="Clear Cart"
+    message="Are you sure you want to remove all items from your cart?"
+    confirmText="Clear Cart"
+    cancelText="Keep Items"
+    @confirm="executeClearCart"
+    @cancel="showClearModal = false"
+    @close="showClearModal = false"
+  />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Trash2 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import CartListComponent from '../_components/CartListComponent.vue'
 import CartSummary from '../_components/CartSummary.vue'
+import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useCartStore } from '../_stores/cart.store'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
 const cart = useCartStore()
+const toast = useToast()
+
+const showClearModal = ref(false)
 
 function handleClearCart() {
-  if (confirm('Are you sure you want to clear your cart?')) {
-    cart.clearCart()
-  }
+  showClearModal.value = true
+}
+
+function executeClearCart() {
+  cart.clearCart()
+  showClearModal.value = false
+  toast.success('Cart has been cleared.')
 }
 
 function handleCheckout() {

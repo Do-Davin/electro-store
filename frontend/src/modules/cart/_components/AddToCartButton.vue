@@ -1,9 +1,14 @@
 <template>
   <button
     :disabled="disabled || product.stock <= 0"
-    class="flex-1 bg-primary text-white py-2 rounded-xl flex justify-center
-    items-center gap-2 hover:bg-primary/90 transition-colors
-    disabled:opacity-50 disabled:cursor-not-allowed"
+    class="flex-1 bg-white text-primary py-2.5 px-4 rounded-xl border-2 border-primary
+    flex justify-center items-center gap-2
+    hover:bg-primary hover:text-white hover:shadow-lg hover:scale-[1.02]
+    active:scale-[0.98]
+    transition-all duration-200 ease-in-out
+    disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white
+    disabled:hover:text-primary disabled:hover:scale-100 disabled:hover:shadow-none
+    font-medium"
     @click.stop.prevent="handleAddToCart"
   >
     <ShoppingCart class="w-5 h-5" />

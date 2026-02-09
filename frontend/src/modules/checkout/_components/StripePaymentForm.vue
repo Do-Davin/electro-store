@@ -8,7 +8,7 @@
     <!-- Stripe Elements Mount Point -->
     <div
       ref="paymentElementRef"
-      class="min-h-[120px] border border-gray-200 rounded-xl p-4 bg-gray-50
+      class="min-h-30 border border-gray-200 rounded-xl p-4 bg-gray-50
       focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20
       transition-all"
     />
@@ -68,13 +68,18 @@ onMounted(async () => {
     return
   }
 
-  stripe = await loadStripe(STRIPE_PK)
-  if (!stripe) {
-    cardError.value = 'Failed to load Stripe'
-    return
-  }
+  try {
+    stripe = await loadStripe(STRIPE_PK)
+    if (!stripe) {
+      cardError.value = 'Failed to load Stripe'
+      return
+    }
 
-  mountElements()
+    mountElements()
+  } catch (cardError) {
+    cardError.value = 'Failed to initialize payment system. Please refresh the page.'
+    emit('error', cardError.value)
+  }
 })
 
 function mountElements() {
@@ -126,21 +131,27 @@ async function handlePay() {
   isProcessing.value = true
   cardError.value = ''
 
-  const { error } = await stripe.confirmPayment({
-    elements,
-    confirmParams: {
-      return_url: window.location.href, // fallback, shouldn't redirect
-    },
-    redirect: 'if_required', // Stay on page — only redirect for 3D Secure
-  })
+  try {
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: window.location.href, // fallback, shouldn't redirect
+      },
+      redirect: 'if_required', // Stay on page — only redirect for 3D Secure
+    })
 
-  if (error) {
-    cardError.value = error.message || 'Payment failed'
+    if (error) {
+      cardError.value = error.message || 'Payment failed'
+      isProcessing.value = false
+      emit('error', error.message)
+    } else {
+      // Payment succeeded (or is processing)
+      emit('success')
+    }
+  } catch (e) {
+    cardError.value = e?.message || 'An unexpected error occurred during payment.'
     isProcessing.value = false
-    emit('error', error.message)
-  } else {
-    // Payment succeeded (or is processing)
-    emit('success')
+    emit('error', cardError.value)
   }
 }
 

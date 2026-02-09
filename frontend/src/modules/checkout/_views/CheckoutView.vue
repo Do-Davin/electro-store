@@ -168,12 +168,14 @@ import { useCartStore } from '@/modules/cart/_stores/cart.store'
 import { useCheckoutStore } from '../_stores/checkout.store'
 import { useOrderStore } from '@/modules/order/_stores/order.store'
 import { isLoggedIn as checkLoggedIn } from '@/lib/auth'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
 const route = useRoute()
 const cart = useCartStore()
 const checkout = useCheckoutStore()
 const orderStore = useOrderStore()
+const toast = useToast()
 
 const isFormValid = ref(false)
 const isSubmitting = ref(false)
@@ -244,6 +246,7 @@ async function handlePaymentSuccess() {
     await orderStore.verifyPayment(createdOrderId.value)
   } catch {
     // Verification may fail, but the webhook will catch it
+    toast.warning('Payment verification is still processing. Your order will be updated shortly.', 'Processing')
   }
   router.push(`/orders/${createdOrderId.value}/confirmation?payment=success`)
 }

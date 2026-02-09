@@ -162,26 +162,49 @@
       </div>
     </div>
 
+    <!-- Cancel Order Confirm Modal -->
+    <ConfirmModal
+      :isOpen="cancelModal.open"
+      type="warning"
+      title="Cancel Order"
+      message="Are you sure you want to cancel this order? This action cannot be undone."
+      confirmText="Cancel Order"
+      cancelText="Keep Order"
+      :loading="cancelModal.loading"
+      @confirm="executeCancelOrder"
+      @cancel="cancelModal = { open: false, orderId: null, loading: false }"
+      @close="cancelModal = { open: false, orderId: null, loading: false }"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { LogIn, XCircle, CreditCard } from 'lucide-vue-next'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import StateView from '@/components/StateView.vue'
+import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useOrderStore } from '../_stores/order.store'
 import { isLoggedIn } from '@/lib/auth'
 import placeholderImg from '@/assets/img/placeholder.png'
 import OrderStatusBadge from './OrderStatusBadge.vue'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
 
 const orderStore = useOrderStore()
+const toast = useToast()
 
 const loggedIn = computed(() => isLoggedIn())
 const orders = computed(() => orderStore.orders)
+
+// Cancel order modal state
+const cancelModal = ref({
+  open: false,
+  orderId: null,
+  loading: false,
+})
 
 const API = import.meta.env.VITE_API_URL
 
@@ -208,13 +231,21 @@ function canCancel(status) {
 }
 
 async function handleCancel(orderId) {
-  if (!confirm('Are you sure you want to cancel this order?')) return
+  cancelModal.value = { open: true, orderId, loading: false }
+}
+
+async function executeCancelOrder() {
+  const orderId = cancelModal.value.orderId
+  cancelModal.value.loading = true
 
   try {
     await orderStore.cancelOrder(orderId)
     await orderStore.fetchMyOrders(orderStore.page)
+    toast.success('Order has been cancelled successfully.')
   } catch (error) {
-    alert(`Failed to cancel: ${error.message}`)
+    toast.error(error?.response?.data?.message || error?.message || 'Failed to cancel order')
+  } finally {
+    cancelModal.value = { open: false, orderId: null, loading: false }
   }
 }
 

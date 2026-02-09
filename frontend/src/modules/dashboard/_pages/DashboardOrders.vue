@@ -57,7 +57,7 @@
               </td>
               <td>{{ formatDate(order.createdAt) }}</td>
               <td>
-                <button class="delete-btn" @click="deleteOrder(order.id)">
+                <button class="delete-btn" @click="confirmDeleteOrder(order.id)">
                   <Trash2 :size="16" />
                 </button>
               </td>
@@ -73,6 +73,20 @@
         <button :disabled="page >= totalPages" @click="fetchOrders(page + 1)">Next</button>
       </div>
     </div>
+
+    <!-- Delete Confirm Modal -->
+    <ConfirmModal
+      :isOpen="deleteModal.open"
+      type="danger"
+      title="Delete Order"
+      message="Are you sure you want to delete this order? This action cannot be undone."
+      confirmText="Delete"
+      cancelText="Cancel"
+      :loading="deleteModal.loading"
+      @confirm="executeDeleteOrder"
+      @cancel="deleteModal = { open: false, orderId: null, loading: false }"
+      @close="deleteModal = { open: false, orderId: null, loading: false }"
+    />
   </section>
 </template>
 
@@ -80,6 +94,8 @@
 import { ref, onMounted } from 'vue'
 import { Loader2, AlertCircle, Trash2 } from 'lucide-vue-next'
 import axios from '@/lib/axios'
+import { useToast } from '@/composables/useToast'
+import ConfirmModal from '@/components/ConfirmModal.vue'
 
 const statuses = ['PENDING', 'PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'CANCELLED']
 
@@ -89,6 +105,15 @@ const error = ref(null)
 const page = ref(1)
 const total = ref(0)
 const totalPages = ref(1)
+
+const toast = useToast()
+
+// Delete confirmation modal state
+const deleteModal = ref({
+  open: false,
+  orderId: null,
+  loading: false,
+})
 
 function statusClass(status) {
   const map = {
@@ -130,22 +155,31 @@ async function updateStatus(orderId, newStatus) {
     // Update locally
     const order = orders.value.find(o => o.id === orderId)
     if (order) order.status = newStatus
+    toast.success(`Order status updated to ${newStatus}.`)
   } catch (e) {
-    alert(e?.response?.data?.message || 'Failed to update status')
+    toast.error(e?.response?.data?.message || 'Failed to update status')
     // Revert UI by re-fetching
     await fetchOrders(page.value)
   }
 }
 
-async function deleteOrder(orderId) {
-  if (!confirm('Are you sure you want to delete this order?')) return
+function confirmDeleteOrder(orderId) {
+  deleteModal.value = { open: true, orderId, loading: false }
+}
+
+async function executeDeleteOrder() {
+  const orderId = deleteModal.value.orderId
+  deleteModal.value.loading = true
 
   try {
     await axios.delete(`/orders/${orderId}`)
     orders.value = orders.value.filter(o => o.id !== orderId)
     total.value--
+    toast.success('Order deleted successfully.')
   } catch (e) {
-    alert(e?.response?.data?.message || 'Failed to delete order')
+    toast.error(e?.response?.data?.message || 'Failed to delete order')
+  } finally {
+    deleteModal.value = { open: false, orderId: null, loading: false }
   }
 }
 
