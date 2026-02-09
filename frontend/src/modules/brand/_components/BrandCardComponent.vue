@@ -1,41 +1,46 @@
 <template>
   <RouterLink
     :to="`/brands/${brand.id}`"
-    class="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl
-           transition-all duration-300 overflow-hidden border border-gray-100
+    class="group relative bg-[#111111] rounded-2xl shadow-sm hover:shadow-xl
+           transition-all duration-300 overflow-hidden border border-white/[0.06]
            hover:border-primary/20 hover:-translate-y-1"
   >
     <!-- Logo Area -->
-    <div class="relative h-44 bg-gradient-to-br from-gray-50 to-slate-100
-                flex items-center justify-center p-8 overflow-hidden">
+    <div class="relative h-44 bg-gradient-to-br from-white/5 to-white/[0.02]
+                flex items-center justify-center overflow-hidden">
       <!-- Decorative circle -->
-      <div class="absolute -top-8 -right-8 w-32 h-32 bg-primary/5
+      <div class="absolute -top-8 -right-8 w-32 h-32 bg-primary/10
                   rounded-full group-hover:scale-150 transition-transform duration-500" />
 
-      <img
-        :src="logoSrc"
-        :alt="brand.name"
-        class="max-h-24 max-w-[80%] object-contain relative z-10
-               group-hover:scale-110 transition-transform duration-300
-               drop-shadow-sm"
-        @error="onImageError"
-      />
+      <!-- Fixed-size white container for uniform appearance -->
+      <div class="relative z-10 flex items-center justify-center flex-shrink-0
+                  rounded-2xl bg-white/90 shadow-sm group-hover:shadow-md
+                  transition-shadow duration-300"
+           style="width: 240px; height: 140px; min-width: 240px; min-height: 140px; max-width: 240px; max-height: 140px;">
+        <img
+          :src="logoSrc"
+          :alt="brand.name"
+          class="object-contain group-hover:scale-110 transition-transform duration-300"
+          style="max-height: 80px; max-width: 200px;"
+          @error="onImageError"
+        />
+      </div>
     </div>
 
     <!-- Info -->
     <div class="p-5">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="text-lg font-bold text-[#0b2c5f] group-hover:text-primary
+        <h3 class="text-lg font-bold text-white group-hover:text-primary
                     transition-colors truncate">
           {{ brand.name }}
         </h3>
         <ArrowRight
-          class="w-4 h-4 text-gray-300 group-hover:text-primary
+          class="w-4 h-4 text-gray-500 group-hover:text-primary
                  group-hover:translate-x-1 transition-all duration-300"
         />
       </div>
 
-      <div class="flex items-center gap-2 text-sm text-gray-500">
+      <div class="flex items-center gap-2 text-sm text-gray-400">
         <UserCircle class="w-4 h-4 shrink-0" />
         <span class="truncate">{{ brand.inventorName }}</span>
       </div>

@@ -159,7 +159,7 @@ onMounted(() => {
 .orb-1 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(0, 150, 255, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 140, 66, 0.15) 0%, transparent 70%);
   top: -10%;
   left: -10%;
   animation-delay: 0s;
@@ -168,7 +168,7 @@ onMounted(() => {
 .orb-2 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(100, 200, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 180, 100, 0.1) 0%, transparent 70%);
   bottom: -15%;
   right: -15%;
   animation-delay: 2s;
@@ -206,9 +206,9 @@ onMounted(() => {
   inset: -100px;
   background: radial-gradient(
     circle,
-    rgba(0, 220, 255, 0.4) 0%,
-    rgba(0, 180, 255, 0.25) 40%,
-    rgba(0, 120, 255, 0.1) 70%,
+    rgba(255, 160, 66, 0.4) 0%,
+    rgba(255, 140, 42, 0.25) 40%,
+    rgba(224, 117, 48, 0.1) 70%,
     transparent 85%
   );
   border-radius: 50%;
@@ -232,9 +232,9 @@ onMounted(() => {
   inset: -60px;
   background: radial-gradient(
     circle,
-    rgba(0, 200, 255, 0.6) 0%,
-    rgba(0, 150, 255, 0.4) 30%,
-    rgba(0, 100, 255, 0.2) 60%,
+    rgba(255, 140, 66, 0.6) 0%,
+    rgba(255, 120, 42, 0.4) 30%,
+    rgba(224, 117, 48, 0.2) 60%,
     transparent 80%
   );
   border-radius: 50%;
@@ -263,9 +263,9 @@ onMounted(() => {
     logo-entrance 1s cubic-bezier(0.34, 1.56, 0.64, 1) both,
     logo-float 3s ease-in-out 1s infinite;
   filter:
-    drop-shadow(0 0 60px rgba(0, 200, 255, 0.8))
-    drop-shadow(0 0 100px rgba(0, 150, 255, 0.6))
-    drop-shadow(0 10px 40px rgba(0, 200, 255, 0.5))
+    drop-shadow(0 0 60px rgba(255, 140, 66, 0.8))
+    drop-shadow(0 0 100px rgba(255, 120, 42, 0.6))
+    drop-shadow(0 10px 40px rgba(255, 140, 66, 0.5))
     brightness(1.3)
     contrast(1.1);
 }

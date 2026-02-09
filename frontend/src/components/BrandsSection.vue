@@ -1,5 +1,5 @@
 <template>
-  <section class="w-full py-14 bg-white dark:bg-[#0b2447]">
+  <section class="w-full py-14 bg-white dark:bg-[#000000]">
     <div class="max-w-6xl mx-auto px-6">
       <h2
         class="text-3xl font-bold text-primary text-center mb-10"
@@ -33,15 +33,19 @@
           :key="brand.id"
           :to="`/brands/${brand.id}`"
           v-aos="{ delay: i * 120 }"
-          class="w-36 grayscale hover:grayscale-0 transition
+          class="flex items-center justify-center flex-shrink-0
+          p-6 rounded-xl bg-white/90 dark:bg-white/90
+          grayscale hover:grayscale-0 transition
           duration-300 opacity-80
           hover:scale-[1.025]
           hover:opacity-100"
+          style="width: 180px; height: 100px; min-width: 180px; min-height: 100px;"
         >
           <img
             :src="getLogoUrl(brand.logoUrl)"
             :alt="brand.name"
-            class="w-full object-contain"
+            class="object-contain"
+            style="max-width: 140px; max-height: 70px;"
             @error="onImageError($event)"
           />
         </RouterLink>

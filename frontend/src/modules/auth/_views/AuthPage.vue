@@ -121,7 +121,7 @@
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  background: #003465;
+  background: #000000;
 }
 
 .bg-gradient {
@@ -130,7 +130,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #003465 0%, #004d8c 50%, #0066b3 100%);
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #111111 100%);
   opacity: 0.95;
   z-index: 0;
 }

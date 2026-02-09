@@ -1,11 +1,11 @@
 <template>
-  <section class="w-full py-16 bg-white dark:bg-[#0b2447]">
+  <section class="w-full py-16 bg-white dark:bg-[#000000]">
     <div class="max-w-4xl mx-auto px-6 text-center">
       <h2 class="text-3xl font-bold text-primary mb-4">
         Stay Updated
       </h2>
 
-      <p class="text-gray-600 dark:text-gray-300 mb-8 text-sm sm:text-base leading-relaxed">
+      <p class="text-secondary mb-8 text-sm sm:text-base leading-relaxed">
         Subscribe to get the latest product updates, exclusive deals, and special offers.
       </p>
 
@@ -20,7 +20,7 @@
           :disabled="isLoading"
           class="px-5 py-3 rounded-xl border w-full sm:w-82.5
           focus:outline-none focus:ring-2 focus:ring-primary
-          bg-white dark:bg-[#132a4f] dark:text-white"
+          bg-white dark:bg-[#111111] dark:text-white"
         />
 
         <button

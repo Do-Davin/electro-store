@@ -47,20 +47,21 @@ export default {
   width: 100%;
   padding: 12px 14px 12px 40px;
   border-radius: 999px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 14px;
   outline: none;
   transition: all 0.25s ease;
-  background: white;
+  background: #111111;
+  color: #f0f0f0;
 }
 
 .search-input::placeholder {
-  color: #9ca3af;
+  color: #6b7280;
 }
 
 .search-input:focus {
-  border-color: #003465;
-  box-shadow: 0 0 0 3px rgba(0, 52, 101, 0.15);
+  border-color: #ff8c42;
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
 }
 
 .search-icon {

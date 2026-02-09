@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <footer class="w-full bg-[#003465] text-white py-12">
+  <footer class="w-full bg-[#0a0a0a] text-primary py-12">
     <div class="max-w-6xl mx-auto px-6">
       <!-- Follow Us -->
       <div>
@@ -23,7 +23,7 @@
       </div>
 
       <!-- Divider -->
-      <hr class="border-gray-400 my-8" />
+      <hr class="border-primary my-8" />
 
       <!-- Contact Us -->
       <div>
@@ -53,7 +53,7 @@
       </div>
 
       <!-- Divider -->
-      <hr class="border-gray-400 my-8" />
+      <hr class="border-primary my-8" />
 
       <!-- Copyright -->
       <p class="text-center text-sm tracking-wide">

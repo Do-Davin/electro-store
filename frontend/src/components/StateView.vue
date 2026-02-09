@@ -17,7 +17,7 @@
     <Transition name="fade">
       <div
         v-if="showOverlay"
-        class="absolute inset-0 z-10 flex items-center justify-center bg-white/70
+        class="absolute inset-0 z-10 flex items-center justify-center bg-black/70
                backdrop-blur-[2px] rounded-2xl"
       >
         <Loader2 class="w-8 h-8 text-primary animate-spin" />
@@ -183,24 +183,24 @@ const iconComponent = computed(() => {
 
 const containerClass = computed(() =>
   props.variant === 'error'
-    ? 'bg-red-50 border border-red-200 shadow-sm'
-    : 'bg-white shadow-sm',
+    ? 'bg-red-500/10 border border-red-500/20'
+    : 'bg-[#111111] border border-white/[0.06]',
 )
 
 const iconBgClass = computed(() =>
-  props.variant === 'error' ? 'bg-red-100' : 'bg-gray-100',
+  props.variant === 'error' ? 'bg-red-500/15' : 'bg-white/10',
 )
 
 const iconColorClass = computed(() =>
-  props.variant === 'error' ? 'text-red-400' : 'text-gray-300',
+  props.variant === 'error' ? 'text-red-400' : 'text-gray-500',
 )
 
 const titleClass = computed(() =>
-  props.variant === 'error' ? 'text-red-700' : 'text-gray-600',
+  props.variant === 'error' ? 'text-red-400' : 'text-white',
 )
 
 const subtitleClass = computed(() =>
-  props.variant === 'error' ? 'text-red-500/80' : 'text-gray-400',
+  props.variant === 'error' ? 'text-red-400/80' : 'text-gray-400',
 )
 
 const retryBtnClass = computed(() =>

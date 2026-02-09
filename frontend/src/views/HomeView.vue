@@ -4,6 +4,7 @@
 
     <main class="flex-1">
       <HeroSection />
+      <ProductShowcase />
       <PromoBanner />
       <CategoryCarousel />
       <FeaturedProductComponent />
@@ -27,6 +28,7 @@ import { getRole } from '@/lib/auth';
 
 import HeroSection from '@/components/HeroSection.vue';
 import PromoBanner from '@/components/PromoBanner.vue';
+import ProductShowcase from '@/components/ProductShowcase.vue';
 import CategoryCarousel from '@/components/CategoryCarousel.vue';
 import Navbar from '@/components/Navbar.vue';
 import FeaturedProductComponent from '@/components/FeaturedProductComponent.vue';

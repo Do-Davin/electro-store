@@ -1,10 +1,10 @@
 <template>
   <div
     class="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4
-    bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow"
+    bg-[#111111] rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-white/[0.06]"
   >
     <!-- Product Image -->
-    <div class="w-24 h-24 shrink-0 bg-gray-50 rounded-xl overflow-hidden">
+    <div class="w-24 h-24 shrink-0 bg-[#0a0a0a] rounded-xl overflow-hidden">
       <img
         :src="imageSource"
         :alt="item.name"
@@ -15,10 +15,10 @@
 
     <!-- Product Info -->
     <div class="flex-1 min-w-0">
-      <h3 class="text-lg font-bold text-[#0b2c5f] truncate">
+      <h3 class="text-lg font-bold text-white truncate">
         {{ item.name }}
       </h3>
-      <p class="text-gray-500 text-sm mt-1">
+      <p class="text-gray-400 text-sm mt-1">
         Unit price: ${{ item.priceSnapshot.toFixed(2) }}
       </p>
     </div>
@@ -28,13 +28,13 @@
       <button
         @click="onDecrement"
         class="w-9 h-9 flex items-center justify-center rounded-lg
-        bg-gray-100 hover:bg-gray-200 transition-colors text-[#0b2c5f] font-bold"
+        bg-white/10 hover:bg-white/20 transition-colors text-white font-bold"
         aria-label="Decrease quantity"
       >
         <Minus class="w-4 h-4" />
       </button>
 
-      <span class="w-10 text-center font-semibold text-[#0b2c5f]">
+      <span class="w-10 text-center font-semibold text-white">
         {{ item.quantity }}
       </span>
 
@@ -50,7 +50,7 @@
 
     <!-- Item Total -->
     <div class="text-right min-w-20">
-      <p class="text-lg font-bold text-[#0b2c5f]">
+      <p class="text-lg font-bold text-white">
         ${{ itemTotal.toFixed(2) }}
       </p>
     </div>
@@ -58,8 +58,8 @@
     <!-- Remove Button -->
     <button
       @click="onRemove"
-      class="p-2 rounded-lg text-gray-400 hover:text-red-500
-      hover:bg-red-50 transition-colors"
+      class="p-2 rounded-lg text-gray-500 hover:text-red-500
+      hover:bg-red-500/10 transition-colors"
       aria-label="Remove item"
     >
       <Trash2 class="w-5 h-5" />

@@ -10,10 +10,10 @@
     <!-- Not Logged In -->
     <div
       v-else-if="!loggedIn"
-      class="bg-white rounded-2xl shadow-md p-12 text-center"
+      class="bg-[#111111] rounded-2xl shadow-md p-12 text-center border border-white/[0.06]"
     >
-      <LogIn class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-      <h2 class="text-xl font-bold text-gray-500 mb-2">Please log in</h2>
+      <LogIn class="w-16 h-16 text-gray-600 mx-auto mb-4" />
+      <h2 class="text-xl font-bold text-white mb-2">Please log in</h2>
       <p class="text-gray-400 mb-6">Log in to view your order history.</p>
       <RouterLink
         to="/auth/login"
@@ -50,23 +50,23 @@
       <div
         v-for="order in orders"
         :key="order.id"
-        class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+        class="bg-[#111111] rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-white/[0.06]"
       >
         <!-- Order Header -->
-        <div class="flex flex-wrap justify-between items-center gap-3 px-6 py-4 bg-gray-50 border-b border-gray-100">
+        <div class="flex flex-wrap justify-between items-center gap-3 px-6 py-4 bg-white/5 border-b border-white/[0.06]">
           <div class="flex items-center gap-4">
             <div>
               <p class="text-xs text-gray-400 uppercase tracking-wider">Order</p>
-              <p class="font-bold text-[#0b2c5f]">#{{ order.id.slice(0, 8).toUpperCase() }}</p>
+              <p class="font-bold text-white">#{{ order.id.slice(0, 8).toUpperCase() }}</p>
             </div>
             <div>
               <p class="text-xs text-gray-400 uppercase tracking-wider">Date</p>
-              <p class="text-sm text-gray-600">{{ formatDate(order.createdAt) }}</p>
+              <p class="text-sm text-gray-400">{{ formatDate(order.createdAt) }}</p>
             </div>
           </div>
           <div class="flex items-center gap-4">
             <OrderStatusBadge :status="order.status" />
-            <p class="text-lg font-bold text-[#0b2c5f]">${{ Number(order.totalAmount).toFixed(2) }}</p>
+            <p class="text-lg font-bold text-white">${{ Number(order.totalAmount).toFixed(2) }}</p>
           </div>
         </div>
 
@@ -75,10 +75,10 @@
           <div
             v-for="item in order.items"
             :key="item.id"
-            class="flex items-center gap-4 py-3 border-b border-gray-50 last:border-0"
+            class="flex items-center gap-4 py-3 border-b border-white/[0.04] last:border-0"
           >
             <!-- Image -->
-            <div class="w-14 h-14 shrink-0 bg-gray-50 rounded-xl overflow-hidden">
+            <div class="w-14 h-14 shrink-0 bg-[#0a0a0a] rounded-xl overflow-hidden">
               <img
                 :src="getImageUrl(item.product?.imageUrl)"
                 :alt="item.product?.name"
@@ -89,21 +89,21 @@
 
             <!-- Info -->
             <div class="flex-1 min-w-0">
-              <p class="font-medium text-[#0b2c5f] truncate">{{ item.product?.name }}</p>
+              <p class="font-medium text-white truncate">{{ item.product?.name }}</p>
               <p class="text-sm text-gray-400">
                 {{ item.quantity }} × ${{ Number(item.priceAtTime).toFixed(2) }}
               </p>
             </div>
 
             <!-- Item Total -->
-            <p class="font-semibold text-[#0b2c5f]">
+            <p class="font-semibold text-white">
               ${{ (item.quantity * Number(item.priceAtTime)).toFixed(2) }}
             </p>
           </div>
         </div>
 
         <!-- Order Footer -->
-        <div class="flex justify-between items-center px-6 py-3 bg-gray-50 border-t border-gray-100">
+        <div class="flex justify-between items-center px-6 py-3 bg-white/5 border-t border-white/[0.06]">
           <RouterLink
             :to="`/orders/${order.id}/confirmation`"
             class="text-primary hover:underline text-sm font-medium"
@@ -141,20 +141,20 @@
         <button
           :disabled="orderStore.page <= 1"
           @click="goToPage(orderStore.page - 1)"
-          class="px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200
+          class="px-4 py-2 rounded-xl bg-white/10 text-gray-300 hover:bg-white/20
           transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Previous
         </button>
 
-        <span class="text-sm text-gray-500">
+        <span class="text-sm text-gray-400">
           Page {{ orderStore.page }} of {{ orderStore.totalPages }}
         </span>
 
         <button
           :disabled="orderStore.page >= orderStore.totalPages"
           @click="goToPage(orderStore.page + 1)"
-          class="px-4 py-2 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200
+          class="px-4 py-2 rounded-xl bg-white/10 text-gray-300 hover:bg-white/20
           transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
@@ -227,7 +227,7 @@ function formatDate(dateStr) {
 }
 
 function canCancel(status) {
-  return ['PENDING', 'PAID', 'PROCESSING'].includes(status)
+  return status === 'PENDING'
 }
 
 async function handleCancel(orderId) {

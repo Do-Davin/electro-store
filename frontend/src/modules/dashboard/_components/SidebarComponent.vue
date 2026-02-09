@@ -100,7 +100,7 @@ function onLogout() {
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background: #0b3f6b;
+  background: #0a0a0a;
   color: #ffffff;
   display: flex;
   flex-direction: column;

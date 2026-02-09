@@ -297,7 +297,7 @@ td {
 .status-select.cancelled { background: rgba(248, 113, 113, 0.2); color: #f87171; }
 
 .status-select option {
-  background: #0b3f6b;
+  background: #111111;
   color: white;
 }
 

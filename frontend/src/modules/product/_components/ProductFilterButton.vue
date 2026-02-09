@@ -4,7 +4,7 @@
     <button
       type="button"
       class="flex items-center gap-2 px-4 h-10 rounded-lg border
-             border-primary bg-white text-primary hover:bg-gray-50
+             border-primary bg-transparent text-primary hover:bg-primary/10
              active:scale-[0.98]
              transition cursor-pointer"
       aria-label="Filter products"
@@ -17,7 +17,7 @@
     <!-- Dropdown -->
     <div
       v-if="open"
-      class="absolute right-0 mt-2 w-64 bg-white border border-primary rounded-lg shadow p-4 z-50"
+      class="absolute right-0 mt-2 w-64 bg-[#111111] border border-primary/30 rounded-lg shadow-lg p-4 z-50"
     >
       <div class="space-y-3">
         <div>
@@ -25,7 +25,7 @@
           <input
             type="number"
             v-model.number="min"
-            class="w-full mt-1 px-3 py-2 border rounded"
+            class="w-full mt-1 px-3 py-2 border border-white/10 rounded bg-[#0a0a0a] text-white"
           />
         </div>
 
@@ -34,14 +34,14 @@
           <input
             type="number"
             v-model.number="max"
-            class="w-full mt-1 px-3 py-2 border rounded"
+            class="w-full mt-1 px-3 py-2 border border-white/10 rounded bg-[#0a0a0a] text-white"
           />
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
           <button
             class="px-3 py-1 text-sm border rounded border-red-500 text-red-500
-            hover:bg-red-50 active:scale-[0.98] transition"
+            hover:bg-red-500/10 active:scale-[0.98] transition"
             @click="reset"
           >
             Reset

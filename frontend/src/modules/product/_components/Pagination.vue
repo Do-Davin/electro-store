@@ -1,12 +1,12 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="flex justify-center mt-6">
-    <div class="flex items-center gap-2 bg-white shadow-md px-4 py-2 rounded-xl">
+    <div class="flex items-center gap-2 bg-[#111111] shadow-md px-4 py-2 rounded-xl border border-white/[0.06]">
 
       <!-- Prev -->
       <button
         class="px-3 py-1 rounded-lg border text-sm font-medium
-               hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+               hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="page === 1"
         @click="$emit('change', page - 1)"
       >
@@ -21,11 +21,11 @@
           @click="$emit('change', p)"
           class="w-9 h-9 flex items-center justify-center rounded-lg cursor-pointer
                  border text-sm font-semibold
-                 hover:bg-blue-50 hover:text-blue-600
+                 hover:bg-primary/20 hover:text-primary
                  transition"
           :class="page === p
-            ? 'bg-blue-600 text-white border-blue-600'
-            : 'bg-white text-gray-700 border-gray-200'"
+            ? 'bg-primary text-white border-primary'
+            : 'bg-transparent text-gray-300 border-white/10'"
         >
           {{ p }}
         </span>
@@ -34,7 +34,7 @@
       <!-- Next -->
       <button
         class="px-3 py-1 rounded-lg border text-sm font-medium
-               hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+               hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="page === totalPages"
         @click="$emit('change', page + 1)"
       >

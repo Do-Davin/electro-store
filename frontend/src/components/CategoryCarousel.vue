@@ -73,15 +73,15 @@ onMounted(() => {
 .carousel::before {
   left: 0;
   background: linear-gradient(90deg,
-              #ffffff 0%,
-              rgba(255, 255, 255, 0) 100%);
+              #000000 0%,
+              rgba(0, 0, 0, 0) 100%);
 }
 
 .carousel::after {
   right: 0;
   background: linear-gradient(90deg,
-              rgba(255, 255, 255, 0) 0%,
-              #ffffff 100%);
+              rgba(0, 0, 0, 0) 0%,
+              #000000 100%);
 }
 
 .group {
@@ -100,7 +100,7 @@ onMounted(() => {
   flex: 0 0 auto;
   width: 5em;
   height: 5em;
-  background: #f6f6f6;
+  background: #111111;
   font-size: 3rem;
   border-radius: 0.2em;
   display: flex;
@@ -111,7 +111,7 @@ onMounted(() => {
 }
 
 .card:hover {
-  background: #e8e8e8;
+  background: #1a1a1a;
 }
 
 .card-img {

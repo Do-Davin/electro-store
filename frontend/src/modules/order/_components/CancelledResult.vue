@@ -487,7 +487,7 @@ defineProps({
 .cancelled-title {
   font-size: 24px;
   font-weight: 700;
-  color: #0b2c5f;
+  color: #ffffff;
   margin-bottom: 8px;
   animation: text-fade-in 0.5s ease-out 0.8s both;
 }

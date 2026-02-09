@@ -38,7 +38,7 @@
       <div
         v-for="product in wishlist.items"
         :key="product.id"
-        class="group bg-white rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all
+        class="group bg-[#111111] rounded-2xl p-5 border border-white/[0.06] hover:border-white/10 transition-all
         duration-400 ease-out"
       >
         <!-- Image -->
@@ -66,7 +66,7 @@
         <div class="mt-5 flex items-center justify-between gap-3">
           <RouterLink
             :to="`/products/${product.id}`"
-            class="text-sm text-gray-500 hover:text-primary
+            class="text-sm text-gray-400 hover:text-primary
             hover:font-bold underline-offset-4 hover:underline
             transition-all duration-300 ease-out"
           >
@@ -78,7 +78,7 @@
             class="border border-red-500 text-red-500
             px-4 py-2 rounded-xl
             flex items-center gap-2
-          hover:bg-red-50
+          hover:bg-red-500/10
             active:scale-[0.98]
             transition"
           >

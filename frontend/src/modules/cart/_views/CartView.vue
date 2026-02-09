@@ -12,7 +12,7 @@
   </div>
 
   <!-- Cart Content -->
-  <div class="min-h-screen bg-gray-50 py-8">
+  <div class="min-h-screen bg-[#000000] py-8">
     <div class="max-w-6xl mx-auto px-4">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Cart Items (Left) -->

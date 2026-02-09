@@ -15,13 +15,13 @@
         <!-- Product -->
         <div v-else-if="product" class="grid grid-cols-1 md:grid-cols-2 gap-14">
           <!-- LEFT: Main Image -->
-          <div class="bg-white rounded-2xl p-8 shadow-sm relative">
+          <div class="bg-white rounded-2xl p-8 shadow-sm relative border border-white/[0.06]">
             <img :src="product.imageUrl" class="max-h-110 mx-auto object-contain" />
 
             <!-- Wishlist Heart -->
             <button
               @click="wishlist.toggle(product)"
-              class="absolute top-5 right-5 w-11 h-11 rounded-full bg-white shadow flex items-center justify-center hover:scale-105 transition"
+              class="absolute top-5 right-5 w-11 h-11 rounded-full bg-[#1a1a1a] shadow flex items-center justify-center hover:scale-105 transition"
             >
               <Heart
                 class="w-6 h-6"
@@ -62,7 +62,7 @@
 
               <span
                 v-if="hasDiscount"
-                class="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-full"
+                class="text-sm bg-red-500/20 text-red-400 px-3 py-1 rounded-full"
               >
                 -{{ product.discountPercent }}%
               </span>
@@ -71,7 +71,7 @@
             <!-- Stock Status -->
             <span
               class="inline-block text-sm px-3 py-1 rounded-full font-medium"
-              :class="product.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'"
+              :class="product.stock > 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'"
             >
               {{ product.stock > 0 ? 'In stock' : 'Out of stock' }}
             </span>
@@ -83,17 +83,7 @@
             </div>
 
             <!-- Actions -->
-            <button
-              :disabled="product.stock === 0"
-              class="w-full py-3 rounded-xl text-white font-medium transition"
-              :class="
-                product.stock === 0
-                  ? 'bg-gray-300 cursor-not-allowed'
-                  : 'bg-primary hover:opacity-90'
-              "
-            >
-              Add to cart
-            </button>
+            <AddToCartButton :product="product" class="w-full" />
 
             <!-- Trust Info -->
             <div class="text-sm text-gray-500 space-y-1 pt-2">
@@ -119,17 +109,17 @@
           </h2>
 
           <div
-          class="bg-white rounded-2xl shadow-sm border border-gray-100
+          class="bg-[#111111] rounded-2xl shadow-sm border border-white/[0.06]
           overflow-hidden">
             <div class="overflow-x-auto">
               <table class="min-w-full text-sm">
-                <thead class="bg-gray-50">
+                <thead class="bg-white/5">
                   <tr>
-                    <th class="text-left font-semibold text-gray-700 px-6
+                    <th class="text-left font-semibold text-gray-300 px-6
                     py-4 w-[40%]">
                       Key
                     </th>
-                    <th class="text-left font-semibold text-gray-700
+                    <th class="text-left font-semibold text-gray-300
                     px-6 py-4">
                       Value
                     </th>
@@ -140,12 +130,12 @@
                   <tr
                     v-for="row in specsRows"
                     :key="row.key"
-                    class="border-t border-gray-100"
+                    class="border-t border-white/[0.06]"
                   >
-                    <td class="px-6 py-4 text-gray-700 font-medium whitespace-nowrap">
+                    <td class="px-6 py-4 text-gray-300 font-medium whitespace-nowrap">
                       {{ row.label }}
                     </td>
-                    <td class="px-6 py-4 text-gray-500">
+                    <td class="px-6 py-4 text-gray-400">
                       {{ row.value }}
                     </td>
                   </tr>
@@ -164,7 +154,7 @@
           <h2 class="text-xl font-semibold text-primary mb-4 opacity-80">
             Specifications
           </h2>
-          <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 text-sm text-gray-500">
+          <div class="bg-[#111111] border border-white/[0.06] rounded-2xl p-6 text-sm text-gray-400">
             No specifications available for this product yet.
           </div>
         </div>
@@ -182,6 +172,7 @@ import { Star, Heart } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
+import AddToCartButton from '@/modules/cart/_components/AddToCartButton.vue'
 import axios from '@/lib/axios'
 import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store'
 import { MIN_SKELETON_MS } from '../_constants/ui'

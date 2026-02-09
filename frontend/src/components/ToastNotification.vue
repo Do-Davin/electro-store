@@ -155,9 +155,10 @@ onMounted(() => {
   right: 24px;
   min-width: 320px;
   max-width: 420px;
-  background: white;
+  background: #111111;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
   z-index: 9999;
   cursor: pointer;
@@ -198,13 +199,13 @@ onMounted(() => {
   font-size: 0.95rem;
   font-weight: 600;
   margin: 0 0 4px 0;
-  color: #111827;
+  color: #ffffff;
 }
 
 .toast-message {
   font-size: 0.875rem;
   margin: 0;
-  color: #6b7280;
+  color: #9ca3af;
   line-height: 1.5;
 }
 
@@ -225,8 +226,8 @@ onMounted(() => {
 }
 
 .toast-close:hover {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: rgba(255, 255, 255, 0.1);
+  color: #d1d5db;
 }
 
 .toast-progress {
@@ -283,15 +284,15 @@ onMounted(() => {
 }
 
 .toast-info {
-  border-left: 4px solid #003465;
+  border-left: 4px solid #ff8c42;
 }
 
 .toast-info .toast-icon {
-  color: #003465;
+  color: #ff8c42;
 }
 
 .toast-info .toast-progress {
-  color: #003465;
+  color: #ff8c42;
 }
 
 /* Transition animations */

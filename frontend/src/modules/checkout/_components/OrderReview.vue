@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white rounded-2xl shadow-md p-6">
-    <h2 class="text-xl font-bold text-[#0b2c5f] mb-4 flex items-center gap-2">
+  <div class="bg-[#111111] rounded-2xl shadow-md p-6 border border-white/[0.06]">
+    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
       <ShoppingBag class="w-5 h-5" />
       Order Review
     </h2>
@@ -10,10 +10,10 @@
       <div
         v-for="item in displayItems"
         :key="item.id"
-        class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"
+        class="flex items-center gap-3 p-3 bg-white/5 rounded-xl"
       >
         <!-- Image -->
-        <div class="w-14 h-14 shrink-0 bg-white rounded-lg overflow-hidden">
+        <div class="w-14 h-14 shrink-0 bg-[#0a0a0a] rounded-lg overflow-hidden">
           <img
             :src="getImageUrl(item.imageUrl)"
             :alt="item.name"
@@ -24,30 +24,30 @@
 
         <!-- Info -->
         <div class="flex-1 min-w-0">
-          <p class="font-medium text-[#0b2c5f] truncate">{{ item.name }}</p>
-          <p class="text-sm text-gray-500">
+          <p class="font-medium text-white truncate">{{ item.name }}</p>
+          <p class="text-sm text-gray-400">
             {{ item.quantity }} × ${{ item.price.toFixed(2) }}
           </p>
         </div>
 
         <!-- Item Total -->
-        <p class="font-bold text-[#0b2c5f]">
+        <p class="font-bold text-white">
           ${{ (item.quantity * item.price).toFixed(2) }}
         </p>
       </div>
     </div>
 
     <!-- Summary -->
-    <div class="border-t border-gray-200 mt-4 pt-4 space-y-2">
-      <div class="flex justify-between text-gray-600">
+    <div class="border-t border-white/10 mt-4 pt-4 space-y-2">
+      <div class="flex justify-between text-gray-400">
         <span>Subtotal ({{ totalItemCount }} items)</span>
         <span>${{ displayTotal.toFixed(2) }}</span>
       </div>
-      <div class="flex justify-between text-gray-600">
+      <div class="flex justify-between text-gray-400">
         <span>Shipping</span>
-        <span class="text-green-600 font-medium">Free</span>
+        <span class="text-green-400 font-medium">Free</span>
       </div>
-      <div class="flex justify-between text-lg font-bold text-[#0b2c5f] pt-2 border-t">
+      <div class="flex justify-between text-lg font-bold text-white pt-2 border-t border-white/10">
         <span>Total</span>
         <span>${{ displayTotal.toFixed(2) }}</span>
       </div>

@@ -4,7 +4,7 @@
 
     <main class="flex-1">
       <!-- Header Banner -->
-      <div class="bg-gray-50 pt-24 pb-4">
+      <div class="bg-[#0a0a0a] pt-24 pb-4">
     <div class="max-w-4xl mx-auto px-4" v-if="order">
 
       <!-- CANCELLED — always takes priority regardless of URL params -->
@@ -16,16 +16,16 @@
         <template #details>
           <div class="flex flex-wrap justify-center gap-6 text-sm">
             <div>
-              <p class="text-gray-500">Order Number</p>
-              <p class="font-bold text-[#0b2c5f]">{{ order.id.slice(0, 8).toUpperCase() }}</p>
+              <p class="text-gray-400">Order Number</p>
+              <p class="font-bold text-white">{{ order.id.slice(0, 8).toUpperCase() }}</p>
             </div>
             <div>
-              <p class="text-gray-500">Date</p>
-              <p class="font-medium text-[#0b2c5f]">{{ formatDate(order.createdAt) }}</p>
+              <p class="text-gray-400">Date</p>
+              <p class="font-medium text-white">{{ formatDate(order.createdAt) }}</p>
             </div>
             <div>
-              <p class="text-gray-500">Total</p>
-              <p class="font-bold text-[#0b2c5f]">${{ Number(order.totalAmount).toFixed(2) }}</p>
+              <p class="text-gray-400">Total</p>
+              <p class="font-bold text-white">${{ Number(order.totalAmount).toFixed(2) }}</p>
             </div>
           </div>
         </template>
@@ -33,8 +33,8 @@
           <div class="flex flex-wrap gap-4 justify-center">
             <RouterLink
               to="/orders"
-              class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium
-              hover:bg-gray-200 transition-colors flex items-center gap-2"
+              class="px-6 py-3 bg-white/10 text-gray-300 rounded-xl font-medium
+              hover:bg-white/20 transition-colors flex items-center gap-2"
             >
               <Receipt class="w-5 h-5" />
               View All Orders
@@ -60,16 +60,16 @@
         <template #details>
           <div class="flex flex-wrap justify-center gap-6 text-sm">
             <div>
-              <p class="text-gray-500">Order Number</p>
-              <p class="font-bold text-[#0b2c5f]">{{ order.id.slice(0, 8).toUpperCase() }}</p>
+              <p class="text-gray-400">Order Number</p>
+              <p class="font-bold text-white">{{ order.id.slice(0, 8).toUpperCase() }}</p>
             </div>
             <div>
-              <p class="text-gray-500">Date</p>
-              <p class="font-medium text-[#0b2c5f]">{{ formatDate(order.createdAt) }}</p>
+              <p class="text-gray-400">Date</p>
+              <p class="font-medium text-white">{{ formatDate(order.createdAt) }}</p>
             </div>
             <div>
-              <p class="text-gray-500">Total Paid</p>
-              <p class="font-bold text-green-600">${{ Number(order.totalAmount).toFixed(2) }}</p>
+              <p class="text-gray-400">Total Paid</p>
+              <p class="font-bold text-green-400">${{ Number(order.totalAmount).toFixed(2) }}</p>
             </div>
           </div>
         </template>
@@ -77,8 +77,8 @@
           <div class="flex flex-wrap gap-4 justify-center">
             <RouterLink
               to="/orders"
-              class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium
-              hover:bg-gray-200 transition-colors flex items-center gap-2"
+              class="px-6 py-3 bg-white/10 text-gray-300 rounded-xl font-medium
+              hover:bg-white/20 transition-colors flex items-center gap-2"
             >
               <Receipt class="w-5 h-5" />
               View All Orders
@@ -98,31 +98,31 @@
       <!-- PENDING: payment cancelled or awaiting payment -->
       <div
         v-else
-        class="bg-white rounded-2xl shadow-md p-8 text-center"
+        class="bg-[#111111] rounded-2xl shadow-md p-8 text-center border border-white/[0.06]"
       >
-        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-amber-100 flex items-center justify-center">
-          <Info class="w-10 h-10 text-amber-500" />
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+          <Info class="w-10 h-10 text-amber-400" />
         </div>
-        <h2 class="text-2xl font-bold text-[#0b2c5f] mb-2">
+        <h2 class="text-2xl font-bold text-white mb-2">
           {{ paymentStatus === 'cancelled' ? 'Payment Cancelled' : 'Order Awaiting Payment' }}
         </h2>
-        <p class="text-gray-500 mb-4">
+        <p class="text-gray-400 mb-4">
           {{ paymentStatus === 'cancelled'
             ? 'No worries — your order is saved. You can pay anytime.'
             : 'Your order has been created. Complete the payment to confirm it.' }}
         </p>
         <div class="flex flex-wrap justify-center gap-6 text-sm mb-6">
           <div>
-            <p class="text-gray-500">Order Number</p>
-            <p class="font-bold text-[#0b2c5f]">{{ order.id.slice(0, 8).toUpperCase() }}</p>
+            <p class="text-gray-400">Order Number</p>
+            <p class="font-bold text-white">{{ order.id.slice(0, 8).toUpperCase() }}</p>
           </div>
           <div>
-            <p class="text-gray-500">Date</p>
-            <p class="font-medium text-[#0b2c5f]">{{ formatDate(order.createdAt) }}</p>
+            <p class="text-gray-400">Date</p>
+            <p class="font-medium text-white">{{ formatDate(order.createdAt) }}</p>
           </div>
           <div>
-            <p class="text-gray-500">Total</p>
-            <p class="font-bold text-[#0b2c5f]">${{ Number(order.totalAmount).toFixed(2) }}</p>
+            <p class="text-gray-400">Total</p>
+            <p class="font-bold text-white">${{ Number(order.totalAmount).toFixed(2) }}</p>
           </div>
         </div>
       </div>
@@ -131,7 +131,7 @@
   </div>
 
   <!-- Order Details -->
-  <div class="min-h-screen bg-gray-50 py-8">
+  <div class="min-h-screen bg-[#000000] py-8">
     <div class="max-w-4xl mx-auto px-4">
       <!-- Loading State (initial only) -->
       <SkeletonLoader v-if="orderStore.loading && !orderStore.error" variant="list" :count="1" />
@@ -151,18 +151,18 @@
       <!-- Order Details -->
       <div v-else class="space-y-6">
         <!-- Order Info Card - Improved Layout -->
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+        <div class="bg-[#111111] rounded-2xl shadow-md overflow-hidden border border-white/[0.06]">
           <!-- Header Section -->
-          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 md:p-8 border-b border-blue-100">
+          <div class="bg-white/5 p-6 md:p-8 border-b border-white/[0.06]">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <!-- Order Number & Date -->
               <div class="flex-1">
-                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Order Number</p>
-                <p class="text-3xl font-bold text-[#0b2c5f] tracking-tight mb-3">
+                <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Order Number</p>
+                <p class="text-3xl font-bold text-white tracking-tight mb-3">
                   {{ order.id.slice(0, 8).toUpperCase() }}
                 </p>
-                <div class="flex items-center gap-2 text-sm text-gray-600">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center gap-2 text-sm text-gray-400">
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span>{{ formatDate(order.createdAt) }}</span>
@@ -172,12 +172,12 @@
               <!-- Status & Total -->
               <div class="flex items-center gap-8">
                 <div class="flex flex-col items-center">
-                  <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Status</p>
+                  <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Status</p>
                   <span :class="statusClass">{{ order.status }}</span>
                 </div>
                 <div class="flex flex-col items-end">
-                  <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-2">Total Amount</p>
-                  <p class="text-4xl font-bold text-[#0b2c5f]">
+                  <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Total Amount</p>
+                  <p class="text-4xl font-bold text-white">
                     ${{ Number(order.totalAmount).toFixed(2) }}
                   </p>
                 </div>
@@ -187,7 +187,7 @@
 
           <!-- Items Section -->
           <div class="p-6 md:p-8">
-            <h3 class="font-semibold text-[#0b2c5f] text-lg mb-4 flex items-center gap-2">
+            <h3 class="font-semibold text-white text-lg mb-4 flex items-center gap-2">
               <Package class="w-5 h-5" />
               Order Items
             </h3>
@@ -195,9 +195,9 @@
               <div
                 v-for="item in order.items"
                 :key="item.id"
-                class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                class="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"
               >
-                <div class="w-20 h-20 shrink-0 bg-white rounded-lg overflow-hidden shadow-sm">
+                <div class="w-20 h-20 shrink-0 bg-[#0a0a0a] rounded-lg overflow-hidden shadow-sm">
                   <img
                     :src="getImageUrl(item.product?.imageUrl)"
                     :alt="item.product?.name"
@@ -206,15 +206,15 @@
                   />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="font-semibold text-[#0b2c5f] text-lg truncate mb-1">
+                  <p class="font-semibold text-white text-lg truncate mb-1">
                     {{ item.product?.name }}
                   </p>
-                  <p class="text-sm text-gray-500">
-                    Quantity: <span class="font-medium text-gray-700">{{ item.quantity }}</span> ×
-                    <span class="font-medium text-gray-700">${{ Number(item.priceAtTime).toFixed(2) }}</span>
+                  <p class="text-sm text-gray-400">
+                    Quantity: <span class="font-medium text-gray-300">{{ item.quantity }}</span> ×
+                    <span class="font-medium text-gray-300">${{ Number(item.priceAtTime).toFixed(2) }}</span>
                   </p>
                 </div>
-                <p class="font-bold text-[#0b2c5f] text-xl">
+                <p class="font-bold text-white text-xl">
                   ${{ (item.quantity * Number(item.priceAtTime)).toFixed(2) }}
                 </p>
               </div>
@@ -223,12 +223,12 @@
         </div>
 
         <!-- Next Steps -->
-        <div class="bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-          <h3 class="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+        <div class="bg-primary/10 rounded-2xl p-6 border border-primary/20">
+          <h3 class="font-semibold text-primary mb-2 flex items-center gap-2">
             <Info class="w-5 h-5" />
             What's Next?
           </h3>
-          <p class="text-blue-800 text-sm leading-relaxed">
+          <p class="text-gray-300 text-sm leading-relaxed">
             Your order is currently <strong>{{ order.status }}</strong>.
             <span v-if="order.status === 'PENDING'">
               Complete your payment to start processing.
@@ -351,8 +351,7 @@ const cancelModal = ref({
 
 const canCancelOrder = computed(() => {
   if (!order.value) return false
-  const cancellableStatuses = ['PENDING', 'PAID', 'PROCESSING']
-  return cancellableStatuses.includes(order.value.status)
+  return order.value.status === 'PENDING'
 })
 
 /**

@@ -39,15 +39,15 @@
   </div>
 
   <!-- Checkout Content -->
-  <div class="min-h-screen bg-gray-50 py-8">
+  <div class="min-h-screen bg-[#000000] py-8">
     <div class="max-w-6xl mx-auto px-4">
       <!-- Not Logged In Warning -->
       <div
         v-if="!isLoggedIn"
-        class="bg-white rounded-2xl shadow-md p-12 text-center"
+        class="bg-[#111111] rounded-2xl shadow-md p-12 text-center border border-white/[0.06]"
       >
-        <LogIn class="w-20 h-20 text-gray-300 mx-auto mb-4" />
-        <h2 class="text-xl font-bold text-gray-500 mb-2">Please log in to checkout</h2>
+        <LogIn class="w-20 h-20 text-gray-600 mx-auto mb-4" />
+        <h2 class="text-xl font-bold text-white mb-2">Please log in to checkout</h2>
         <p class="text-gray-400 mb-6">You need to be logged in to place an order.</p>
         <RouterLink
           to="/auth/login"
@@ -59,7 +59,7 @@
       </div>
 
       <!-- Loading Existing Order (from Pay Now) -->
-      <div v-else-if="loadingExistingOrder">
+      <div v-else-if="loadingExistingOrder || isSubmitting">
         <SkeletonLoader variant="list" :count="1" />
       </div>
 
@@ -88,7 +88,7 @@
             <!-- Back link -->
             <button
               @click="goBack"
-              class="text-gray-500 hover:text-primary text-sm font-medium
+              class="text-gray-400 hover:text-primary text-sm font-medium
               flex items-center gap-1 transition-colors"
             >
               <ArrowLeft class="w-4 h-4" />
