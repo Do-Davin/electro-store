@@ -56,7 +56,13 @@ export class ProductsService {
       specs: specs,
     });
 
-    return this.productsRepo.save(product);
+    const saved = await this.productsRepo.save(product);
+
+    // Re-fetch cleanly to avoid circular references from eager relations
+    return this.productsRepo.findOne({
+      where: { id: saved.id },
+      relations: ['category', 'brand'],
+    });
   }
 
   async findAll({

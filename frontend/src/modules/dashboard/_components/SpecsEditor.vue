@@ -55,14 +55,27 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const rows = ref([])
+let internalUpdate = false
 
 watch(
   () => props.modelValue,
   (v) => {
-    rows.value = Object.entries(v || {}).map(([key, value]) => ({
+    // Build what the new rows would be
+    const incoming = Object.entries(v || {}).map(([key, value]) => ({
       key,
       value: String(value ?? ''),
     }))
+
+    // Only update rows if data actually changed (prevents loop)
+    const current = rows.value
+    const isSame =
+      incoming.length === current.length &&
+      incoming.every((r, i) => r.key === current[i]?.key && r.value === current[i]?.value)
+
+    if (!isSame) {
+      internalUpdate = true
+      rows.value = incoming
+    }
   },
   { immediate: true }
 )
@@ -70,6 +83,10 @@ watch(
 watch(
   rows,
   () => {
+    if (internalUpdate) {
+      internalUpdate = false
+      return
+    }
     const obj = {}
     rows.value.forEach((r) => {
       if (r.key) obj[r.key] = r.value

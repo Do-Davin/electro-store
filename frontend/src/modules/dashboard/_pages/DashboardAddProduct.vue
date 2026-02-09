@@ -288,15 +288,20 @@ async function submit() {
       res.data?.product ??
       res.data
 
-    // Update store immediately (so user ProductList updates without reload)
-    if (created?.id) {
-      productStore.upsertProduct(created, 'prepend')
-    } else {
-      // If backend doesn't return product object, just refresh list
-      await productStore.fetchProducts()
-    }
-    toast.success('Product has been added successfully.')
+    // Show success toast immediately (before store ops that might throw)
+    toast.success('Product has been added successfully.', 'Success')
     resetForm()
+
+    // Update store in background — don't let store errors hide the toast
+    try {
+      if (created?.id) {
+        productStore.upsertProduct(created, 'prepend')
+      } else {
+        await productStore.fetchProducts()
+      }
+    } catch {
+      // Store sync failed silently — product was still created
+    }
   } catch (e) {
     toast.error(e?.response?.data?.message || e?.message || 'Failed to add product')
   } finally {
