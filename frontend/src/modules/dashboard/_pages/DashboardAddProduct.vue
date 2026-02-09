@@ -1,118 +1,178 @@
 <template>
   <section class="add-product">
-    <h1 class="title">Add New Product</h1>
-
-    <!-- Image Upload -->
-    <div class="image-upload" @click="triggerFile">
-      <input
-        ref="fileInput"
-        type="file"
-        accept="image/*"
-        hidden
-        @change="onFileChange"
-      />
-
-      <div v-if="preview" class="preview">
-        <img :src="preview" />
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <h1 class="title">Add New Product</h1>
+        <p class="subtitle">Fill in the details below to add a new product to your store</p>
       </div>
-
-      <div v-else class="placeholder">
-        <Upload />
-        <span>Upload Product Image</span>
+      <div class="header-actions">
+        <button class="btn-clear" type="button" @click="resetForm">
+          <RotateCcw :size="16" />
+          Reset
+        </button>
+        <button class="btn-submit" :disabled="loading" @click="submit">
+          <Loader2 v-if="loading" :size="16" class="animate-spin" />
+          <Plus v-else :size="16" />
+          {{ loading ? 'Adding...' : 'Add Product' }}
+        </button>
       </div>
     </div>
 
-    <!-- Form -->
-    <div class="form">
-      <div class="field">
-        <label>Product Name</label>
-        <input v-model="form.name" placeholder="Enter product name" />
-      </div>
-
-      <div class="field">
-        <label>Description</label>
-        <textarea
-          v-model="form.description"
-          placeholder="Enter product description"
-        />
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Actual Price ($)</label>
-          <input type="number" v-model.number="form.price" placeholder="0.00" min="0" step="0.01" />
+    <!-- Row 1 : Image + Product Info -->
+    <div class="row-2col">
+      <!-- Image Upload Card -->
+      <div class="card">
+        <div class="card-header">
+          <ImageIcon :size="18" />
+          <h3>Product Image</h3>
         </div>
-
-        <div class="field">
-          <label>Offer Price ($)</label>
-          <input type="number" v-model.number="offerPrice" placeholder="0.00" min="0" step="0.01" />
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label>Stock Quantity</label>
-          <input type="number" v-model.number="form.stock" placeholder="0" min="0" />
-        </div>
-
-        <div class="field">
-          <label>Discount</label>
-          <div class="discount-display">
-            <span>{{ discountPercent }}%</span>
+        <div class="image-upload" @click="triggerFile">
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            hidden
+            @change="onFileChange"
+          />
+          <div v-if="preview" class="preview">
+            <img :src="preview" />
+            <div class="preview-overlay">
+              <Upload :size="20" />
+              <span>Change Image</span>
+            </div>
+          </div>
+          <div v-else class="placeholder">
+            <div class="upload-icon-wrap">
+              <Upload :size="28" />
+            </div>
+            <span class="upload-title">Upload Product Image</span>
+            <span class="upload-hint">Click to browse · JPG, PNG, WEBP</span>
           </div>
         </div>
       </div>
 
-      <!-- Brand Picker -->
-      <div class="field">
-        <label>Brand</label>
+      <!-- Product Information Card -->
+      <div class="card">
+        <div class="card-header">
+          <FileText :size="18" />
+          <h3>Product Information</h3>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label>Product Name</label>
+            <input v-model="form.name" placeholder="Enter product name" />
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea
+              v-model="form.description"
+              placeholder="Enter product description"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <div class="brand-picker">
-          <div
-            v-for="b in brands"
-            :key="b.id"
-            class="brand-card"
-            :class="{ active: form.brandId === b.id }"
-            @click="form.brandId = b.id"
-          >
-            <img :src="toUrl(b.logoUrl)" draggable="false" />
-            <span>{{ b.name }}</span>
+    <!-- Row 2 : Pricing + Inventory -->
+    <div class="row-2col">
+      <div class="card">
+        <div class="card-header">
+          <DollarSign :size="18" />
+          <h3>Pricing</h3>
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field">
+              <label>Actual Price ($)</label>
+              <input type="number" v-model.number="form.price" placeholder="0.00" min="0" step="0.01" />
+            </div>
+            <div class="field">
+              <label>Offer Price ($)</label>
+              <input type="number" v-model.number="offerPrice" placeholder="0.00" min="0" step="0.01" />
+            </div>
+          </div>
+          <div class="pricing-summary">
+            <div class="pricing-row">
+              <span class="pricing-label">Discount</span>
+              <span class="pricing-value" :class="{ 'has-discount': discountPercent > 0 }">{{ discountPercent }}%</span>
+            </div>
+            <div v-if="offerPrice && offerPrice < form.price" class="pricing-row">
+              <span class="pricing-label">You save</span>
+              <span class="pricing-value save">${{ (form.price - offerPrice).toFixed(2) }}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="field">
-        <label>Category</label>
-        <select v-model="form.categoryId">
-          <option disabled value="">Select a category</option>
-          <option
-            v-for="c in categories"
-            :key="c.id"
-            :value="c.id"
-          >
-            {{ c.name }}
-          </option>
-        </select>
+      <div class="card">
+        <div class="card-header">
+          <Package :size="18" />
+          <h3>Inventory</h3>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label>Stock Quantity</label>
+            <input type="number" v-model.number="form.stock" placeholder="0" min="0" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3 : Category + Brand -->
+    <div class="row-2col">
+      <div class="card">
+        <div class="card-header">
+          <LayoutGrid :size="18" />
+          <h3>Category</h3>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label>Select Category</label>
+            <select v-model="form.categoryId">
+              <option disabled value="">Select a category</option>
+              <option
+                v-for="c in categories"
+                :key="c.id"
+                :value="c.id"
+              >
+                {{ c.name }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <SpecsEditor v-model="form.specs" :allowCustom="false" />
+      <div class="card">
+        <div class="card-header">
+          <Tag :size="18" />
+          <h3>Brand</h3>
+        </div>
+        <div class="card-body">
+          <div class="brand-picker">
+            <div
+              v-for="b in brands"
+              :key="b.id"
+              class="brand-card"
+              :class="{ active: form.brandId === b.id }"
+              @click="form.brandId = b.id"
+            >
+              <img :src="toUrl(b.logoUrl)" draggable="false" />
+              <span>{{ b.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <div class="action-row">
-        <button
-          class="submit"
-          :disabled="loading"
-          @click="submit"
-        >
-          {{ loading ? 'Adding...' : 'Add Product' }}
-        </button>
-
-        <button
-          class="clear"
-          type="button"
-          @click="resetForm"
-        >
-          Clear Form
-        </button>
+    <!-- Row 4 : Specifications (full width) -->
+    <div class="card">
+      <div class="card-header">
+        <Settings :size="18" />
+        <h3>Specifications</h3>
+      </div>
+      <div class="card-body">
+        <SpecsEditor v-model="form.specs" :allowCustom="false" />
       </div>
     </div>
   </section>
@@ -121,7 +181,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/lib/axios'
-import { Upload } from 'lucide-vue-next'
+import { Upload, RotateCcw, Plus, Loader2, ImageIcon, DollarSign, Package, FileText, LayoutGrid, Tag, Settings } from 'lucide-vue-next'
 import { useProductStore } from '@/modules/product/_stores/product.store'
 import SpecsEditor from '../_components/SpecsEditor.vue'
 import { useToast } from '@/composables/useToast'
@@ -288,132 +348,255 @@ onMounted(async () => {
 
 <style scoped>
 .add-product {
-  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 100vh;
+  width: 100%;
   color: white;
 }
 
-.title {
-  font-size: 26px;
-  font-weight: 600;
-  margin-bottom: 24px;
+/* ── Header ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  font-weight: 400;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-submit,
+.btn-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #3da9ff, #1e88e5);
+  color: white;
+  box-shadow: 0 4px 14px rgba(61, 169, 255, 0.3);
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-clear {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-clear:hover {
+  background: rgba(255, 77, 79, 0.15);
+  color: #ff7875;
+  border-color: rgba(255, 77, 79, 0.3);
+}
+
+/* ── Row Layout ── */
+.row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+}
+
+/* ── Card ── */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.card-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.card-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Image Upload ── */
 .image-upload {
-  height: 160px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.08);
-  border: 2px dashed rgba(255,255,255,0.2);
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-bottom: 24px;
+  position: relative;
+  margin: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(255, 255, 255, 0.12);
   transition: all 0.25s ease;
 }
 
 .image-upload:hover {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(61, 169, 255, 0.5);
+  background: rgba(61, 169, 255, 0.06);
+  border-color: rgba(61, 169, 255, 0.35);
 }
 
 .placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  opacity: 0.8;
+  gap: 10px;
+}
+
+.upload-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(61, 169, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3da9ff;
+  margin-bottom: 4px;
+}
+
+.upload-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .preview img {
-  max-height: 140px;
+  max-height: 190px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.brand-picker {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  padding: 10px 4px;
-  scroll-snap-type: x mandatory;
-}
-
-/* Hide scrollbar (Chrome, Edge, Safari) */
-.brand-picker::-webkit-scrollbar {
-  height: 6px;
-}
-.brand-picker::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
-  border-radius: 10px;
-}
-
-/* Firefox */
-.brand-picker {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.2) transparent;
-}
-
-.brand-card {
-  flex-shrink: 0;
-  width: 120px;
-  height: 90px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 14px;
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-
+.preview-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  scroll-snap-align: start;
-}
-
-.brand-card:hover {
-  background: rgba(255,255,255,0.14);
-}
-
-.brand-card.active {
-  border-color: #3da9ff;
-  background: rgba(61,169,255,0.25);
-}
-
-.brand-card img {
-  max-width: 48px;
-  max-height: 32px;
-  object-fit: contain;
-  margin-bottom: 6px;
-}
-
-.brand-card span {
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: white;
   font-size: 13px;
   font-weight: 500;
-  opacity: 0.9;
+}
+
+.image-upload:hover .preview-overlay {
+  opacity: 1;
+}
+
+/* ── Fields ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 input,
 textarea,
 select {
-  background: rgba(255,255,255,0.08);
-  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  padding: 12px;
+  padding: 12px 14px;
   color: white;
-  transition: border-color 0.2s ease;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 input:focus,
@@ -421,92 +604,141 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: #3da9ff;
+  background: rgba(61, 169, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(61, 169, 255, 0.1);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: rgba(255,255,255,0.35);
+  color: rgba(255, 255, 255, 0.25);
 }
 
 textarea {
-  min-height: 100px;
-  resize: none;
+  min-height: 110px;
+  resize: vertical;
 }
 
-.discount-display {
-  background: rgba(255,255,255,0.08);
-  border: 1.5px solid rgba(255,255,255,0.12);
+select option {
+  background: #0a2744;
+  color: white;
+}
+
+/* ── Pricing Summary ── */
+.pricing-summary {
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 10px;
-  padding: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pricing-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pricing-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+.pricing-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+}
+
+.pricing-value.has-discount {
   color: #3da9ff;
-  font-weight: 600;
-  font-size: 15px;
 }
 
-.row {
+.pricing-value.save {
+  color: #4ade80;
+}
+
+/* ── Brand Picker ── */
+.brand-picker {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
 }
 
-.action-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-top: 16px;
-}
-
-.submit {
-  height: 48px;
-  background: linear-gradient(135deg, #3da9ff, #1e88e5);
-  color: white;
+.brand-card {
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  border: none;
+  padding: 14px 10px;
+  text-align: center;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 6px 18px rgba(61, 169, 255, 0.35);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.submit:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(61, 169, 255, 0.45);
+.brand-card:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  box-shadow: none;
+.brand-card.active {
+  border-color: #3da9ff;
+  background: rgba(61, 169, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(61, 169, 255, 0.1);
 }
 
-.submit:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(61, 169, 255, 0.3);
-  background: linear-gradient(135deg, #2f8de4, #1976d2);
+.brand-card img {
+  max-width: 48px;
+  max-height: 32px;
+  object-fit: contain;
 }
 
-.clear {
-  height: 48px;
-  background: linear-gradient(135deg, #ff4d4f, #d9363e);
-  color: white;
-  border-radius: 12px;
+.brand-card span {
+  font-size: 12px;
   font-weight: 600;
-  font-size: 15px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 6px 18px rgba(255, 77, 79, 0.35);
+  opacity: 0.8;
 }
 
-.clear:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(255, 77, 79, 0.45);
-  background: linear-gradient(135deg, #ff7875, #f5222d);
+/* ── Spin animation ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.clear:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .row-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    justify-content: flex-end;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .brand-picker {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
 }
 </style>
