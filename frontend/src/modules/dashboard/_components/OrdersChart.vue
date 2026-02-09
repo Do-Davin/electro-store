@@ -1,8 +1,8 @@
 <template>
   <div class="orders-chart" ref="chartRoot">
     <div class="chart-header">
-      <div class="header-left">
-        <h3>Order Analytics</h3>
+        <div class="header-left">
+          <h3><BarChart2 class="chart-icon" :size="18" />Order Analytics</h3>
         <div v-if="!loading && dataPoints.length > 0" class="summary-stats">
           <span class="stat-item">
             <span class="stat-label">Total:</span>
@@ -201,7 +201,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
-import { Loader2, ChevronDown } from 'lucide-vue-next'
+import { Loader2, ChevronDown, BarChart2 } from 'lucide-vue-next'
 import axios from '@/lib/axios'
 
 const loading = ref(true)
@@ -667,6 +667,14 @@ watch(interval, () => {
   font-weight: 600;
   color: white;
   margin: 0;
+}
+
+.chart-icon {
+  color: #60a5fa;
+  stroke: currentColor;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-right: 8px;
 }
 
 .summary-stats {

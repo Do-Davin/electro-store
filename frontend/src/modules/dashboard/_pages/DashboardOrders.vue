@@ -382,7 +382,7 @@ onMounted(() => fetchOrders())
 }
 
 .title {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #f8fafc;
@@ -714,9 +714,9 @@ td {
 }
 
 .amount {
-  font-weight: 700;
-  font-size: 14px;
-  color: #34d399;
+  font-weight: 600;
+  font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+  color: rgb(74, 222, 128);
 }
 
 .date-cell {

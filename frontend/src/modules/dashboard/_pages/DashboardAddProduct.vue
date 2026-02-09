@@ -3,17 +3,22 @@
     <!-- Header -->
     <div class="page-header">
       <div class="header-left">
-        <h1 class="title">Add New Product</h1>
-        <p class="subtitle">Fill in the details below to add a new product to your store</p>
+        <div class="header-icon">
+          <Plus :size="18" />
+        </div>
+        <div>
+          <h1 class="title">Add New Product</h1>
+          <p class="subtitle">Fill in the details below to add a new product to your store</p>
+        </div>
       </div>
       <div class="header-actions">
         <button class="btn-clear" type="button" @click="resetForm">
-          <RotateCcw :size="16" />
+          <RotateCcw class="reset-icon" :size="16" />
           Reset
         </button>
         <button class="btn-submit" :disabled="loading" @click="submit">
           <Loader2 v-if="loading" :size="16" class="animate-spin" />
-          <Plus v-else :size="16" />
+          <Plus v-else class="submit-icon" :size="16" />
           {{ loading ? 'Adding...' : 'Add Product' }}
         </button>
       </div>
@@ -372,8 +377,41 @@ onMounted(async () => {
 
 .header-left {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
+}
+
+/* Apply blue accent color to all lucide icons on this page */
+::v-deep svg {
+  color: #60a5fa;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* keep reset button icon color as the button text (don't apply blue accent) */
+.reset-icon {
+  color: inherit !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* keep the Add Product button plus icon white */
+::v-deep .btn-submit .submit-icon {
+  color: white !important;
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 .title {
@@ -513,11 +551,11 @@ onMounted(async () => {
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  background: rgba(61, 169, 255, 0.12);
+  background: rgba(96,165,250,0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3da9ff;
+  color: #60a5fa;
   margin-bottom: 4px;
 }
 

@@ -249,7 +249,7 @@ onMounted(fetchDeals)
 }
 
 .title {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #f8fafc;

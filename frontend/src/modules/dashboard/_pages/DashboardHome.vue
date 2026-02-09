@@ -1,10 +1,22 @@
 <template>
   <section class="dashboard">
     <!-- Header -->
-    <div class="dashboard-header">
-      <h1 class="title">Dashboard</h1>
-      <div v-if="!loading" class="last-updated">
-        Last updated: {{ lastUpdatedTime }}
+    <div class="page-header">
+      <div class="header-left">
+        <div class="header-icon">
+          <Package :size="22" />
+        </div>
+        <div>
+          <h1 class="title">Dashboard</h1>
+          <p class="subtitle">Overview & quick stats</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div v-if="!loading" class="last-updated">Last updated: {{ lastUpdatedTime }}</div>
+        <button class="refresh-btn" @click="loadDashboard" :disabled="loading">
+          <RefreshCw :size="14" :class="{ spin: loading }" />
+          <span>Refresh</span>
+        </button>
       </div>
     </div>
 
@@ -52,7 +64,7 @@
       <!-- Recent Orders Table -->
       <div class="orders-section">
         <div class="section-header">
-          <h3>Recent Orders</h3>
+          <h3><ClipboardList class="section-icon" :size="18" />Recent Orders</h3>
           <span class="order-count">{{ recentOrders.length }} recent</span>
         </div>
 
@@ -102,7 +114,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { Package, DollarSign, ShoppingCart, Users, Loader2 } from 'lucide-vue-next'
+import { Package, DollarSign, ShoppingCart, Users, Loader2, RefreshCw, ClipboardList } from 'lucide-vue-next'
 import StatCard from '../_components/StatCard.vue'
 import OrdersChart from '../_components/OrdersChart.vue'
 import axios from '@/lib/axios'
@@ -171,7 +183,8 @@ function getInitials(email) {
 
 const toast = useToast()
 
-onMounted(async () => {
+async function loadDashboard() {
+  loading.value = true
   try {
     const [productsRes, ordersRes, usersRes] = await Promise.all([
       axios.get('/products?limit=1'),
@@ -203,7 +216,9 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(() => loadDashboard())
 </script>
 
 <style scoped>
@@ -211,16 +226,69 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  background-color: #000000;
+  background-color: #0a0a0a;
   min-height: 100vh;
 }
 
 .dashboard-header {
+  display: none;
+}
+
+/* Page header (new) */
+.page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.12));
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: rgba(148, 163, 184, 0.8);
+  margin: 2px 0 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.spin { animation: spin 1s linear infinite; }
 
 .title {
   font-size: 32px;
@@ -289,6 +357,15 @@ onMounted(async () => {
   font-weight: 600;
   color: white;
   margin: 0;
+}
+
+/* icons for analytics and recent orders only */
+.section-header .section-icon {
+  color: #60a5fa;
+  stroke: currentColor;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-right: 8px;
 }
 
 .order-count {
@@ -402,7 +479,7 @@ onMounted(async () => {
 .amount {
   font-weight: 600;
   font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgb(74, 222, 128);
 }
 
 .date-cell {
@@ -448,7 +525,7 @@ onMounted(async () => {
 .status-badge.delivered,
 .status-badge.completed {
   background: rgba(16, 185, 129, 0.15);
-  color: rgb(52, 211, 153);
+  color: rgb(74, 222, 128);
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 

@@ -84,10 +84,12 @@ defineProps({
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(96, 165, 250, 0.12); /* blue translucent */
+  border: 1px solid rgba(96, 165, 250, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #60a5fa; /* icon color */
 }
 
 .icon-wrap :deep(svg) {
@@ -102,5 +104,12 @@ defineProps({
     rgba(255, 255, 255, 0.12),
     rgba(255, 255, 255, 0.06)
   );
+}
+
+/* revenue variant: keep icon blue to match other icons */
+.card.revenue .icon-wrap {
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.18);
+  color: #4ade80;
 }
 </style>
