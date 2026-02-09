@@ -211,7 +211,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  background-color: #003465;
+  background-color: #000000;
   min-height: 100vh;
 }
 

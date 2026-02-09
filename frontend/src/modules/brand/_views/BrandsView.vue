@@ -1,20 +1,20 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50/50">
+  <div class="min-h-screen flex flex-col bg-[#000000]">
     <Navbar />
 
     <main class="flex-1 pt-24 pb-16 px-4 sm:px-6">
       <div class="max-w-6xl mx-auto">
         <!-- Page Header -->
         <div class="mb-10 text-center" v-aos>
-          <div class="inline-flex items-center gap-2 bg-primary/5 px-4 py-2
+          <div class="inline-flex items-center gap-2 bg-primary/10 px-4 py-2
                       rounded-full mb-4">
             <Crown class="w-4 h-4 text-primary" />
             <span class="text-sm font-semibold text-primary">Our Brands</span>
           </div>
-          <h1 class="text-3xl sm:text-4xl font-extrabold text-[#0b2c5f] mb-3">
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
             Explore Top Brands
           </h1>
-          <p class="text-gray-500 max-w-lg mx-auto">
+          <p class="text-gray-400 max-w-lg mx-auto">
             Discover the world's leading technology brands and the visionaries behind them.
           </p>
         </div>

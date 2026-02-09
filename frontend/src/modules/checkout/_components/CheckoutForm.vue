@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white rounded-2xl shadow-md p-6">
-    <h2 class="text-xl font-bold text-[#0b2c5f] mb-6 flex items-center gap-2">
+  <div class="bg-[#111111] rounded-2xl shadow-md p-6 border border-white/[0.06]">
+    <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
       <MapPin class="w-5 h-5" />
       Shipping Information
     </h2>
@@ -8,11 +8,11 @@
     <form @submit.prevent="onSubmit" class="space-y-4">
       <!-- Full Name -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-300 mb-1">
           Full Name <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <User class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <User class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
             type="text"
             :value="checkout.shippingInfo.fullName"
@@ -20,8 +20,8 @@
             @blur="handleBlur('fullName')"
             placeholder="John Doe"
             class="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2
-            focus:ring-primary focus:border-primary transition-colors"
-            :class="checkout.errors.fullName ? 'border-red-500' : 'border-gray-200'"
+            focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
+            :class="checkout.errors.fullName ? 'border-red-500' : 'border-white/10'"
           />
         </div>
         <p v-if="checkout.errors.fullName" class="text-red-500 text-sm mt-1">
@@ -31,11 +31,11 @@
 
       <!-- Email -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-300 mb-1">
           Email <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <Mail class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Mail class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
             type="email"
             :value="checkout.shippingInfo.email"
@@ -43,8 +43,8 @@
             @blur="handleBlur('email')"
             placeholder="john@example.com"
             class="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2
-            focus:ring-primary focus:border-primary transition-colors"
-            :class="checkout.errors.email ? 'border-red-500' : 'border-gray-200'"
+            focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
+            :class="checkout.errors.email ? 'border-red-500' : 'border-white/10'"
           />
         </div>
         <p v-if="checkout.errors.email" class="text-red-500 text-sm mt-1">
@@ -54,11 +54,11 @@
 
       <!-- Phone -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-300 mb-1">
           Phone <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <Phone class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Phone class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
             type="tel"
             :value="checkout.shippingInfo.phone"
@@ -66,8 +66,8 @@
             @blur="handleBlur('phone')"
             placeholder="+1 234 567 8900"
             class="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2
-            focus:ring-primary focus:border-primary transition-colors"
-            :class="checkout.errors.phone ? 'border-red-500' : 'border-gray-200'"
+            focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
+            :class="checkout.errors.phone ? 'border-red-500' : 'border-white/10'"
           />
         </div>
         <p v-if="checkout.errors.phone" class="text-red-500 text-sm mt-1">
@@ -77,11 +77,11 @@
 
       <!-- Address -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-300 mb-1">
           Address <span class="text-red-500">*</span>
         </label>
         <div class="relative">
-          <Home class="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+          <Home class="absolute left-3 top-3 w-5 h-5 text-gray-500" />
           <textarea
             :value="checkout.shippingInfo.address"
             @input="handleInput('address', $event)"
@@ -89,8 +89,8 @@
             placeholder="123 Main Street, Apt 4B"
             rows="2"
             class="w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2
-            focus:ring-primary focus:border-primary transition-colors resize-none"
-            :class="checkout.errors.address ? 'border-red-500' : 'border-gray-200'"
+            focus:ring-primary focus:border-primary transition-colors resize-none bg-[#0a0a0a] text-white placeholder-gray-500"
+            :class="checkout.errors.address ? 'border-red-500' : 'border-white/10'"
           />
         </div>
         <p v-if="checkout.errors.address" class="text-red-500 text-sm mt-1">
@@ -102,7 +102,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- City -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label class="block text-sm font-medium text-gray-300 mb-1">
             City <span class="text-red-500">*</span>
           </label>
           <input
@@ -112,8 +112,8 @@
             @blur="handleBlur('city')"
             placeholder="New York"
             class="w-full px-4 py-3 border rounded-xl focus:ring-2
-            focus:ring-primary focus:border-primary transition-colors"
-            :class="checkout.errors.city ? 'border-red-500' : 'border-gray-200'"
+            focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
+            :class="checkout.errors.city ? 'border-red-500' : 'border-white/10'"
           />
           <p v-if="checkout.errors.city" class="text-red-500 text-sm mt-1">
             {{ checkout.errors.city }}
@@ -122,7 +122,7 @@
 
         <!-- Postal Code -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+          <label class="block text-sm font-medium text-gray-300 mb-1">
             Postal Code <span class="text-red-500">*</span>
           </label>
           <input
@@ -132,8 +132,8 @@
             @blur="handleBlur('postalCode')"
             placeholder="10001"
             class="w-full px-4 py-3 border rounded-xl focus:ring-2
-            focus:ring-primary focus:border-primary transition-colors"
-            :class="checkout.errors.postalCode ? 'border-red-500' : 'border-gray-200'"
+            focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
+            :class="checkout.errors.postalCode ? 'border-red-500' : 'border-white/10'"
           />
           <p v-if="checkout.errors.postalCode" class="text-red-500 text-sm mt-1">
             {{ checkout.errors.postalCode }}
@@ -143,7 +143,7 @@
 
       <!-- Country (Optional) -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-300 mb-1">
           Country
         </label>
         <input
@@ -151,14 +151,14 @@
           :value="checkout.shippingInfo.country"
           @input="handleInput('country', $event)"
           placeholder="United States"
-          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2
-          focus:ring-primary focus:border-primary transition-colors"
+          class="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2
+          focus:ring-primary focus:border-primary transition-colors bg-[#0a0a0a] text-white placeholder-gray-500"
         />
       </div>
 
       <!-- Order Notes (Optional) -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-300 mb-1">
           Order Notes
         </label>
         <textarea
@@ -166,8 +166,8 @@
           @input="handleInput('notes', $event)"
           placeholder="Any special instructions for delivery..."
           rows="3"
-          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2
-          focus:ring-primary focus:border-primary transition-colors resize-none"
+          class="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2
+          focus:ring-primary focus:border-primary transition-colors resize-none bg-[#0a0a0a] text-white placeholder-gray-500"
         />
       </div>
     </form>

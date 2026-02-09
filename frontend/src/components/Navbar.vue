@@ -336,40 +336,40 @@ onUnmounted(() => {
 
 /* Light navbar (on white background) */
 .navbar-light {
-  border-color: rgba(0, 0, 0, 0.1);
-  background-color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(10, 10, 10, 0.9);
 }
 
 .navbar-light .navbar-logo {
-  color: #003d7a;
+  color: #fff;
 }
 
 .navbar-light .navbar-nav {
-  color: #1a1a1a;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .navbar-light .nav-link,
 .navbar-light .navbar-icon {
-  color: #1a1a1a;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .navbar-light .nav-link:hover {
-  color: var(--color-primary);
+  color: #ff8c42;
 }
 
 .navbar-light .mobile-nav-link {
-  color: #1a1a1a;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .navbar-light .mobile-nav-link:hover,
 .navbar-light .mobile-nav-link:active {
-  background-color: rgba(0, 61, 122, 0.05);
-  color: var(--color-primary);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #ff8c42;
 }
 
 .navbar-light .mobile-nav-link.router-link-active {
-  background-color: rgba(0, 61, 122, 0.1);
-  color: var(--color-primary);
+  background-color: rgba(255, 140, 66, 0.15);
+  color: #ff8c42;
 }
 
 /* Mobile Navigation */
@@ -418,7 +418,7 @@ onUnmounted(() => {
   transform: translateX(-50%);
   width: 6px;
   height: 6px;
-  background-color: var(--color-primary);
+  background-color: #ff8c42;
   border-radius: 50%;
 }
 </style>

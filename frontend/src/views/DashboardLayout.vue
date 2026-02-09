@@ -17,7 +17,7 @@ import SidebarComponent from '@/modules/dashboard/_components/SidebarComponent.v
   display: flex !important;
   flex-direction: row !important;
   min-height: 100vh;
-  background: #003465;
+  background: #0a0a0a;
 }
 
 .content {

@@ -15,32 +15,35 @@
     <div v-else-if="brand" class="space-y-8">
       <!-- Hero Card -->
       <div
-        class="relative bg-white rounded-3xl shadow-md overflow-hidden
-               border border-gray-100"
+        class="relative bg-[#111111] rounded-3xl shadow-md overflow-hidden
+               border border-white/[0.06]"
       >
         <!-- Background gradient bar -->
-        <div class="h-40 sm:h-52 bg-gradient-to-br from-primary/10 via-blue-50 to-slate-100
+        <div class="h-40 sm:h-52 bg-gradient-to-br from-primary/10 via-primary/5 to-white/[0.02]
                     flex items-center justify-center relative overflow-hidden">
           <!-- Decorative circles -->
-          <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5
+          <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10
                       rounded-full -translate-y-1/2 translate-x-1/3" />
-          <div class="absolute bottom-0 left-0 w-48 h-48 bg-primary/5
+          <div class="absolute bottom-0 left-0 w-48 h-48 bg-primary/10
                       rounded-full translate-y-1/2 -translate-x-1/3" />
 
-          <img
-            :src="logoSrc"
-            :alt="brand.name"
-            class="max-h-28 sm:max-h-36 max-w-[70%] object-contain relative z-10
-                   drop-shadow-md"
-            @error="onLogoError"
-          />
+          <!-- Logo wrapper — light pill so dark logos stay visible -->
+          <div class="relative z-10 flex items-center justify-center
+                      w-44 h-24 sm:w-52 sm:h-28 rounded-2xl bg-white/90 shadow-md">
+            <img
+              :src="logoSrc"
+              :alt="brand.name"
+              class="max-h-16 sm:max-h-20 max-w-[80%] object-contain"
+              @error="onLogoError"
+            />
+          </div>
         </div>
 
         <!-- Brand Info -->
         <div class="p-6 sm:p-8">
           <div class="flex flex-wrap items-start gap-4 justify-between">
             <div>
-              <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0b2c5f] mb-1">
+              <h1 class="text-2xl sm:text-3xl font-extrabold text-white mb-1">
                 {{ brand.name }}
               </h1>
               <p class="text-sm text-gray-400">
@@ -48,7 +51,7 @@
               </p>
             </div>
 
-            <div class="flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-full">
+            <div class="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
               <Award class="w-5 h-5 text-primary" />
               <span class="text-sm font-semibold text-primary">Brand</span>
             </div>
@@ -58,13 +61,13 @@
 
       <!-- Inventor Section -->
       <div
-        class="bg-white rounded-3xl shadow-sm border border-gray-100
+        class="bg-[#111111] rounded-3xl shadow-sm border border-white/[0.06]
                overflow-hidden"
       >
-        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+        <div class="px-6 py-4 border-b border-white/[0.06] bg-white/5">
           <div class="flex items-center gap-2">
-            <Lightbulb class="w-5 h-5 text-amber-500" />
-            <h2 class="text-lg font-bold text-[#0b2c5f]">Inventor</h2>
+            <Lightbulb class="w-5 h-5 text-amber-400" />
+            <h2 class="text-lg font-bold text-white">Inventor</h2>
           </div>
         </div>
 
@@ -73,8 +76,8 @@
             <!-- Inventor Image -->
             <div
               class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-gradient-to-br
-                     from-gray-100 to-slate-100 overflow-hidden shrink-0
-                     shadow-inner ring-4 ring-gray-50"
+                     from-white/10 to-white/5 overflow-hidden shrink-0
+                     shadow-inner ring-4 ring-white/5"
             >
               <img
                 v-if="inventorImageSrc"
@@ -93,7 +96,7 @@
 
             <!-- Inventor Info -->
             <div class="text-center sm:text-left">
-              <p class="text-xl font-bold text-[#0b2c5f] mb-1">
+              <p class="text-xl font-bold text-white mb-1">
                 {{ brand.inventorName }}
               </p>
               <p class="text-sm text-gray-400">
@@ -107,41 +110,41 @@
       <!-- Quick Stats (placeholder for future) -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div
-          class="bg-white rounded-2xl shadow-sm border border-gray-100
+          class="bg-[#111111] rounded-2xl shadow-sm border border-white/[0.06]
                  p-5 flex items-center gap-4"
         >
-          <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
-            <Star class="w-5 h-5 text-blue-500" />
+          <div class="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+            <Star class="w-5 h-5 text-blue-400" />
           </div>
           <div>
             <p class="text-xs text-gray-400 uppercase tracking-wider">Status</p>
-            <p class="font-bold text-[#0b2c5f]">Active</p>
+            <p class="font-bold text-white">Active</p>
           </div>
         </div>
 
         <div
-          class="bg-white rounded-2xl shadow-sm border border-gray-100
+          class="bg-[#111111] rounded-2xl shadow-sm border border-white/[0.06]
                  p-5 flex items-center gap-4"
         >
-          <div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center">
-            <CalendarDays class="w-5 h-5 text-emerald-500" />
+          <div class="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+            <CalendarDays class="w-5 h-5 text-emerald-400" />
           </div>
           <div>
             <p class="text-xs text-gray-400 uppercase tracking-wider">Since</p>
-            <p class="font-bold text-[#0b2c5f]">{{ formatYear(brand.createdAt) }}</p>
+            <p class="font-bold text-white">{{ formatYear(brand.createdAt) }}</p>
           </div>
         </div>
 
         <div
-          class="bg-white rounded-2xl shadow-sm border border-gray-100
+          class="bg-[#111111] rounded-2xl shadow-sm border border-white/[0.06]
                  p-5 flex items-center gap-4"
         >
-          <div class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center">
-            <Sparkles class="w-5 h-5 text-amber-500" />
+          <div class="w-11 h-11 rounded-xl bg-amber-500/10 flex items-center justify-center">
+            <Sparkles class="w-5 h-5 text-amber-400" />
           </div>
           <div>
             <p class="text-xs text-gray-400 uppercase tracking-wider">Quality</p>
-            <p class="font-bold text-[#0b2c5f]">Premium</p>
+            <p class="font-bold text-white">Premium</p>
           </div>
         </div>
       </div>
@@ -150,10 +153,10 @@
     <!-- Not found -->
     <div
       v-else
-      class="bg-white rounded-2xl shadow-md p-12 text-center"
+      class="bg-[#111111] rounded-2xl shadow-md p-12 text-center border border-white/[0.06]"
     >
-      <SearchX class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-      <h2 class="text-xl font-bold text-gray-500 mb-2">Brand not found</h2>
+      <SearchX class="w-16 h-16 text-gray-600 mx-auto mb-4" />
+      <h2 class="text-xl font-bold text-white mb-2">Brand not found</h2>
       <p class="text-gray-400 mb-6">The brand you're looking for doesn't exist.</p>
       <RouterLink
         to="/brands"

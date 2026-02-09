@@ -724,7 +724,7 @@ watch(interval, () => {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  background: #0a2a4a;
+  background: #111111;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   padding: 4px;

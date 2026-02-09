@@ -84,7 +84,7 @@ watch(loading, (val) => {
 onBeforeUnmount(() => clearTimeout(skeletonTimer))
 
 const sectionClass = props.bg === "gray"
-  ? "w-full py-16 bg-[#f8f9fc] dark:bg-[#0b2447]"
+  ? "w-full py-16 bg-[#f8f9fc] dark:bg-[#000000]"
   : "w-full py-16"
 
 async function fetchProducts() {

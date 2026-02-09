@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-white rounded-2xl shadow-md p-6">
-    <h2 class="text-xl font-bold text-[#0b2c5f] mb-4">Order Summary</h2>
+  <div class="bg-[#111111] rounded-2xl shadow-md p-6 border border-white/[0.06]">
+    <h2 class="text-xl font-bold text-white mb-4">Order Summary</h2>
 
     <!-- Summary Lines -->
-    <div class="space-y-3 text-gray-600">
+    <div class="space-y-3 text-gray-400">
       <div class="flex justify-between">
         <span>Subtotal ({{ itemCount }} items)</span>
-        <span class="font-medium text-[#0b2c5f]">${{ subtotal.toFixed(2) }}</span>
+        <span class="font-medium text-white">${{ subtotal.toFixed(2) }}</span>
       </div>
 
       <div class="flex justify-between">
@@ -14,10 +14,10 @@
         <span class="font-medium text-green-600">Free</span>
       </div>
 
-      <div class="border-t border-gray-200 pt-3">
+      <div class="border-t border-white/10 pt-3">
         <div class="flex justify-between text-lg">
-          <span class="font-bold text-[#0b2c5f]">Total</span>
-          <span class="font-bold text-[#0b2c5f]">${{ total.toFixed(2) }}</span>
+          <span class="font-bold text-white">Total</span>
+          <span class="font-bold text-white">${{ total.toFixed(2) }}</span>
         </div>
       </div>
     </div>

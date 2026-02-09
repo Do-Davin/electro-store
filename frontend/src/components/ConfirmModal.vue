@@ -165,13 +165,14 @@ const handleCancel = () => {
 }
 
 .modal-container {
-  background: white;
+  background: #111111;
   border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 32px;
   width: 100%;
   max-width: 420px;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   animation: scaleIn 0.3s ease;
 }
 
@@ -197,35 +198,35 @@ const handleCancel = () => {
 }
 
 .modal-icon-danger {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
 }
 
 .modal-icon-warning {
-  background: #fef3c7;
+  background: rgba(245, 158, 11, 0.15);
   color: #f59e0b;
 }
 
 .modal-icon-info {
-  background: #dbeafe;
-  color: #003465;
+  background: rgba(255, 140, 66, 0.15);
+  color: #ff8c42;
 }
 
 .modal-icon-success {
-  background: #d1fae5;
+  background: rgba(16, 185, 129, 0.15);
   color: #10b981;
 }
 
 .modal-title {
   font-size: 1.375rem;
   font-weight: 600;
-  color: #111827;
+  color: #ffffff;
   margin: 0 0 12px 0;
 }
 
 .modal-message {
   font-size: 0.95rem;
-  color: #6b7280;
+  color: #9ca3af;
   margin: 0 0 28px 0;
   line-height: 1.6;
 }
@@ -252,14 +253,14 @@ const handleCancel = () => {
 }
 
 .btn-cancel {
-  background: white;
-  border: 1.5px solid #d1d5db;
-  color: #374151;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  color: #d1d5db;
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #9ca3af;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .btn-cancel:disabled {
@@ -288,11 +289,11 @@ const handleCancel = () => {
 }
 
 .btn-confirm-info {
-  background: #003465;
+  background: #ff8c42;
 }
 
 .btn-confirm-info:hover:not(:disabled) {
-  background: #002850;
+  background: #e67a30;
 }
 
 .btn-confirm-success {

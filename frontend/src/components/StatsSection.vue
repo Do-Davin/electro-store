@@ -1,5 +1,5 @@
 <template>
-  <section class="w-full py-16 bg-[#f8f9fc] dark:bg-[#0b2447]">
+  <section class="w-full py-16 bg-[#f8f9fc] dark:bg-[#000000]">
     <div class="max-w-6xl mx-auto px-6 text-center">
       <h2 class="text-3xl font-bold text-primary mb-10">
         Our Store in Numbers
@@ -13,11 +13,11 @@
           :key="i"
           v-aos="{ delay: i * 120 }"
           class="flex flex-col items-center text-center border rounded-xl p-6
-          shadow-lg bg-white dark:bg-[#132a4f]
+          shadow-lg bg-white dark:bg-[#111111]
           transition-all duration-300 ease-out
           hover:-translate-y-1 hover:scale-[1.03]
           hover:shadow-[0_25px_50px_rgba(0,0,0,0.15)]
-          hover:border-primary/60 hover:bg-white/90 dark:hover:bg-[#1b376d]
+          hover:border-primary/60 hover:bg-white/90 dark:hover:bg-[#1a1a1a]
           hover:ring-1 hover:ring-primary/40 hover:ring-offset-2"
         >
           <p class="text-4xl font-extrabold text-primary">

@@ -9,27 +9,31 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
   --color-ring: var(--ring);
   --color-border: var(--border);
 }
 
 /* Light */
 :root {
-  --primary: #003465;
+  --primary: #ff8c42;
+  --secondary: #6b7280;
   --background: #ffffff;
   --foreground: #111111;
 }
 
 /* Dark */
 .dark {
-  --background: #0b2447;
-  --foreground: white;
+  --primary: #ff8c42;
+  --secondary: #d1d5db;
+  --background: #000000;
+  --foreground: #f0f0f0;
 }
 
 /* Base layer */
 @layer base {
   html {
-    background-color: #003465;
+    background-color: #000000;
     /* Removed overscroll-behavior-y to allow pull-to-refresh */
   }
 
@@ -84,5 +88,5 @@
 #app > * > footer {
   flex-shrink: 0;
   margin-top: auto; /* Pushes to bottom */
-  background-color: #003465;
+  background-color: #0a0a0a;
 }

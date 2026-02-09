@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full min-h-screen flex flex-col bg-[#f8f9fc] dark:bg-[#0b2447]">
+  <div class="w-full min-h-screen flex flex-col bg-[#f8f9fc] dark:bg-[#000000]">
 
     <Navbar />
 
@@ -9,7 +9,7 @@
       <!-- Header -->
       <div class="text-center mb-10">
         <h1 class="text-4xl font-bold text-primary">Exclusive Deals & Discounts</h1>
-        <p class="text-gray-600 dark:text-gray-300 mt-3">
+        <p class="text-secondary mt-3">
           Save more with limited-time offers on your favorite products.
         </p>
       </div>

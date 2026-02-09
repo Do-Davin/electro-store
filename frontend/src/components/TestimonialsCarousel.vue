@@ -1,12 +1,12 @@
 <template>
-  <section class="w-full py-16 bg-white dark:bg-[#0b2447]">
+  <section class="w-full py-16 bg-white dark:bg-[#000000]">
     <div class="w-full">
       <div class="max-w-6xl mx-auto px-6 mb-12">
         <h2 class="text-3xl font-bold text-primary text-center mb-4">
           What Our Customers Say
         </h2>
 
-        <p class="text-center text-gray-600 dark:text-gray-300">
+        <p class="text-center text-secondary">
           Real feedback from real customers
         </p>
       </div>
@@ -326,8 +326,8 @@ onMounted(() => {
 
   .dark .testimonials-carousel-wrapper::before {
     background: linear-gradient(90deg,
-  rgba(11, 36, 71, 0) 0%,
-  #0b2447 100%);
+  rgba(0, 0, 0, 0) 0%,
+  #000000 100%);
   }
 
   .testimonials-carousel-wrapper::after {
@@ -339,8 +339,8 @@ onMounted(() => {
 
   .dark .testimonials-carousel-wrapper::after {
     background: linear-gradient(90deg,
-  #0b2447 0%,
-  rgba(11, 36, 71, 0) 100%);
+  #000000 0%,
+  rgba(0, 0, 0, 0) 100%);
   }
 
   .carousel-card {

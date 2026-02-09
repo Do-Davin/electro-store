@@ -1,7 +1,9 @@
 <template>
   <div
-    class="w-75 bg-white rounded-2xl p-4 shadow-[0_10px_25px_rgba(0,0,0,0.15)]
-    transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+    class="w-75 bg-[#111111] rounded-2xl p-4 shadow-[0_8px_30px_rgba(0,0,0,0.4)]
+    transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,140,66,0.15)] hover:-translate-y-1
+    border-3 border-primary
+  hover:border-orange-400 hover:shadow-[0_12px_40px_rgba(255,140,66,0.15)]"
   >
     <!-- Clickale Area -->
     <RouterLink
@@ -15,10 +17,10 @@
       >
         <!-- Stock -->
         <span
-          class="absolute top-2 left-38 text-xs font-bold px-3 py-1 rounded-full"
+          class="absolute top-2 right-2 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap"
           :class="product.stock > 0
-          ? 'bg-green-100 text-green-700'
-          : 'bg-red-100 text-red-700'"
+          ? 'bg-green-500/20 text-green-400'
+          : 'bg-red-500/20 text-red-400'"
         >
           {{ product.stock > 0 ? 'INSTOCK' : 'OUT OF STOCK' }}
         </span>
@@ -33,12 +35,12 @@
       </div>
 
       <!-- Category -->
-      <p class="text-gray-500 text-sm mb-1">
+      <p class="text-gray-400 text-sm mb-1">
         {{ product.category?.name || 'Unknown' }}
       </p>
 
       <!-- Title -->
-      <p class="text-2xl font-bold text-[#0b2c5f] mb-2">
+      <p class="text-2xl font-bold text-white mb-2">
         {{ product.name }}
       </p>
     </RouterLink>
@@ -46,7 +48,7 @@
     <!-- Price + Rating Row -->
     <div class="flex justify-between items-center mb-4">
       <div class="flex items-baseline gap-2">
-        <p class="text-xl font-bold text-[#0b2c5f]">
+        <p class="text-xl font-bold text-white">
           ${{ Number(product.finalPrice ?? product.price).toFixed(2) }}
         </p>
 
@@ -58,8 +60,8 @@
         </p>
       </div>
 
-      <span class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full
-            shadow">
+      <span class="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full
+            shadow text-gray-200">
         <span class="font-bold">{{ Number(product.rating) > 0 ? Number(product.rating).toFixed(1) : '-' }}</span>
         <span class="text-yellow-500">★</span>
       </span>
@@ -70,13 +72,13 @@
       <AddToCartButton :product="product" />
 
       <button
-        class="w-11 h-11 border border-gray-200 bg-white
+        class="w-11 h-11 border border-white/10 bg-[#1a1a1a]
               rounded-xl flex items-center justify-center
-              shadow-[0_4px_10px_rgba(0,0,0,0.04)]
-              hover:border-gray-300 hover:shadow-md transition"
+              shadow-[0_4px_10px_rgba(0,0,0,0.2)]
+              hover:border-white/20 hover:shadow-md transition"
         @click="toggleFavorite"
       >
-        <Heart :class="isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-700'" />
+        <Heart :class="isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400'" />
       </button>
     </div>
   </div>
@@ -134,10 +136,10 @@ watch(
 .product-card {
   margin: 20px;
   width: 280px;
-  background: #ffffff;
+  background: #111111;
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 .image-wrapper img {
@@ -156,14 +158,14 @@ watch(
 h3 {
   font-size: 26px;
   font-weight: 700;
-  color: #0b2c5f;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
 .price {
   font-size: 22px;
   font-weight: 700;
-  color: #0b2c5f;
+  color: #ffffff;
   margin-bottom: 10px;
 }
 
@@ -173,10 +175,10 @@ h3 {
 }
 
 .rating span {
-  color: #dcdcdc;
+  color: #444444;
 }
 
 .rating span.active {
-  color: #0b2c5f;
+  color: #ff8c42;
 }
 </style>

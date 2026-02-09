@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white rounded-2xl shadow-md p-6">
-    <h2 class="text-lg font-bold text-[#0b2c5f] mb-4 flex items-center gap-2">
+  <div class="bg-[#111111] rounded-2xl shadow-md p-6 border border-white/[0.06]">
+    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
       <CreditCard class="w-5 h-5" />
       Payment Details
     </h2>
@@ -8,7 +8,7 @@
     <!-- Stripe Elements Mount Point -->
     <div
       ref="paymentElementRef"
-      class="min-h-30 border border-gray-200 rounded-xl p-4 bg-gray-50
+      class="min-h-30 border border-white/10 rounded-xl p-4 bg-[#0a0a0a]
       focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20
       transition-all"
     />
@@ -94,9 +94,10 @@ function mountElements() {
   elements = stripe.elements({
     clientSecret: props.clientSecret,
     appearance: {
-      theme: 'stripe',
+      theme: 'night',
       variables: {
-        colorPrimary: '#0b2c5f',
+        colorPrimary: '#ff8c42',
+        colorBackground: '#0a0a0a',
         borderRadius: '12px',
         fontFamily: 'system-ui, -apple-system, sans-serif',
       },

@@ -26,16 +26,16 @@ const props = defineProps({
 
 /** Map each status to its Tailwind colour pair */
 const STATUS_CONFIG = {
-  PENDING:    { bg: 'bg-yellow-100',  text: 'text-yellow-700',  label: 'Pending' },
-  PAID:       { bg: 'bg-green-100',   text: 'text-green-700',   label: 'Paid' },
-  PROCESSING: { bg: 'bg-blue-100',    text: 'text-blue-700',    label: 'Processing' },
-  SHIPPED:    { bg: 'bg-purple-100',  text: 'text-purple-700',  label: 'Shipped' },
-  DELIVERED:  { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Delivered' },
-  COMPLETED:  { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Completed' },
-  CANCELLED:  { bg: 'bg-red-100',     text: 'text-red-700',     label: 'Cancelled' },
+  PENDING:    { bg: 'bg-yellow-500/20',  text: 'text-yellow-400',  label: 'Pending' },
+  PAID:       { bg: 'bg-green-500/20',   text: 'text-green-400',   label: 'Paid' },
+  PROCESSING: { bg: 'bg-blue-500/20',    text: 'text-blue-400',    label: 'Processing' },
+  SHIPPED:    { bg: 'bg-purple-500/20',  text: 'text-purple-400',  label: 'Shipped' },
+  DELIVERED:  { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'Delivered' },
+  COMPLETED:  { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'Completed' },
+  CANCELLED:  { bg: 'bg-red-500/20',     text: 'text-red-400',     label: 'Cancelled' },
 }
 
-const FALLBACK = { bg: 'bg-gray-100', text: 'text-gray-600' }
+const FALLBACK = { bg: 'bg-gray-500/20', text: 'text-gray-400' }
 
 const config = computed(() => STATUS_CONFIG[props.status] ?? FALLBACK)
 const label  = computed(() => config.value.label ?? props.status)
