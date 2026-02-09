@@ -11,7 +11,7 @@
 
       <button
         v-if="wishlist.items.length > 0"
-        @click="wishlist.clearAll()"
+        @click="openClearAllModal"
         class="text-sm text-red-500 hover:underline
         hover:font-bold hover:text-red-600 transition-all
         duration-300 ease-out"
@@ -38,11 +38,11 @@
       <div
         v-for="product in wishlist.items"
         :key="product.id"
-        class="group bg-[#111111] rounded-2xl p-5 border border-white/[0.06] hover:border-white/10 transition-all
+        class="group bg-[#111111] rounded-2xl p-5 border-3 border-primary/6 hover:border-primary/10 transition-all
         duration-400 ease-out"
       >
         <!-- Image -->
-        <div class="h-44 flex items-center justify-center mb-4">
+        <div class="h-44 flex items-center justify-center mb-4 bg-white rounded-xl p-4">
           <img
             :src="product.imageUrl"
             alt=""
@@ -74,7 +74,7 @@
           </RouterLink>
 
           <button
-            @click="wishlist.remove(product.id)"
+            @click="openRemoveModal(product.id)"
             class="border border-red-500 text-red-500
             px-4 py-2 rounded-xl
             flex items-center gap-2
@@ -91,15 +91,90 @@
     </main>
 
     <Footer />
+
+    <!-- Confirm Modal -->
+    <ConfirmModal
+      :is-open="modal.isOpen"
+      :type="modal.type"
+      :title="modal.title"
+      :message="modal.message"
+      :confirm-text="modal.confirmText"
+      :cancel-text="modal.cancelText"
+      :loading="modal.loading"
+      @confirm="handleConfirm"
+      @cancel="closeModal"
+    />
   </div>
 </template>
 
 <script setup>
+import { reactive } from 'vue';
 import { useWishlistStore } from '../_stores/wishlist.store';
 import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Trash2 } from 'lucide-vue-next';
 import StateView from '@/components/StateView.vue';
 
-const wishlist = useWishlistStore()
+const wishlist = useWishlistStore();
+
+// Modal state
+const modal = reactive({
+  isOpen: false,
+  type: 'danger',
+  title: '',
+  message: '',
+  confirmText: 'Confirm',
+  cancelText: 'Cancel',
+  loading: false,
+  action: null, // 'clearAll' or 'remove'
+  productId: null // For remove action
+});
+
+// Open modal for clearing all items
+const openClearAllModal = () => {
+  modal.isOpen = true;
+  modal.type = 'warning';
+  modal.title = 'Clear Wishlist';
+  modal.message = `Are you sure you want to remove all ${wishlist.items.length} item${wishlist.items.length > 1 ? 's' : ''} from your wishlist? This action cannot be undone.`;
+  modal.confirmText = 'Clear All';
+  modal.cancelText = 'Cancel';
+  modal.action = 'clearAll';
+  modal.productId = null;
+};
+
+// Open modal for removing a single item
+const openRemoveModal = (productId) => {
+  modal.isOpen = true;
+  modal.type = 'danger';
+  modal.title = 'Remove from Wishlist';
+  modal.message = 'Are you sure you want to remove this item from your wishlist?';
+  modal.confirmText = 'Remove';
+  modal.cancelText = 'Cancel';
+  modal.action = 'remove';
+  modal.productId = productId;
+};
+
+// Handle confirm action
+const handleConfirm = async () => {
+  modal.loading = true;
+
+  try {
+    if (modal.action === 'clearAll') {
+      await wishlist.clearAll();
+    } else if (modal.action === 'remove' && modal.productId) {
+      await wishlist.remove(modal.productId);
+    }
+  } finally {
+    modal.loading = false;
+    closeModal();
+  }
+};
+
+// Close modal
+const closeModal = () => {
+  modal.isOpen = false;
+  modal.action = null;
+  modal.productId = null;
+};
 </script>

@@ -213,12 +213,12 @@ onMounted(() => {
 .carousel-number {
   font-weight: 600;
   font-size: 1rem;
-  color: #003465;
+  color: var(--color-primary);
 }
 
 .dark .carousel-name,
 .dark .carousel-number {
-  color: #ffffff;
+  color: var(--color-primary);
 }
 
 .carousel-name {
@@ -239,24 +239,24 @@ onMounted(() => {
 }
 
 .star-icon {
-  color: #003465;
+  color: var(--color-primary);
   transition: transform 0.2s;
   cursor: pointer;
 }
 
 .dark .star-icon {
-  color: #4a90e2;
+  color: var(--color-primary);
 }
 
 .carousel-review {
   font-size: 0.938rem;
-  color: #64748b;
+  color: var(--color-secondary);
   line-height: 1.6;
   margin: 0;
 }
 
 .dark .carousel-review {
-  color: #cbd5e1;
+  color: var(--color-secondary);
 }
 
 .carousel-card:hover .carousel-img {

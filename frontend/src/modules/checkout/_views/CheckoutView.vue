@@ -44,7 +44,7 @@
       <!-- Not Logged In Warning -->
       <div
         v-if="!isLoggedIn"
-        class="bg-[#111111] rounded-2xl shadow-md p-12 text-center border border-white/[0.06]"
+        class="bg-[#111111] rounded-2xl shadow-md p-12 text-center border border-white/6"
       >
         <LogIn class="w-20 h-20 text-gray-600 mx-auto mb-4" />
         <h2 class="text-xl font-bold text-white mb-2">Please log in to checkout</h2>

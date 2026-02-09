@@ -15,7 +15,7 @@
         <!-- Product -->
         <div v-else-if="product" class="grid grid-cols-1 md:grid-cols-2 gap-14">
           <!-- LEFT: Main Image -->
-          <div class="bg-white rounded-2xl p-8 shadow-sm relative border border-white/[0.06]">
+          <div class="bg-white rounded-2xl p-8 shadow-sm relative border border-white/6">
             <img :src="product.imageUrl" class="max-h-110 mx-auto object-contain" />
 
             <!-- Wishlist Heart -->
@@ -37,7 +37,7 @@
               <h1 class="text-3xl font-bold text-primary">
                 {{ product.name }}
               </h1>
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-secondary mt-1">
                 {{ product.category?.name }}
               </p>
             </div>
@@ -48,7 +48,7 @@
                 v-for="i in 5"
                 :key="i"
                 class="w-5 h-5"
-                :class="i <= roundedRating ? 'text-primary fill-primary' : 'text-gray-300'"
+                :class="i <= roundedRating ? 'text-primary fill-primary' : 'text-secondary/30'"
               />
             </div>
 
@@ -56,13 +56,13 @@
             <div class="flex items-center gap-4">
               <p class="text-3xl font-bold text-primary">${{ finalPrice }}</p>
 
-              <p v-if="hasDiscount" class="text-lg text-gray-400 line-through">
+              <p v-if="hasDiscount" class="text-lg text-secondary/60 line-through">
                 ${{ originalPrice }}
               </p>
 
               <span
                 v-if="hasDiscount"
-                class="text-sm bg-red-500/20 text-red-400 px-3 py-1 rounded-full"
+                class="text-sm bg-primary/20 text-primary px-3 py-1 rounded-full font-medium"
               >
                 -{{ product.discountPercent }}%
               </span>
@@ -77,34 +77,34 @@
             </span>
 
             <!-- Meta Info -->
-            <div class="text-sm text-gray-500 space-y-1">
-              <p><strong>Product ID:</strong> {{ product.id }}</p>
-              <p><strong>Category:</strong> {{ product.category?.name }}</p>
+            <div class="text-sm text-secondary/70 space-y-1">
+              <p><strong class="text-secondary">Product ID:</strong> {{ product.id }}</p>
+              <p><strong class="text-secondary">Category:</strong> {{ product.category?.name }}</p>
             </div>
 
             <!-- Actions -->
             <AddToCartButton :product="product" class="w-full" />
 
             <!-- Trust Info -->
-            <div class="text-sm text-gray-500 space-y-1 pt-2">
-              <p>✔ Free delivery within city</p>
-              <p>✔ 7-day return policy</p>
-              <p>✔ Official warranty</p>
+            <div class="text-sm text-secondary/80 space-y-1 pt-2">
+              <p><span class="text-primary">✔</span> Free delivery within city</p>
+              <p><span class="text-primary">✔</span> 7-day return policy</p>
+              <p><span class="text-primary">✔</span> Official warranty</p>
             </div>
           </div>
         </div>
 
         <!-- Description -->
         <div v-if="product" class="mt-16 max-w-3xl">
-          <h2 class="text-xl font-semibold text-primary mb-3 opacity-80">Description</h2>
-          <p class="text-gray-500 leading-relaxed">
+          <h2 class="text-xl font-semibold text-primary mb-3">Description</h2>
+          <p class="text-secondary/70 leading-relaxed">
             {{ product.description }}
           </p>
         </div>
 
         <!-- Specs Table -->
         <div v-if="product && hasSpecs" class="mt-12">
-          <h2 class="text-xl font-semibold text-primary mb-4 opacity-80">
+          <h2 class="text-xl font-semibold text-primary mb-4">
             Specifications
           </h2>
 
@@ -113,13 +113,13 @@
           overflow-hidden">
             <div class="overflow-x-auto">
               <table class="min-w-full text-sm">
-                <thead class="bg-white/5">
+                <thead class="bg-primary/10">
                   <tr>
-                    <th class="text-left font-semibold text-gray-300 px-6
+                    <th class="text-left font-semibold text-primary px-6
                     py-4 w-[40%]">
                       Key
                     </th>
-                    <th class="text-left font-semibold text-gray-300
+                    <th class="text-left font-semibold text-primary
                     px-6 py-4">
                       Value
                     </th>
@@ -130,12 +130,12 @@
                   <tr
                     v-for="row in specsRows"
                     :key="row.key"
-                    class="border-t border-white/[0.06]"
+                    class="border-t border-white/[0.06] hover:bg-primary/5 transition-colors"
                   >
-                    <td class="px-6 py-4 text-gray-300 font-medium whitespace-nowrap">
+                    <td class="px-6 py-4 text-secondary font-medium whitespace-nowrap">
                       {{ row.label }}
                     </td>
-                    <td class="px-6 py-4 text-gray-400">
+                    <td class="px-6 py-4 text-secondary/70">
                       {{ row.value }}
                     </td>
                   </tr>
@@ -144,17 +144,17 @@
             </div>
           </div>
 
-          <p class="text-xs text-gray-400 mt-3">
+          <p class="text-xs text-secondary/60 mt-3">
             Specs are provided by the seller/manufacturer and may vary by region.
           </p>
         </div>
 
         <!-- No specs (optional UX) -->
         <div v-else-if="product" class="mt-12">
-          <h2 class="text-xl font-semibold text-primary mb-4 opacity-80">
+          <h2 class="text-xl font-semibold text-primary mb-4">
             Specifications
           </h2>
-          <div class="bg-[#111111] border border-white/[0.06] rounded-2xl p-6 text-sm text-gray-400">
+          <div class="bg-[#111111] border border-white/[0.06] rounded-2xl p-6 text-sm text-secondary/60">
             No specifications available for this product yet.
           </div>
         </div>

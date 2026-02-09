@@ -10,7 +10,7 @@
     <!-- Not Logged In -->
     <div
       v-else-if="!loggedIn"
-      class="bg-[#111111] rounded-2xl shadow-md p-12 text-center border border-white/[0.06]"
+      class="bg-[#111111] rounded-2xl shadow-md p-12 text-center border border-white/6"
     >
       <LogIn class="w-16 h-16 text-gray-600 mx-auto mb-4" />
       <h2 class="text-xl font-bold text-white mb-2">Please log in</h2>
@@ -50,23 +50,23 @@
       <div
         v-for="order in orders"
         :key="order.id"
-        class="bg-[#111111] rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-white/[0.06]"
+        class="bg-[#111111] rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-3 border-primary"
       >
         <!-- Order Header -->
-        <div class="flex flex-wrap justify-between items-center gap-3 px-6 py-4 bg-white/5 border-b border-white/[0.06]">
+        <div class="flex flex-wrap justify-between items-center gap-3 px-6 py-4 bg-white/5 border-b border-white/6">
           <div class="flex items-center gap-4">
             <div>
-              <p class="text-xs text-gray-400 uppercase tracking-wider">Order</p>
-              <p class="font-bold text-white">#{{ order.id.slice(0, 8).toUpperCase() }}</p>
+              <p class="text-xs text-secondary/70 uppercase tracking-wider">Order</p>
+              <p class="font-bold text-primary">#{{ order.id.slice(0, 8).toUpperCase() }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-400 uppercase tracking-wider">Date</p>
-              <p class="text-sm text-gray-400">{{ formatDate(order.createdAt) }}</p>
+              <p class="text-xs text-secondary/70 uppercase tracking-wider">Date</p>
+              <p class="text-sm text-secondary/70">{{ formatDate(order.createdAt) }}</p>
             </div>
           </div>
           <div class="flex items-center gap-4">
             <OrderStatusBadge :status="order.status" />
-            <p class="text-lg font-bold text-white">${{ Number(order.totalAmount).toFixed(2) }}</p>
+            <p class="text-lg font-bold text-primary">${{ Number(order.totalAmount).toFixed(2) }}</p>
           </div>
         </div>
 
@@ -75,10 +75,13 @@
           <div
             v-for="item in order.items"
             :key="item.id"
-            class="flex items-center gap-4 py-3 border-b border-white/[0.04] last:border-0"
+            class="flex items-center gap-4 py-3 border-b border-white/4 last:border-0"
           >
             <!-- Image -->
-            <div class="w-14 h-14 shrink-0 bg-[#0a0a0a] rounded-xl overflow-hidden">
+            <div
+              class="w-14 h-14 shrink-0 bg-white rounded-xl overflow-hidden
+              border-3 border-primary"
+            >
               <img
                 :src="getImageUrl(item.product?.imageUrl)"
                 :alt="item.product?.name"
@@ -89,14 +92,14 @@
 
             <!-- Info -->
             <div class="flex-1 min-w-0">
-              <p class="font-medium text-white truncate">{{ item.product?.name }}</p>
-              <p class="text-sm text-gray-400">
+              <p class="font-medium text-primary truncate">{{ item.product?.name }}</p>
+              <p class="text-sm text-secondary/70 mt-1">
                 {{ item.quantity }} × ${{ Number(item.priceAtTime).toFixed(2) }}
               </p>
             </div>
 
             <!-- Item Total -->
-            <p class="font-semibold text-white">
+            <p class="font-semibold text-primary">
               ${{ (item.quantity * Number(item.priceAtTime)).toFixed(2) }}
             </p>
           </div>
@@ -141,21 +144,21 @@
         <button
           :disabled="orderStore.page <= 1"
           @click="goToPage(orderStore.page - 1)"
-          class="px-4 py-2 rounded-xl bg-white/10 text-gray-300 hover:bg-white/20
-          transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary/80
+          transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.95]"
         >
           Previous
         </button>
 
-        <span class="text-sm text-gray-400">
+        <span class="text-sm text-secondary/70">
           Page {{ orderStore.page }} of {{ orderStore.totalPages }}
         </span>
 
         <button
           :disabled="orderStore.page >= orderStore.totalPages"
           @click="goToPage(orderStore.page + 1)"
-          class="px-4 py-2 rounded-xl bg-white/10 text-gray-300 hover:bg-white/20
-          transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary/80
+          transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.95]"
         >
           Next
         </button>

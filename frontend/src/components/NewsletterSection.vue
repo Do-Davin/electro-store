@@ -27,7 +27,7 @@
           type="submit"
           :disabled="isLoading"
           class="bg-primary text-white font-semibold px-6 py-3 rounded-xl
-          hover:bg-[#004a9f] transition-transform duration-200
+          hover:bg-primary-dark transition-transform duration-200
           hover:scale-[1.03] active:scale-95 shadow-md"
         >
           {{ isLoading ? 'Subscribing...' : 'Subscribe' }}

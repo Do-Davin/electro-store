@@ -17,7 +17,9 @@
 /* Light */
 :root {
   --primary: #ff8c42;
-  --secondary: #6b7280;
+  --secondary: #FFC7A3;
+  --third: #ffb380;
+  --fourth: #FFE6D1;
   --background: #ffffff;
   --foreground: #111111;
 }
@@ -25,7 +27,9 @@
 /* Dark */
 .dark {
   --primary: #ff8c42;
-  --secondary: #d1d5db;
+  --secondary: #FFB98A;
+  --third: #C95D1A;
+  --fourth: #9F4410;
   --background: #000000;
   --foreground: #f0f0f0;
 }
