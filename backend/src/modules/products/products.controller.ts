@@ -88,6 +88,16 @@ export class ProductsController {
     return this.productsService.fetchDeals();
   }
 
+  @Get('featured')
+  getFeatured(@Query('limit') limit: number = 6) {
+    return this.productsService.fetchFeatured(Number(limit));
+  }
+
+  @Get('bestsellers')
+  getBestsellers(@Query('limit') limit: number = 6) {
+    return this.productsService.fetchBestsellers(Number(limit));
+  }
+
   @Get(':id')
   findOneProduct(@Param('id') id: string) {
     return this.productsService.findOne(id);

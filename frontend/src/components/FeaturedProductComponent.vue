@@ -1,7 +1,8 @@
 <template>
   <ProductSection
     title="Featured Products"
-    :params="{ featured: true, limit: 3 }"
+    endpoint="/products/featured"
+    :params="{ limit: 6 }"
   />
 </template>
 

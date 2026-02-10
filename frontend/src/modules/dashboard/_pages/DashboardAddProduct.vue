@@ -120,6 +120,15 @@
             <label>Stock Quantity</label>
             <input type="number" v-model.number="form.stock" placeholder="0" min="0" />
           </div>
+          <div class="featured-toggle" @click="form.isFeatured = !form.isFeatured">
+            <div class="toggle-star" :class="{ active: form.isFeatured }">
+              <Star :size="18" :fill="form.isFeatured ? 'currentColor' : 'none'" />
+            </div>
+            <div class="toggle-text">
+              <span class="toggle-label">Featured Product</span>
+              <span class="toggle-hint">{{ form.isFeatured ? 'Will appear in Featured section' : 'Not featured' }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -186,7 +195,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/lib/axios'
-import { Upload, RotateCcw, Plus, Loader2, ImageIcon, DollarSign, Package, FileText, LayoutGrid, Tag, Settings } from 'lucide-vue-next'
+import { Upload, RotateCcw, Plus, Loader2, ImageIcon, DollarSign, Package, FileText, LayoutGrid, Tag, Settings, Star } from 'lucide-vue-next'
 import { useProductStore } from '@/modules/product/_stores/product.store'
 import SpecsEditor from '../_components/SpecsEditor.vue'
 import { useToast } from '@/composables/useToast'
@@ -225,6 +234,7 @@ const form = ref({
   categoryId: '',
   brandId: '',
   stock: 0,
+  isFeatured: false,
   specs: {},
 })
 
@@ -258,6 +268,7 @@ function resetForm() {
     categoryId: '',
     brandId: '',
     stock: 0,
+    isFeatured: false,
     specs: {},
   }
   offerPrice.value = 0
@@ -283,6 +294,7 @@ async function submit() {
     fd.append('categoryId', form.value.categoryId)
     fd.append('brandId', form.value.brandId)
     fd.append('stock', String(form.value.stock))
+    fd.append('isFeatured', String(form.value.isFeatured))
     fd.append('specs', JSON.stringify(form.value.specs))
 
     const res = await axios.post('/products', fd)
@@ -702,6 +714,57 @@ select option {
 
 .pricing-value.save {
   color: #4ade80;
+}
+
+/* ── Featured Toggle ── */
+.featured-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.featured-toggle:hover {
+  background: rgba(250, 204, 21, 0.06);
+  border-color: rgba(250, 204, 21, 0.2);
+}
+
+.toggle-star {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.toggle-star.active {
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+}
+
+.toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toggle-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.toggle-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 /* ── Brand Picker ── */

@@ -1,7 +1,8 @@
 <template>
   <ProductSection
     title="Best Sellers"
-    :params="{ featured: true, page: 2, limit: 3 }"
+    endpoint="/products/bestsellers"
+    :params="{ limit: 6 }"
     bg="gray"
   />
 </template>

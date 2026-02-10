@@ -242,11 +242,13 @@ const specsRows = computed(() => {
   const specs = product.value?.specs
   if (!specs || typeof specs !== 'object' || Array.isArray(specs)) return []
 
-  return Object.entries(specs).map(([key, value]) => ({
-    key,
-    label: formatSpecLabel(key),
-    value: formatSpecValue(value),
-  }))
+  return Object.entries(specs)
+    .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+    .map(([key, value]) => ({
+      key,
+      label: formatSpecLabel(key),
+      value: formatSpecValue(value),
+    }))
 })
 
 onMounted(async () => {
