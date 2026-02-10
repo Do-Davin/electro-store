@@ -86,7 +86,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import placeholderImg from '@/assets/img/placeholder.png'
+import { placeholderSvg } from '@/lib/utils'
 import { Heart } from 'lucide-vue-next'
 import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store'
 import AddToCartButton from '@/modules/cart/_components/AddToCartButton.vue'
@@ -111,22 +111,22 @@ function toggleFavorite() {
 const API = import.meta.env.VITE_API_URL
 
 const toUrl = (img) => {
-  if (!img) return placeholderImg
+  if (!img) return placeholderSvg
   return img.startsWith('http') ? img : API + img
 }
 
 const currentImage = ref(
-  props.product?.imageUrl ? toUrl(props.product.imageUrl) : placeholderImg
+  props.product?.imageUrl ? toUrl(props.product.imageUrl) : placeholderSvg
 )
 
 const onImageError = () => {
-  currentImage.value = placeholderImg
+  currentImage.value = placeholderSvg
 }
 
 watch(
   () => props.product?.imageUrl,
   newImage => {
-    currentImage.value = newImage ? toUrl(newImage) : placeholderImg
+    currentImage.value = newImage ? toUrl(newImage) : placeholderSvg
   },
   { immediate: true }
 )

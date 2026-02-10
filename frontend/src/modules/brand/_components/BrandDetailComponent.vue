@@ -178,6 +178,7 @@ import {
 } from 'lucide-vue-next'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import StateView from '@/components/StateView.vue'
+import { placeholderSvg } from '@/lib/utils'
 
 const props = defineProps({
   brand: { type: Object, default: null },
@@ -189,7 +190,7 @@ const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL ||
 
 const logoSrc = computed(() => {
   const url = props.brand?.logoUrl
-  if (!url) return '/brands/placeholder.png'
+  if (!url) return placeholderSvg
   return url.startsWith('http') ? url : API + url
 })
 
@@ -200,7 +201,7 @@ const inventorImageSrc = computed(() => {
 })
 
 function onLogoError(e) {
-  e.target.src = '/brands/placeholder.png'
+  e.target.src = placeholderSvg
 }
 
 function onInventorError(e) {

@@ -190,7 +190,7 @@ import StateView from '@/components/StateView.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useOrderStore } from '../_stores/order.store'
 import { isLoggedIn } from '@/lib/auth'
-import placeholderImg from '@/assets/img/placeholder.png'
+import { placeholderSvg } from '@/lib/utils'
 import OrderStatusBadge from './OrderStatusBadge.vue'
 import { useToast } from '@/composables/useToast'
 
@@ -212,12 +212,12 @@ const cancelModal = ref({
 const API = import.meta.env.VITE_API_URL
 
 function getImageUrl(img) {
-  if (!img) return placeholderImg
+  if (!img) return placeholderSvg
   return img.startsWith('http') ? img : API + img
 }
 
 function onImageError(event) {
-  event.target.src = placeholderImg
+  event.target.src = placeholderSvg
 }
 
 function formatDate(dateStr) {

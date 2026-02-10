@@ -326,7 +326,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue'
 import SuccessResult from '../_components/SuccessResult.vue'
 import CancelledResult from '../_components/CancelledResult.vue'
 import { useOrderStore } from '../_stores/order.store'
-import placeholderImg from '@/assets/img/placeholder.png'
+import { placeholderSvg } from '@/lib/utils'
 import { useToast } from '@/composables/useToast'
 
 const route = useRoute()
@@ -407,12 +407,12 @@ const statusClass = computed(() => {
 const API = import.meta.env.VITE_API_URL
 
 function getImageUrl(img) {
-  if (!img) return placeholderImg
+  if (!img) return placeholderSvg
   return img.startsWith('http') ? img : API + img
 }
 
 function onImageError(event) {
-  event.target.src = placeholderImg
+  event.target.src = placeholderSvg
 }
 
 function formatDate(dateStr) {

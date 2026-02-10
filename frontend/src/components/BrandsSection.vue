@@ -60,6 +60,7 @@ import { RouterLink } from 'vue-router'
 import { Loader2 } from 'lucide-vue-next'
 import { useBrandStore } from '@/modules/brand/_stores/brand.store'
 import StateView from './StateView.vue'
+import { placeholderSvg } from '@/lib/utils'
 
 const brandStore = useBrandStore()
 const brands = computed(() => brandStore.brands)
@@ -67,12 +68,12 @@ const brands = computed(() => brandStore.brands)
 const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
 function getLogoUrl(url) {
-  if (!url) return '/brands/placeholder.png'
+  if (!url) return placeholderSvg
   return url.startsWith('http') ? url : API + url
 }
 
 function onImageError(e) {
-  e.target.src = '/brands/placeholder.png'
+  e.target.src = placeholderSvg
 }
 
 function handleRetry() {

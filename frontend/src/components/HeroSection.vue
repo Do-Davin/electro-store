@@ -4,11 +4,6 @@
     :style="{ backgroundImage: `url(${backgroundImage})` }"
   >
     <!-- Angkor Wat SVG Background (Corrected Proportions) -->
-    <!-- <img
-      src="/angkor-wat.svg"
-      alt="Angkor Wat"
-      class="angkor-wat-bg angkor-orange"
-    /> -->
     <svg class="angkor-wat-bg angkor-orange" width="414.656" height="268.0673" viewBox="0 0 109.7111 70.9261"
         xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
         <g
@@ -161,7 +156,7 @@
     </div>
 
     <div class="hero__image">
-      <img src="/iphone.png" alt="iPhone">
+      <img src="/hero-section/iphone.png" alt="iPhone">
     </div>
   </section>
 </template>

@@ -52,6 +52,7 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ArrowRight, UserCircle } from 'lucide-vue-next'
+import { placeholderSvg } from '@/lib/utils'
 
 const props = defineProps({
   brand: {
@@ -64,11 +65,11 @@ const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL ||
 
 const logoSrc = computed(() => {
   const url = props.brand.logoUrl
-  if (!url) return '/brands/placeholder.png'
+  if (!url) return placeholderSvg
   return url.startsWith('http') ? url : API + url
 })
 
 function onImageError(e) {
-  e.target.src = '/brands/placeholder.png'
+  e.target.src = placeholderSvg
 }
 </script>
