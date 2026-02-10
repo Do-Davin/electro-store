@@ -19,7 +19,7 @@ export class PaymentsService {
     @InjectRepository(Order)
     private ordersRepo: Repository<Order>,
   ) {
-    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const secretKey = process.env.STRIPE_SECRET_KEY; // Now Test Key ex: sk_test_xxxx
     if (!secretKey) {
       this.logger.warn(
         'STRIPE_SECRET_KEY not set – payment features will fail at runtime.',
@@ -142,12 +142,12 @@ export class PaymentsService {
     }
 
     // --- LOG POINT 1: Event received ---
-    const receivedPaymentIntent = (event.data.object as Stripe.PaymentIntent);
+    const receivedPaymentIntent = event.data.object as Stripe.PaymentIntent;
     this.logger.log(
       `[Webhook Received] eventId=${event.id} eventType=${event.type} ` +
-      `paymentIntentId=${receivedPaymentIntent?.id ?? 'N/A'} ` +
-      `paymentIntentStatus=${receivedPaymentIntent?.status ?? 'N/A'} ` +
-      `orderId=${receivedPaymentIntent?.metadata?.orderId ?? 'N/A'}`,
+        `paymentIntentId=${receivedPaymentIntent?.id ?? 'N/A'} ` +
+        `paymentIntentStatus=${receivedPaymentIntent?.status ?? 'N/A'} ` +
+        `orderId=${receivedPaymentIntent?.metadata?.orderId ?? 'N/A'}`,
     );
 
     switch (event.type) {
@@ -156,17 +156,17 @@ export class PaymentsService {
         // --- LOG POINT 2: Before handling ---
         this.logger.log(
           `[Webhook Before Handle] eventId=${event.id} eventType=${event.type} ` +
-          `paymentIntentId=${paymentIntent.id} ` +
-          `paymentIntentStatus=${paymentIntent.status} ` +
-          `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'}`,
+            `paymentIntentId=${paymentIntent.id} ` +
+            `paymentIntentStatus=${paymentIntent.status} ` +
+            `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'}`,
         );
         await this.handlePaymentSucceeded(paymentIntent);
         // --- LOG POINT 3: After handling ---
         this.logger.log(
           `[Webhook After Handle] eventId=${event.id} eventType=${event.type} ` +
-          `paymentIntentId=${paymentIntent.id} ` +
-          `paymentIntentStatus=${paymentIntent.status} ` +
-          `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'} result=success`,
+            `paymentIntentId=${paymentIntent.id} ` +
+            `paymentIntentStatus=${paymentIntent.status} ` +
+            `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'} result=success`,
         );
         break;
       }
@@ -176,9 +176,9 @@ export class PaymentsService {
         // --- LOG POINT 2: Before handling ---
         this.logger.log(
           `[Webhook Before Handle] eventId=${event.id} eventType=${event.type} ` +
-          `paymentIntentId=${paymentIntent.id} ` +
-          `paymentIntentStatus=${paymentIntent.status} ` +
-          `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'}`,
+            `paymentIntentId=${paymentIntent.id} ` +
+            `paymentIntentStatus=${paymentIntent.status} ` +
+            `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'}`,
         );
         this.logger.log(
           `Payment failed for order: ${paymentIntent.metadata?.orderId}`,
@@ -186,9 +186,9 @@ export class PaymentsService {
         // --- LOG POINT 3: After handling ---
         this.logger.log(
           `[Webhook After Handle] eventId=${event.id} eventType=${event.type} ` +
-          `paymentIntentId=${paymentIntent.id} ` +
-          `paymentIntentStatus=${paymentIntent.status} ` +
-          `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'} result=payment_failed`,
+            `paymentIntentId=${paymentIntent.id} ` +
+            `paymentIntentStatus=${paymentIntent.status} ` +
+            `orderId=${paymentIntent.metadata?.orderId ?? 'N/A'} result=payment_failed`,
         );
         break;
       }
@@ -196,9 +196,9 @@ export class PaymentsService {
       default:
         this.logger.log(
           `[Webhook Unhandled] eventId=${event.id} eventType=${event.type} ` +
-          `paymentIntentId=${receivedPaymentIntent?.id ?? 'N/A'} ` +
-          `paymentIntentStatus=${receivedPaymentIntent?.status ?? 'N/A'} ` +
-          `orderId=${receivedPaymentIntent?.metadata?.orderId ?? 'N/A'}`,
+            `paymentIntentId=${receivedPaymentIntent?.id ?? 'N/A'} ` +
+            `paymentIntentStatus=${receivedPaymentIntent?.status ?? 'N/A'} ` +
+            `orderId=${receivedPaymentIntent?.metadata?.orderId ?? 'N/A'}`,
         );
     }
 

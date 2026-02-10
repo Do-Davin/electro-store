@@ -29,7 +29,7 @@ const categories = [
   { name: 'Phone', img: '/category/phone.webp', scale: 1.55 },
   { name: 'Laptop', img: '/category/laptop.png', scale: 1.15 },
   { name: 'Headphones', img: '/category/headphones.png', scale: 1.95 },
-  { name: 'Watch', img: '/category/watch.png', scale: 1.15 },
+  { name: 'Watch', img: '/category/watch.jpg', scale: 1.15 },
   { name: 'Monitor', img: '/category/monitor.png' },
 ];
 

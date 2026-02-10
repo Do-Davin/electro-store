@@ -124,28 +124,38 @@ function downloadFile(url: string, dest: string): Promise<void> {
 
     const get = url.startsWith('https') ? https.get : http.get;
 
-    get(url, { headers: { 'User-Agent': 'ElectroStore-Seeder/1.0' } }, (res) => {
-      // Follow one redirect
-      if ((res.statusCode === 301 || res.statusCode === 302) && res.headers.location) {
-        return downloadFile(res.headers.location, dest).then(resolve).catch(reject);
-      }
+    get(
+      url,
+      { headers: { 'User-Agent': 'ElectroStore-Seeder/1.0' } },
+      (res) => {
+        // Follow one redirect
+        if (
+          (res.statusCode === 301 || res.statusCode === 302) &&
+          res.headers.location
+        ) {
+          downloadFile(res.headers.location, dest).then(resolve).catch(reject);
+          return;
+        }
 
-      if (res.statusCode !== 200) {
-        return reject(new Error(`Download failed (${res.statusCode}): ${url}`));
-      }
+        if (res.statusCode !== 200) {
+          return reject(
+            new Error(`Download failed (${res.statusCode}): ${url}`),
+          );
+        }
 
-      const file = fs.createWriteStream(dest);
-      res.pipe(file);
-      file.on('finish', () => {
-        file.close();
-        logger.log(`  ↳ Downloaded: ${path.basename(dest)}`);
-        resolve();
-      });
-      file.on('error', (err) => {
-        fs.unlink(dest, () => {});
-        reject(err);
-      });
-    }).on('error', reject);
+        const file = fs.createWriteStream(dest);
+        res.pipe(file);
+        file.on('finish', () => {
+          file.close();
+          logger.log(`  ↳ Downloaded: ${path.basename(dest)}`);
+          resolve();
+        });
+        file.on('error', (err) => {
+          fs.unlink(dest, () => {});
+          reject(err);
+        });
+      },
+    ).on('error', reject);
   });
 }
 
@@ -153,7 +163,14 @@ async function seed() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const brandsService = app.get(BrandsService);
 
-  const uploadsDir = path.join(__dirname, '..', '..', 'public', 'uploads', 'brands');
+  const uploadsDir = path.join(
+    __dirname,
+    '..',
+    '..',
+    'public',
+    'uploads',
+    'brands',
+  );
   fs.mkdirSync(uploadsDir, { recursive: true });
 
   logger.log('=== Starting Brand Seed ===');
@@ -170,7 +187,9 @@ async function seed() {
     try {
       await downloadFile(brand.logoDownload, logoDest);
     } catch (e) {
-      logger.warn(`  ✗ Failed to download logo for ${brand.name}: ${(e as Error).message}`);
+      logger.warn(
+        `  ✗ Failed to download logo for ${brand.name}: ${(e as Error).message}`,
+      );
     }
 
     // Download inventor image (if available)
@@ -181,7 +200,9 @@ async function seed() {
         await downloadFile(brand.inventorDownload, inventorDest);
         inventorImageUrl = `/uploads/brands/${brand.inventorFile}`;
       } catch (e) {
-        logger.warn(`  ✗ Failed to download inventor image for ${brand.name}: ${(e as Error).message}`);
+        logger.warn(
+          `  ✗ Failed to download inventor image for ${brand.name}: ${(e as Error).message}`,
+        );
       }
     }
 
