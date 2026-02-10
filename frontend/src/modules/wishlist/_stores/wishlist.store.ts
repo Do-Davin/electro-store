@@ -1,14 +1,23 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
+import { getAuthPayload } from '@/lib/auth'
+
+function getStorageKey(): string {
+  const payload = getAuthPayload()
+  const userId = payload?.sub || 'guest'
+  return `wishlist_${userId}`
+}
 
 export const useWishlistStore = defineStore('wishlist', () => {
   const items = ref<any[]>([])
 
-  // Load from localStorage
-  const stored = localStorage.getItem('wishlist')
-  if (stored) {
-    items.value = JSON.parse(stored)
+  function loadFromStorage() {
+    const stored = localStorage.getItem(getStorageKey())
+    items.value = stored ? JSON.parse(stored) : []
   }
+
+  // Load on store creation
+  loadFromStorage()
 
   function toggle(product: any) {
     const index = items.value.findIndex(p => p.id === product.id)
@@ -35,7 +44,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
   watch(
     items,
     () => {
-      localStorage.setItem('wishlist', JSON.stringify(items.value))
+      localStorage.setItem(getStorageKey(), JSON.stringify(items.value))
     },
     { deep: true }
   )
@@ -45,6 +54,7 @@ export const useWishlistStore = defineStore('wishlist', () => {
     toggle,
     remove,
     isInWishlist,
-    clearAll
+    clearAll,
+    loadFromStorage
   }
 })

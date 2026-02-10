@@ -255,6 +255,9 @@ const mobileNavClasses = computed(() => {
 
 function onLogout() {
   logout();
+  // Reload stores so they switch to guest storage keys
+  wishlist.loadFromStorage();
+  cart.loadFromStorage();
   closeMobileMenu();
   router.push('/auth/login');
 }
