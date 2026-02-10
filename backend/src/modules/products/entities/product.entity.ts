@@ -41,6 +41,9 @@ export class Product {
   @Column({ type: 'int', default: 0 })
   discountPercent: number;
 
+  @Column({ type: 'boolean', default: false })
+  isFeatured: boolean;
+
   @ManyToOne(() => Brand, (brand) => brand.products, {
     eager: true,
     onDelete: 'RESTRICT',

@@ -8,7 +8,7 @@
       @click="$emit('update:modelValue', c.id)"
     >
       <component
-        :is="getIcon(c.name)"
+        :is="getIcon(c)"
         class="category-icon
         text-primary
         transition-all duration-300 ease-out
@@ -24,15 +24,7 @@
 </template>
 
 <script setup>
-import {
-  LayoutGrid,
-  Smartphone,
-  Laptop,
-  Headphones,
-  Tablet,
-  Watch,
-  Boxes,
-} from 'lucide-vue-next'
+import { getCategoryIcon, ICON_PALETTE, FALLBACK_ICON } from '@/composables/useCategoryIcon'
 
 defineProps({
   categories: {
@@ -45,18 +37,13 @@ defineProps({
   },
 })
 
-const iconMap = {
-  all: LayoutGrid,
-  smartphones: Smartphone,
-  laptops: Laptop,
-  tablets: Tablet,
-  accessories: Headphones,
-  smartwatch: Watch,
-}
-
-const getIcon = (name = '') => {
-  const key = name.toLowerCase()
-  return iconMap[key] || Boxes
+// Use persisted iconKey when available, fall back to name-based suggestion
+const getIcon = (cat) => {
+  if (cat.iconKey) {
+    const entry = ICON_PALETTE.find((p) => p.key === cat.iconKey)
+    if (entry) return entry.component
+  }
+  return getCategoryIcon(cat.name)
 }
 </script>
 

@@ -31,6 +31,8 @@ import PasswordFieldComponent from './PasswordFieldComponent.vue';
 import AuthButtonComponent from './AuthButtonComponent.vue';
 import { http } from '@/lib/http';
 import { setAccessToken, getRole } from '@/lib/auth';
+import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store';
+import { useCartStore } from '@/modules/cart/_stores/cart.store';
 
 const router = useRouter();
 
@@ -61,6 +63,10 @@ async function onLogin() {
     if (!res?.access_token) throw new Error('Missing access_token from server');
 
     setAccessToken(res.access_token);
+
+    // Reload stores so they read from the new user's storage keys
+    useWishlistStore().loadFromStorage();
+    useCartStore().loadFromStorage();
 
     // Redirect based on role
     const role = getRole();

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { getAuthPayload } from '@/lib/auth'
 
 export type CartItem = {
   productId: string
@@ -9,7 +10,11 @@ export type CartItem = {
   imageUrl?: string
 }
 
-const CART_STORAGE_KEY = 'electro_cart_v1'
+function getStorageKey(): string {
+  const payload = getAuthPayload()
+  const userId = payload?.sub || 'guest'
+  return `electro_cart_${userId}`
+}
 
 export const useCartStore = defineStore('cart', () => {
   // STATE
@@ -36,7 +41,7 @@ export const useCartStore = defineStore('cart', () => {
 
   function saveToStorage() {
     try {
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.value))
+      localStorage.setItem(getStorageKey(), JSON.stringify(items.value))
       // TODO: Notification
       console.log('Cart saved to localStorage')
     } catch (e) {
@@ -47,7 +52,7 @@ export const useCartStore = defineStore('cart', () => {
 
   function loadFromStorage() {
     try {
-      const raw = localStorage.getItem(CART_STORAGE_KEY)
+      const raw = localStorage.getItem(getStorageKey())
       if (raw) {
         const parsed = JSON.parse(raw)
         if (Array.isArray(parsed)) {

@@ -52,6 +52,7 @@ export class ProductsService {
       stock: dto.stock ?? 0,
       rating: dto.rating ?? 0,
       discountPercent: dto.discountPercent ?? 0,
+      isFeatured: dto.isFeatured ?? false,
       brand,
       specs: specs,
     });
@@ -191,6 +192,8 @@ export class ProductsService {
     if (dto.rating !== undefined) product.rating = dto.rating;
     if (dto.discountPercent !== undefined)
       product.discountPercent = dto.discountPercent;
+    if (dto.isFeatured !== undefined)
+      product.isFeatured = dto.isFeatured;
     
     return this.productsRepo.save(product);
   }
@@ -199,6 +202,27 @@ export class ProductsService {
     await this.findEntity(id);
     await this.productsRepo.delete(id);
     return { message: 'Deleted successfully' };
+  }
+
+  // Featured
+  async fetchFeatured(limit = 6) {
+    const products = await this.productsRepo.find({
+      relations: ['category'],
+      where: { isFeatured: true },
+      order: { createdAt: 'DESC' },
+      take: limit,
+    });
+    return products.map((p) => this.withFinalPrice(p));
+  }
+
+  // Best Sellers (highest rated products)
+  async fetchBestsellers(limit = 6) {
+    const products = await this.productsRepo.find({
+      relations: ['category'],
+      order: { rating: 'DESC', createdAt: 'DESC' },
+      take: limit,
+    });
+    return products.map((p) => this.withFinalPrice(p));
   }
 
   // Deals

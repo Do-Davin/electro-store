@@ -1,0 +1,516 @@
+<template>
+  <section class="category-form">
+    <!-- Loading -->
+    <div v-if="loading" class="state-box">
+      <Loader2 :size="28" class="animate-spin" />
+      <p>Loading category…</p>
+    </div>
+
+    <!-- Error loading -->
+    <div v-else-if="loadError" class="state-box error">
+      <AlertCircle :size="28" />
+      <p>{{ loadError }}</p>
+      <button class="btn-retry" @click="fetchCategory">Retry</button>
+    </div>
+
+    <!-- Form -->
+    <template v-else>
+      <!-- Header -->
+      <div class="page-header">
+        <div class="header-left">
+          <button class="btn-back" @click="$router.push('/dashboard/categories')">
+            <ArrowLeft :size="18" />
+          </button>
+          <div>
+            <h1 class="title">Edit Category</h1>
+            <p class="subtitle">Update category "{{ originalName }}"</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="btn-clear" type="button" @click="resetForm">
+            <RotateCcw :size="16" />
+            Reset
+          </button>
+          <button class="btn-submit" :disabled="submitting" @click="submit">
+            <Loader2 v-if="submitting" :size="16" class="animate-spin" />
+            <Save v-else :size="16" />
+            {{ submitting ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Error Banner -->
+      <div v-if="formError" class="error-banner">
+        <AlertCircle :size="16" />
+        <span>{{ formError }}</span>
+        <button class="close-error" @click="formError = null">&times;</button>
+      </div>
+
+      <!-- Form Card -->
+      <div class="card">
+        <div class="card-header">
+          <LayoutGrid :size="18" />
+          <h3>Category Information</h3>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="catName">Category Name <span class="required">*</span></label>
+            <input
+              id="catName"
+              v-model="form.name"
+              placeholder="e.g. Smartphones"
+              @keyup.enter="submit"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Icon Selector Card -->
+      <div class="card icon-card">
+        <div class="card-header">
+          <Palette :size="18" />
+          <h3>Category Icon</h3>
+          <span class="badge-ui">Optional</span>
+        </div>
+        <div class="card-body">
+          <!-- Preview -->
+          <div class="icon-preview">
+            <div class="preview-circle">
+              <component :is="activeIconComponent" :size="32" />
+            </div>
+            <div class="preview-info">
+              <span class="preview-label">{{ activeIconEntry.label }}</span>
+              <span class="preview-hint">
+                {{ isAutoSuggested ? 'Auto-suggested from name' : 'Manually selected' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Grid -->
+          <p class="picker-label">Choose an icon</p>
+          <div class="icon-grid">
+            <button
+              v-for="ico in ICON_PALETTE"
+              :key="ico.key"
+              class="icon-btn"
+              :class="{ selected: selectedIconKey === ico.key }"
+              :title="ico.label"
+              type="button"
+              @click="pickIcon(ico.key)"
+            >
+              <component :is="ico.component" :size="20" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+  </section>
+</template>
+
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import {
+  ArrowLeft, Save, RotateCcw, Loader2,
+  LayoutGrid, AlertCircle, Palette,
+} from 'lucide-vue-next'
+import axios from '@/lib/axios'
+import { useToast } from '@/composables/useToast'
+import { ICON_PALETTE, FALLBACK_ICON, suggestIconKey } from '@/composables/useCategoryIcon'
+
+const router = useRouter()
+const route = useRoute()
+const toast = useToast()
+
+const loading = ref(true)
+const loadError = ref(null)
+const submitting = ref(false)
+const formError = ref(null)
+const originalName = ref('')
+const form = ref({ name: '' })
+
+// ── Icon selector (persisted as iconKey) ──
+const selectedIconKey = ref(null)
+const suggestedKey = computed(() => suggestIconKey(form.value.name))
+const isAutoSuggested = computed(() => selectedIconKey.value === null)
+const effectiveKey = computed(() => selectedIconKey.value ?? suggestedKey.value)
+const activeIconEntry = computed(
+  () => ICON_PALETTE.find((p) => p.key === effectiveKey.value) || ICON_PALETTE.at(-1),
+)
+const activeIconComponent = computed(() => activeIconEntry.value?.component || FALLBACK_ICON)
+
+function pickIcon(key) {
+  selectedIconKey.value = key === selectedIconKey.value ? null : key
+}
+
+watch(() => form.value.name, () => {
+  if (selectedIconKey.value && suggestedKey.value !== 'boxes') {
+    selectedIconKey.value = null
+  }
+})
+
+async function fetchCategory() {
+  loading.value = true
+  loadError.value = null
+  try {
+    const { data } = await axios.get(`/categories/${route.params.id}`)
+    originalName.value = data.name
+    form.value.name = data.name
+    // Restore persisted icon selection
+    if (data.iconKey) {
+      selectedIconKey.value = data.iconKey
+    }
+  } catch (err) {
+    loadError.value = err?.response?.data?.message || err.message || 'Failed to load category'
+  } finally {
+    loading.value = false
+  }
+}
+
+function resetForm() {
+  form.value.name = originalName.value
+  formError.value = null
+  selectedIconKey.value = null
+}
+
+async function submit() {
+  formError.value = null
+
+  if (!form.value.name.trim()) {
+    formError.value = 'Category name is required.'
+    return
+  }
+
+  submitting.value = true
+  try {
+    await axios.patch(`/categories/${route.params.id}`, {
+      name: form.value.name.trim(),
+      iconKey: effectiveKey.value,
+    })
+    toast.success(`Category updated to "${form.value.name}".`, 'Category Updated')
+    router.push('/dashboard/categories')
+  } catch (err) {
+    const msg = err?.response?.data?.message
+    formError.value = Array.isArray(msg) ? msg.join(', ') : msg || err.message || 'Failed to update category'
+  } finally {
+    submitting.value = false
+  }
+}
+
+onMounted(fetchCategory)
+</script>
+
+<style scoped>
+.category-form {
+  max-width: 600px;
+}
+
+/* ── States ── */
+.state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+.state-box.error { color: #f87171; }
+
+.btn-retry {
+  margin-top: 6px;
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-retry:hover { background: rgba(255, 255, 255, 0.1); }
+
+/* ── Header ── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-back {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-back:hover { background: rgba(255, 255, 255, 0.12); }
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 2px 0 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ── Buttons ── */
+.btn-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-clear:hover { background: rgba(255, 255, 255, 0.1); }
+
+.btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: linear-gradient(180deg, #16a34a 0%, #0f8a3b 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.16);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(16, 185, 129, 0.22);
+  filter: brightness(1.03);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 6px 12px rgba(16, 185, 129, 0.12);
+}
+
+.btn-submit:focus-visible {
+  outline: 3px solid rgba(16, 185, 129, 0.18);
+  outline-offset: 2px;
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Error banner ── */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 10px;
+  color: #f87171;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.close-error {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #f87171;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* ── Card ── */
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-body { padding: 20px; }
+
+.required { color: #f87171; }
+
+/* ── Field ── */
+.field {
+  margin-bottom: 0;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 6px;
+}
+
+.field input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.field input:focus { border-color: rgba(255, 243, 205, 0.5); }
+.field input::placeholder { color: rgba(255, 255, 255, 0.25); }
+
+/* ── Icon Card ── */
+.icon-card {
+  margin-top: 16px;
+}
+
+.badge-ui {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff3cd;
+  background: rgba(255, 243, 205, 0.1);
+  border: 1px solid rgba(255, 243, 205, 0.2);
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+}
+
+.icon-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.preview-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  background: rgba(255, 243, 205, 0.08);
+  border: 1px solid rgba(255, 243, 205, 0.18);
+  display: grid;
+  place-items: center;
+  color: #fff3cd;
+  flex-shrink: 0;
+}
+
+.preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.preview-label {
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.preview-hint {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+}
+
+.picker-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 10px;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.45);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.icon-btn.selected {
+  background: rgba(255, 243, 205, 0.12);
+  border-color: rgba(255, 243, 205, 0.35);
+  color: #fff3cd;
+  box-shadow: 0 0 0 2px rgba(255, 243, 205, 0.1);
+}
+
+/* ── Spin ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+</style>

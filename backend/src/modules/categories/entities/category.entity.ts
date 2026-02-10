@@ -16,6 +16,9 @@ export class Category {
   @Column({ unique: true })
   name: string;
 
+  @Column({ nullable: true })
+  iconKey: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
@@ -12,35 +16,60 @@ export class CategoriesService {
     private categoryRepo: Repository<Category>,
   ) {}
 
-  create(dto: CreateCategoryDto) {
+  async create(dto: CreateCategoryDto) {
+    // Prevent duplicate category names
+    const existing = await this.categoryRepo.findOne({
+      where: { name: dto.name },
+    });
+    if (existing) {
+      throw new BadRequestException('Category name already exists');
+    }
+
     const category = this.categoryRepo.create(dto);
-    console.log(`[CATEGORY] created.`);
     return this.categoryRepo.save(category);
   }
 
   findAll() {
-    console.log(`[CATEGORY] fetched all.`);
-    return this.categoryRepo.find();
+    return this.categoryRepo.find({ order: { createdAt: 'DESC' } });
   }
 
   async findOne(id: string) {
-    const category = await this.categoryRepo.findOneBy({ id });
+    const category = await this.categoryRepo.findOne({
+      where: { id },
+      relations: ['products'],
+    });
     if (!category) throw new NotFoundException('Category not found');
-    console.log(`[CATEGORY] fetched: ${id}`);
     return category;
   }
 
   async update(id: string, dto: UpdateCategoryDto) {
-    await this.findOne(id);
-    await this.categoryRepo.update(id, dto);
-    console.log(`[CATEGORY] Updated: ${id}`);
-    return this.findOne(id);
+    const category = await this.findOne(id);
+
+    // Check name uniqueness (if changed)
+    if (dto.name && dto.name !== category.name) {
+      const exists = await this.categoryRepo.findOne({
+        where: { name: dto.name },
+      });
+      if (exists) {
+        throw new BadRequestException('Category name already exists');
+      }
+    }
+
+    Object.assign(category, dto);
+    return this.categoryRepo.save(category);
   }
 
   async remove(id: string) {
-    await this.findOne(id);
-    await this.categoryRepo.delete(id);
-    console.log(`[CATEGORY] Removed: ${id}`);
-    return { message: 'Deleted successfully' };
+    const category = await this.findOne(id);
+
+    // Prevent deleting category that still has products
+    if (category.products?.length > 0) {
+      throw new BadRequestException(
+        'Cannot delete category with existing products',
+      );
+    }
+
+    await this.categoryRepo.remove(category);
+    return { message: 'Category deleted successfully' };
   }
 }

@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import axios from "axios"
+import axios from "@/lib/axios"
 import { ref, onMounted, watch, onBeforeUnmount } from "vue"
 import ProductCard from "./ProductCard.vue"
 import SkeletonLoader from "@/components/SkeletonLoader.vue"
@@ -56,6 +56,10 @@ import { RouterLink } from "vue-router"
 
 const props = defineProps({
   title: String,
+  endpoint: {
+    type: String,
+    default: "/products",
+  },
   params: Object,
   bg: {
     type: String,
@@ -90,7 +94,7 @@ const sectionClass = props.bg === "gray"
 async function fetchProducts() {
   loading.value = true
   try {
-    const res = await axios.get("/products", { params: props.params })
+    const res = await axios.get(props.endpoint, { params: props.params })
     error.value = ''
     products.value = res.data.data || res.data
   } catch (err) {

@@ -24,6 +24,41 @@ export class User {
   @Column({ default: 'USER' })
   role: UserRole;
 
+  // ── Profile fields ──
+  @Column({ nullable: true })
+  firstName: string;
+
+  @Column({ nullable: true })
+  lastName: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  gender: string;
+
+  @Column({ type: 'date', nullable: true })
+  dateOfBirth: string;
+
+  @Column({ nullable: true })
+  avatar: string;
+
+  // ── Address (flat columns) ──
+  @Column({ nullable: true })
+  addressStreet: string;
+
+  @Column({ nullable: true })
+  addressCity: string;
+
+  @Column({ nullable: true })
+  addressState: string;
+
+  @Column({ nullable: true })
+  addressPostCode: string;
+
+  @Column({ nullable: true })
+  addressCountry: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

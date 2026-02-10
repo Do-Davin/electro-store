@@ -1,6 +1,49 @@
 <template>
   <div class="mx-auto mt-4" style="max-width: 1200px">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Guest empty state -->
+    <div v-if="isGuest" class="flex flex-col items-center gap-6 py-24 text-center">
+      <div class="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+        <UserX :size="40" class="text-gray-500" />
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white mb-2">You're not signed in</h2>
+        <p class="text-gray-400 text-sm max-w-md mx-auto leading-relaxed">
+          Create an account or sign in to view and manage your profile, track orders, and save your preferences.
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <RouterLink
+          to="/auth/login"
+          class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-all shadow-sm shadow-primary/20"
+        >
+          <LogIn :size="16" />
+          Sign In
+        </RouterLink>
+        <RouterLink
+          to="/auth/register"
+          class="inline-flex items-center gap-2 px-6 py-2.5 border border-white/10 text-gray-300 rounded-xl text-sm font-medium hover:bg-white/5 transition-all"
+        >
+          <UserPlus :size="16" />
+          Create Account
+        </RouterLink>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div v-else-if="loading" class="flex flex-col items-center gap-3 py-20 text-gray-400">
+      <Loader2 :size="28" class="animate-spin" />
+      <span>Loading profile…</span>
+    </div>
+
+    <!-- Error -->
+    <div v-else-if="loadError" class="flex flex-col items-center gap-3 py-20 text-red-400 text-center">
+      <span>{{ loadError }}</span>
+      <button @click="fetchProfile" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition cursor-pointer">
+        Retry
+      </button>
+    </div>
+
+    <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Left Column - Profile Card -->
       <div class="lg:col-span-1 space-y-6">
         <!-- Profile Card -->
@@ -21,11 +64,22 @@
               <div v-else class="w-24 h-24 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20 border-[3px] border-[#111111] shadow-lg ring-2 ring-primary/10">
                 <User :size="40" class="text-primary/60" />
               </div>
+              <!-- Avatar upload overlay -->
               <button
+                @click="triggerAvatarUpload"
+                :disabled="uploadingAvatar"
                 class="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
               >
-                <Camera :size="20" class="text-white" />
+                <Loader2 v-if="uploadingAvatar" :size="20" class="text-white animate-spin" />
+                <Camera v-else :size="20" class="text-white" />
               </button>
+              <input
+                ref="avatarInput"
+                type="file"
+                accept="image/*"
+                hidden
+                @change="onAvatarSelected"
+              />
             </div>
 
             <!-- Name & Email -->
@@ -242,10 +296,12 @@
         <div v-if="isEditing" class="flex items-center gap-3">
           <button
             @click="saveProfile"
-            class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 transition-all shadow-sm shadow-primary/20 cursor-pointer"
+            :disabled="saving"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary/90 transition-all shadow-sm shadow-primary/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Check :size="16" />
-            Save Changes
+            <Loader2 v-if="saving" :size="16" class="animate-spin" />
+            <Check v-else :size="16" />
+            {{ saving ? 'Saving…' : 'Save Changes' }}
           </button>
           <button
             @click="cancelEdit"
@@ -282,7 +338,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 import {
   Camera,
   Clock,
@@ -290,52 +347,173 @@ import {
   MapPin,
   Calendar,
   User,
+  UserX,
+  UserPlus,
+  LogIn,
   Edit,
   Check,
   X,
   Settings,
   Lock,
-  Trash2
+  Trash2,
+  Loader2,
 } from 'lucide-vue-next'
+import axios from '@/lib/axios'
+import { useToast } from '@/composables/useToast'
+import { isLoggedIn } from '@/lib/auth'
 
+const toast = useToast()
+const isGuest = ref(!isLoggedIn())
 const isEditing = ref(false)
+const loading = ref(true)
+const saving = ref(false)
+const loadError = ref(null)
+const uploadingAvatar = ref(false)
+const avatarInput = ref(null)
 
-const originalUser = {
-  firstName: 'Vong',
-  lastName: 'Tath',
-  email: 'vong.tath@example.com',
-  phone: '+855 762 147 429',
+const user = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
   gender: 'male',
-  dateOfBirth: '2005-06-20',
-  avatar: '/users/default-avatar.png',
-  memberSince: 'January 2024',
+  dateOfBirth: '',
+  avatar: '',
+  memberSince: '',
   address: {
-    street: 'No. 128, Street 271',
-    city: 'Phnom Penh',
-    state: 'Khan Sen Sok',
-    zipCode: '12000',
-    country: 'Cambodia',
+    street: '',
+    city: '',
+    state: '',
+    postCode: '',
+    country: '',
   },
+})
+
+let originalSnapshot = null
+
+function snapshotUser() {
+  return JSON.parse(JSON.stringify({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    phone: user.phone,
+    gender: user.gender,
+    dateOfBirth: user.dateOfBirth,
+    address: { ...user.address },
+  }))
 }
 
-const user = reactive({ ...originalUser, address: { ...originalUser.address } })
+function populateUser(data) {
+  user.firstName = data.firstName || ''
+  user.lastName = data.lastName || ''
+  user.email = data.email || ''
+  user.phone = data.phone || ''
+  user.gender = data.gender || 'male'
+  user.dateOfBirth = data.dateOfBirth || ''
+  user.avatar = data.avatar || ''
+  user.address.street = data.address?.street || ''
+  user.address.city = data.address?.city || ''
+  user.address.state = data.address?.state || ''
+  user.address.postCode = data.address?.postCode || ''
+  user.address.country = data.address?.country || ''
+
+  // Format memberSince
+  if (data.memberSince) {
+    const d = new Date(data.memberSince)
+    user.memberSince = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }
+}
 
 // Computed property for avatar display
 const avatarSrc = computed(() => user.avatar || '')
-const hasAvatar = computed(() => !!user.avatar && user.avatar !== '/users/default-avatar.png')
+const hasAvatar = computed(() => !!user.avatar && !user.avatar.endsWith('default-avatar.png'))
 
-const saveProfile = () => {
-  // Here you would typically send the data to the backend
-  console.log('Saving profile:', user)
-  isEditing.value = false
+function triggerAvatarUpload() {
+  avatarInput.value?.click()
+}
+
+async function onAvatarSelected(e) {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  uploadingAvatar.value = true
+  try {
+    const fd = new FormData()
+    fd.append('avatar', file)
+    const { data } = await axios.post('/users/profile/avatar', fd)
+    populateUser(data)
+    toast.success('Avatar updated.', 'Saved')
+  } catch (err) {
+    toast.error(err?.response?.data?.message || 'Failed to upload avatar', 'Error')
+  } finally {
+    uploadingAvatar.value = false
+    // Reset input so same file can be re-selected
+    if (avatarInput.value) avatarInput.value.value = ''
+  }
+}
+
+async function fetchProfile() {
+  loading.value = true
+  loadError.value = null
+  try {
+    const { data } = await axios.get('/users/profile')
+    populateUser(data)
+    originalSnapshot = snapshotUser()
+  } catch (err) {
+    loadError.value = err?.response?.data?.message || err.message || 'Failed to load profile'
+  } finally {
+    loading.value = false
+  }
+}
+
+async function saveProfile() {
+  saving.value = true
+  try {
+    const payload = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+      gender: user.gender,
+      dateOfBirth: user.dateOfBirth || undefined,
+      addressStreet: user.address.street,
+      addressCity: user.address.city,
+      addressState: user.address.state,
+      addressPostCode: user.address.postCode,
+      addressCountry: user.address.country,
+    }
+    const { data } = await axios.patch('/users/profile', payload)
+    populateUser(data)
+    originalSnapshot = snapshotUser()
+    isEditing.value = false
+    toast.success('Profile updated successfully.', 'Saved')
+  } catch (err) {
+    const msg = err?.response?.data?.message
+    toast.error(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to update profile', 'Error')
+  } finally {
+    saving.value = false
+  }
 }
 
 const cancelEdit = () => {
-  // Reset to original values
-  Object.assign(user, originalUser)
-  user.address = { ...originalUser.address }
+  if (originalSnapshot) {
+    user.firstName = originalSnapshot.firstName
+    user.lastName = originalSnapshot.lastName
+    user.phone = originalSnapshot.phone
+    user.gender = originalSnapshot.gender
+    user.dateOfBirth = originalSnapshot.dateOfBirth
+    user.address.street = originalSnapshot.address.street
+    user.address.city = originalSnapshot.address.city
+    user.address.state = originalSnapshot.address.state
+    user.address.postCode = originalSnapshot.address.postCode
+    user.address.country = originalSnapshot.address.country
+  }
   isEditing.value = false
 }
+
+onMounted(() => {
+  if (!isGuest.value) {
+    fetchProfile()
+  }
+})
 </script>
 
 <style scoped>
