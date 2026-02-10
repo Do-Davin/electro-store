@@ -5,6 +5,12 @@
     <!-- Main Content -->
     <main class="flex-1">
       <div class="pt-24 max-w-7xl mx-auto px-6 pb-24">
+        <BreadcrumbNav :crumbs="[
+          { label: 'Home', to: '/' },
+          { label: 'Products', to: '/products' },
+          { label: product?.name ?? 'Product Details', to: `/products/${route.params.id}` },
+        ]" class="mb-6" />
+
         <h2 class="text-2xl font-semibold mb-10 text-primary">
           Product Details
         </h2>
@@ -170,6 +176,7 @@ import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { Star, Heart } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
+import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import Footer from '@/components/Footer.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import AddToCartButton from '@/modules/cart/_components/AddToCartButton.vue'

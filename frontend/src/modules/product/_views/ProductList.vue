@@ -4,6 +4,11 @@
 
     <main class="page-layout__main">
       <div class="container pt-20">
+        <BreadcrumbNav :crumbs="[
+          { label: 'Home', to: '/' },
+          { label: 'Products', to: '/products' },
+        ]" class="mb-4" />
+
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
           <h1 class="text-2xl font-bold text-primary">All Products</h1>
@@ -78,6 +83,7 @@
 import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 
 import Navbar from '@/components/Navbar.vue'
+import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import SearchBar from '../_components/SearchBar.vue'
 import CategoryScroller from '../_components/CategoryScroller.vue'
 import ProductCard from '../_components/ProductCard.vue'

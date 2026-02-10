@@ -71,6 +71,8 @@ export class PaymentsService {
       amount,
       currency: 'usd',
       metadata: { orderId: order.id },
+      // Use automatic_payment_methods; cashapp, amazon_pay, crypto
+      // are disabled on the frontend via Payment Element options
       automatic_payment_methods: { enabled: true },
     });
 

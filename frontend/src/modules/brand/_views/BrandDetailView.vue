@@ -4,16 +4,11 @@
 
     <main class="flex-1 pt-24 pb-16 px-4 sm:px-6">
       <div class="max-w-4xl mx-auto">
-        <!-- Back link -->
-        <RouterLink
-          to="/brands"
-          class="inline-flex items-center gap-2 text-sm text-gray-500
-                 hover:text-primary transition-colors mb-6 group"
-          v-aos
-        >
-          <ArrowLeft class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          Back to all brands
-        </RouterLink>
+        <BreadcrumbNav :crumbs="[
+          { label: 'Home', to: '/' },
+          { label: 'Brands', to: '/brands' },
+          { label: brandStore.currentBrand?.name ?? 'Brand', to: `/brands/${route.params.id}` },
+        ]" class="mb-6" />
 
         <BrandDetailComponent
           :brand="brandStore.currentBrand"
@@ -29,9 +24,9 @@
 
 <script setup>
 import { onMounted, onUnmounted, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
-import { ArrowLeft } from 'lucide-vue-next'
+import { useRoute } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
+import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import Footer from '@/components/Footer.vue'
 import BrandDetailComponent from '../_components/BrandDetailComponent.vue'
 import { useBrandStore } from '../_stores/brand.store'

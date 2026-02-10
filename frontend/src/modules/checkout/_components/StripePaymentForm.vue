@@ -65,6 +65,13 @@ function mountElements() {
 
   paymentElement = elements.create('payment', {
     layout: 'tabs',
+    paymentMethodOrder: ['card'],
+    wallets: {
+      applePay: 'auto',
+      googlePay: 'auto',
+      cashApp: 'never',
+      amazonPay: 'never',
+    },
   })
 
   paymentElement.mount(paymentElementRef.value)

@@ -6,6 +6,10 @@
       <!-- Page Header -->
       <div class="bg-primary py-8 pt-24">
     <div class="max-w-6xl mx-auto px-4">
+      <BreadcrumbNav :crumbs="[
+        { label: 'Home', to: '/' },
+        { label: 'Cart', to: '/carts' },
+      ]" class="mb-3 [&_span]:text-white/70 [&_span:last-child]:text-white [&_svg]:text-white/40" />
       <h1 class="text-3xl font-bold text-white">Shopping Cart</h1>
       <p class="text-white/70 mt-1">{{ cart.itemCount }} items in your cart</p>
     </div>
@@ -72,6 +76,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Trash2 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
+import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import Footer from '@/components/Footer.vue'
 import CartListComponent from '../_components/CartListComponent.vue'
 import CartSummary from '../_components/CartSummary.vue'

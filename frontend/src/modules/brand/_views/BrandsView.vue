@@ -4,6 +4,11 @@
 
     <main class="flex-1 pt-24 pb-16 px-4 sm:px-6">
       <div class="max-w-6xl mx-auto">
+        <BreadcrumbNav :crumbs="[
+          { label: 'Home', to: '/' },
+          { label: 'Brands', to: '/brands' },
+        ]" class="mb-6" />
+
         <!-- Page Header -->
         <div class="mb-10 text-center" v-aos>
           <div class="inline-flex items-center gap-2 bg-primary/10 px-4 py-2
@@ -68,6 +73,7 @@
 import { computed, onMounted } from 'vue'
 import { Crown } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
+import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import Footer from '@/components/Footer.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import StateView from '@/components/StateView.vue'

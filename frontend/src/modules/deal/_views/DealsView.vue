@@ -6,6 +6,11 @@
     <main class="flex-1">
 
     <section class="max-w-6xl mx-auto px-6 py-16 mt-10">
+      <BreadcrumbNav :crumbs="[
+        { label: 'Home', to: '/' },
+        { label: 'Deals', to: '/deals' },
+      ]" class="mb-6" />
+
       <!-- Header -->
       <div class="text-center mb-10">
         <h1 class="text-4xl font-bold text-primary">Exclusive Deals & Discounts</h1>
@@ -85,6 +90,7 @@
 
 <script setup>
 import Navbar from "@/components/Navbar.vue";
+import BreadcrumbNav from '@/components/BreadcrumbNav.vue';
 import ProductCard from "@/modules/product/_components/ProductCard.vue";
 import Footer from "@/components/Footer.vue";
 import SkeletonLoader from "@/components/SkeletonLoader.vue";

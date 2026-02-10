@@ -3,6 +3,11 @@
     <Navbar />
 
     <main class="flex-1 pt-24 px-6 max-w-7xl mx-auto mb-24 w-full">
+    <BreadcrumbNav :crumbs="[
+      { label: 'Home', to: '/' },
+      { label: 'Wishlist', to: '/wishlist' },
+    ]" class="mb-4" />
+
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
       <h1 class="text-3xl text-primary font-bold">
@@ -35,11 +40,12 @@
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
     >
-      <div
+      <RouterLink
         v-for="product in wishlist.items"
         :key="product.id"
+        :to="`/products/${product.id}`"
         class="group bg-[#111111] rounded-2xl p-5 border-3 border-primary/6 hover:border-primary/10 transition-all
-        duration-400 ease-out"
+        duration-400 ease-out cursor-pointer"
       >
         <!-- Image -->
         <div class="h-44 flex items-center justify-center mb-4 bg-white rounded-xl p-4">
@@ -63,18 +69,9 @@
         </div>
 
         <!-- Actions -->
-        <div class="mt-5 flex items-center justify-between gap-3">
-          <RouterLink
-            :to="`/products/${product.id}`"
-            class="text-sm text-gray-400 hover:text-primary
-            hover:font-bold underline-offset-4 hover:underline
-            transition-all duration-300 ease-out"
-          >
-            View product
-          </RouterLink>
-
+        <div class="mt-5 flex items-center justify-end gap-3">
           <button
-            @click="openRemoveModal(product.id)"
+            @click.prevent="openRemoveModal(product.id)"
             class="border border-red-500 text-red-500
             px-4 py-2 rounded-xl
             flex items-center gap-2
@@ -86,7 +83,7 @@
             Remove
           </button>
         </div>
-      </div>
+      </RouterLink>
     </div>
     </main>
 
@@ -111,6 +108,7 @@
 import { reactive } from 'vue';
 import { useWishlistStore } from '../_stores/wishlist.store';
 import Navbar from '@/components/Navbar.vue';
+import BreadcrumbNav from '@/components/BreadcrumbNav.vue';
 import Footer from '@/components/Footer.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Trash2 } from 'lucide-vue-next';
