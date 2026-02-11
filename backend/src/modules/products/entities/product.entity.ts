@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -13,6 +14,10 @@ import {
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Generated('increment')
+  @Column({ type: 'int', unique: true })
+  productCode: number;
 
   @Column()
   name: string;

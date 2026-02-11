@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { NewsletterModule } from './modules/newsletter/newsletter.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -21,12 +22,15 @@ import { PaymentsModule } from './modules/payments/payments.module';
     UsersModule,
     NewsletterModule,
     PaymentsModule,
+    ReportsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
+      migrations: [__dirname + '/migrations/*{.ts,.js}'],
+      migrationsRun: true,
     }),
   ],
   controllers: [AppController],
