@@ -4,11 +4,9 @@
 
     <!-- Left: Logo -->
     <div
-      class="navbar-logo font-bold text-lg sm:text-xl
-      cursor-pointer transition-colors"
       @click="onLogoClick"
     >
-      &lt;DT /&gt;
+      <span class="logo__title-gradient">ELECTRO-STORE</span>
     </div>
 
     <!-- Center: Navigation Icons -->
@@ -300,6 +298,15 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.logo__title-gradient {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: block;
+  background: linear-gradient(135deg, #ff8c42 0%, #ff6b9d 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 /* Dark navbar (on hero/black background) */
 .navbar-dark {
   border-color: rgba(255, 255, 255, 0.1);
