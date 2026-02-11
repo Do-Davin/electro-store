@@ -70,6 +70,7 @@ export class ProductsController {
     @Query('limit') limit: number = 12,
     @Query('search') search?: string,
     @Query('category') category?: string,
+    @Query('brand') brand?: string,
     @Query('minPrice') minPrice?: number,
     @Query('maxPrice') maxPrice?: number,
   ) {
@@ -78,6 +79,7 @@ export class ProductsController {
       limit: Number(limit),
       search,
       category,
+      brand,
       minPrice: minPrice !== undefined ? Number(minPrice) : undefined,
       maxPrice: maxPrice !== undefined ? Number(maxPrice) : undefined,
     });
@@ -96,6 +98,14 @@ export class ProductsController {
   @Get('bestsellers')
   getBestsellers(@Query('limit') limit: number = 6) {
     return this.productsService.fetchBestsellers(Number(limit));
+  }
+
+  @Get('low-stock')
+  getLowStock(
+    @Query('threshold') threshold: number = 5,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.productsService.fetchLowStock(Number(threshold), Number(limit));
   }
 
   @Get(':id')

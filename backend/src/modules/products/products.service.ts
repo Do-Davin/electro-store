@@ -71,6 +71,7 @@ export class ProductsService {
     limit,
     search,
     category,
+    brand,
     minPrice,
     maxPrice,
   }: {
@@ -78,12 +79,14 @@ export class ProductsService {
     limit: number;
     search?: string;
     category?: string;
+    brand?: string;
     minPrice?: number;
     maxPrice?: number;
   }) {
     const qb = this.productsRepo
       .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category');
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.brand', 'brand');
 
     if (search) {
       qb.andWhere('LOWER(product.name) LIKE LOWER(:search)', {
@@ -93,6 +96,10 @@ export class ProductsService {
 
     if (category) {
       qb.andWhere('category.id = :categoryId', { categoryId: category });
+    }
+
+    if (brand) {
+      qb.andWhere('brand.id = :brandId', { brandId: brand });
     }
 
     if (minPrice !== undefined) {
@@ -233,6 +240,20 @@ export class ProductsService {
     });
 
     return products.map((product) => this.withFinalPrice(product));
+  }
+
+  // Low stock (0 < stock <= threshold)
+  async fetchLowStock(threshold = 5, limit = 10) {
+    const products = await this.productsRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .where('product.stock > 0')
+      .andWhere('product.stock <= :threshold', { threshold })
+      .orderBy('product.stock', 'ASC')
+      .take(limit)
+      .getMany();
+
+    return products.map((p) => this.withFinalPrice(p));
   }
 
   private withFinalPrice(product: Product) {
