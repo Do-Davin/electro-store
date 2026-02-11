@@ -13,6 +13,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
+import PDFDocument = require('pdfkit');
 
 @Injectable()
 export class OrdersService {
@@ -48,7 +49,7 @@ export class OrdersService {
 
     // Second pass: create order items and deduct stock
     const items: OrderItem[] = [];
-    let total = 0;
+    let subtotal = 0;
 
     for (const it of dto.items) {
       const product = productMap.get(it.productId)!;
@@ -63,14 +64,24 @@ export class OrdersService {
         priceAtTime: product.price,
       });
 
-      total += Number(product.price) * it.quantity;
+      subtotal += Number(product.price) * it.quantity;
       items.push(item);
     }
+
+    // Calculate VAT at 10%
+    const vatAmount = Math.round(subtotal * 10) / 100;
+
+    // Shipping: free if subtotal >= $500, otherwise $5
+    const shippingAmount = subtotal >= 500 ? 0 : 5;
+
+    const totalAmount =
+      Math.round((subtotal + vatAmount + shippingAmount) * 100) / 100;
 
     const order = this.ordersRepo.create({
       user,
       items,
-      totalAmount: total,
+      shippingAmount,
+      totalAmount,
       status: 'PENDING',
     });
 
@@ -151,7 +162,7 @@ export class OrdersService {
 
     if (dto.items && dto.items.length > 0) {
       const newItems: OrderItem[] = [];
-      let newTotal = 0;
+      let newSubtotal = 0;
 
       for (const it of dto.items) {
         const product = await this.productsRepo.findOneBy({ id: it.productId });
@@ -163,12 +174,20 @@ export class OrdersService {
           priceAtTime: product.price,
         });
 
-        newTotal += Number(product.price) * it.quantity;
+        newSubtotal += Number(product.price) * it.quantity;
         newItems.push(item);
       }
 
+      // Calculate VAT at 10%
+      const newVat = Math.round(newSubtotal * 10) / 100;
+
+      // Shipping: free if subtotal >= $500, otherwise $5
+      const newShipping = newSubtotal >= 500 ? 0 : 5;
+
       order.items = newItems;
-      order.totalAmount = newTotal;
+      order.shippingAmount = newShipping;
+      order.totalAmount =
+        Math.round((newSubtotal + newVat + newShipping) * 100) / 100;
     }
 
     const { items: _unusedItems, ...rest } = dto;
@@ -288,5 +307,157 @@ export class OrdersService {
         await this.productsRepo.save(product);
       }
     }
+  }
+
+  /**
+   * Generate a PDF receipt for a paid order.
+   * Returns a PDFKit document (readable stream).
+   */
+  async generateReceipt(
+    orderId: string,
+    userId: string,
+    role: 'USER' | 'ADMIN',
+  ): Promise<PDFKit.PDFDocument> {
+    const order = await this.ordersRepo.findOne({
+      where: { id: orderId },
+      relations: ['user', 'items', 'items.product'],
+    });
+
+    if (!order) throw new NotFoundException('Order not found');
+
+    if (role !== 'ADMIN' && order.user.id !== userId) {
+      throw new ForbiddenException('You cannot access this receipt');
+    }
+
+    const paidStatuses: OrderStatus[] = [
+      'PAID',
+      'PROCESSING',
+      'SHIPPED',
+      'DELIVERED',
+      'COMPLETED',
+    ];
+    if (!paidStatuses.includes(order.status)) {
+      throw new BadRequestException(
+        'Receipt is only available for paid orders',
+      );
+    }
+
+    // Derive subtotal and VAT from items (same logic as frontend)
+    const subtotal = order.items.reduce(
+      (sum, item) => sum + Number(item.priceAtTime) * item.quantity,
+      0,
+    );
+    const shipping = Number(order.shippingAmount);
+    const vat = Math.round(subtotal * 10) / 100;
+    const total = Number(order.totalAmount);
+
+    // Build PDF
+    const doc = new PDFDocument({ size: 'A4', margin: 50 });
+
+    // ── Header ──
+    doc.fontSize(22).font('Helvetica-Bold').text('ElectroStore', { align: 'center' });
+    doc.moveDown(0.3);
+    doc.fontSize(10).font('Helvetica').fillColor('#666666').text('Receipt / Tax Invoice', { align: 'center' });
+    doc.moveDown(1);
+
+    // Divider
+    doc.strokeColor('#e5e7eb').lineWidth(1)
+      .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+    doc.moveDown(0.8);
+
+    // ── Order info ──
+    doc.fillColor('#000000').fontSize(10).font('Helvetica-Bold');
+    doc.text(`Order ID:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${order.id}`);
+    doc.font('Helvetica-Bold').text(`Date:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`);
+    doc.font('Helvetica-Bold').text(`Status:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${order.status}`);
+    doc.moveDown(0.5);
+
+    // ── Customer info ──
+    const user = order.user;
+    const customerName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+    doc.font('Helvetica-Bold').text(`Customer:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${customerName}`);
+    doc.font('Helvetica-Bold').text(`Email:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${user.email}`);
+    if (user.addressStreet) {
+      const address = [user.addressStreet, user.addressCity, user.addressState, user.addressPostCode, user.addressCountry]
+        .filter(Boolean).join(', ');
+      doc.font('Helvetica-Bold').text(`Address:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${address}`);
+    }
+    doc.moveDown(1);
+
+    // Divider
+    doc.strokeColor('#e5e7eb').lineWidth(1)
+      .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+    doc.moveDown(0.8);
+
+    // ── Items table header ──
+    const tableTop = doc.y;
+    const col1 = 50;  // Product
+    const col2 = 280; // Qty
+    const col3 = 350; // Price
+    const col4 = 440; // Total
+
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#374151');
+    doc.text('Product', col1, tableTop);
+    doc.text('Qty', col2, tableTop);
+    doc.text('Unit Price', col3, tableTop);
+    doc.text('Total', col4, tableTop);
+    doc.moveDown(0.5);
+
+    doc.strokeColor('#e5e7eb').lineWidth(0.5)
+      .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+    doc.moveDown(0.5);
+
+    // ── Items rows ──
+    doc.font('Helvetica').fillColor('#000000').fontSize(9);
+    for (const item of order.items) {
+      const y = doc.y;
+      const productName = item.product?.name || 'Unknown Product';
+      const unitPrice = Number(item.priceAtTime);
+      const lineTotal = unitPrice * item.quantity;
+
+      doc.text(productName, col1, y, { width: 220 });
+      doc.text(String(item.quantity), col2, y);
+      doc.text(`$${unitPrice.toFixed(2)}`, col3, y);
+      doc.text(`$${lineTotal.toFixed(2)}`, col4, y);
+      doc.moveDown(0.3);
+    }
+
+    doc.moveDown(0.5);
+    doc.strokeColor('#e5e7eb').lineWidth(1)
+      .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+    doc.moveDown(0.8);
+
+    // ── Totals ──
+    const totalsX = 350;
+    const totalsValX = 440;
+
+    doc.fontSize(10).font('Helvetica');
+    doc.text('Subtotal:', totalsX, doc.y, { continued: false });
+    doc.text(`$${subtotal.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+
+    doc.text('VAT (10%):', totalsX, doc.y, { continued: false });
+    doc.text(`$${vat.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+
+    doc.text('Shipping:', totalsX, doc.y, { continued: false });
+    doc.text(shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+
+    doc.moveDown(0.3);
+    doc.strokeColor('#e5e7eb').lineWidth(0.5)
+      .moveTo(totalsX, doc.y).lineTo(545, doc.y).stroke();
+    doc.moveDown(0.5);
+
+    doc.fontSize(12).font('Helvetica-Bold');
+    doc.text('Total:', totalsX, doc.y, { continued: false });
+    doc.text(`$${total.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+
+    doc.moveDown(2);
+
+    // ── Footer ──
+    doc.fontSize(8).font('Helvetica').fillColor('#9ca3af')
+      .text('Thank you for shopping with ElectroStore!', 50, doc.y, { align: 'center' })
+      .text(`Generated on ${new Date().toLocaleString('en-US')}`, { align: 'center' });
+
+    doc.end();
+    return doc;
   }
 }

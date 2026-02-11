@@ -33,6 +33,9 @@ export class Order {
   })
   items: OrderItem[];
 
+  @Column('decimal', { default: 0 })
+  shippingAmount: number;
+
   @Column('decimal')
   totalAmount: number;
 

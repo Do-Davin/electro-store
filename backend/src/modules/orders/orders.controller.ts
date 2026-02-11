@@ -9,8 +9,10 @@ import {
   Post,
   Query,
   Request as NestRequest,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -55,6 +57,26 @@ export class OrdersController {
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     return this.ordersService.findByUser(req.user.sub, query);
+  }
+
+  @Get(':id/receipt')
+  async getReceipt(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @NestRequest() req: AuthRequest,
+    @Res() res: Response,
+  ) {
+    const doc = await this.ordersService.generateReceipt(
+      id,
+      req.user.sub,
+      req.user.role,
+    );
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="receipt-${id}.pdf"`,
+    });
+
+    doc.pipe(res);
   }
 
   @Get(':id')
