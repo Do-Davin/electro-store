@@ -125,6 +125,18 @@
             </button>
 
             <button
+              v-if="canDownloadReceipt(order.status)"
+              @click="handleDownloadReceipt(order.id)"
+              :disabled="receiptLoading[order.id]"
+              class="text-gray-400 hover:text-white text-sm font-medium flex items-center gap-1
+              disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Loader2 v-if="receiptLoading[order.id]" class="w-4 h-4 animate-spin" />
+              <Download v-else class="w-4 h-4" />
+              Receipt
+            </button>
+
+            <button
               v-if="canCancel(order.status)"
               @click="handleCancel(order.id)"
               class="text-red-500 hover:text-red-600 text-sm font-medium flex items-center gap-1"
@@ -184,11 +196,12 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { LogIn, XCircle, CreditCard } from 'lucide-vue-next'
+import { LogIn, XCircle, CreditCard, Download, Loader2 } from 'lucide-vue-next'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import StateView from '@/components/StateView.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useOrderStore } from '../_stores/order.store'
+import { orderApi } from '../_services/order.service'
 import { isLoggedIn } from '@/lib/auth'
 import { placeholderSvg } from '@/lib/utils'
 import OrderStatusBadge from './OrderStatusBadge.vue'
@@ -208,6 +221,25 @@ const cancelModal = ref({
   orderId: null,
   loading: false,
 })
+
+// Receipt download loading state (keyed by order ID)
+const receiptLoading = ref({})
+
+function canDownloadReceipt(status) {
+  return ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED'].includes(status)
+}
+
+async function handleDownloadReceipt(orderId) {
+  receiptLoading.value[orderId] = true
+  try {
+    await orderApi.downloadReceipt(orderId)
+    toast.success('Receipt downloaded successfully!')
+  } catch (error) {
+    toast.error(error?.message || 'Failed to download receipt')
+  } finally {
+    receiptLoading.value[orderId] = false
+  }
+}
 
 const API = import.meta.env.VITE_API_URL
 

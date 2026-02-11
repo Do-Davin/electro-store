@@ -24,6 +24,7 @@ export type OrderItem = {
 
 export type Order = {
   id: string
+  shippingAmount: number
   totalAmount: number
   status: OrderStatus
   createdAt: string

@@ -41,9 +41,13 @@
           <div class="sticky top-24">
             <CartSummary
               :subtotal="cart.cartTotal"
-              :total="cart.cartTotal"
+              :vat="cartVat"
+              :shipping="cartShipping"
+              :is-free-shipping="isFreeShipping"
+              :total="cartGrandTotal"
               :item-count="cart.itemCount"
               :is-empty="cart.isEmpty"
+              :loading="checkingStock"
               @checkout="handleCheckout"
             />
           </div>
@@ -72,7 +76,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Trash2 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
@@ -83,10 +87,27 @@ import CartSummary from '../_components/CartSummary.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useCartStore } from '../_stores/cart.store'
 import { useToast } from '@/composables/useToast'
+import axios from '@/lib/axios'
 
 const router = useRouter()
 const cart = useCartStore()
 const toast = useToast()
+
+const checkingStock = ref(false)
+
+const cartVat = computed(() => {
+  return Math.round(cart.cartTotal * 10) / 100
+})
+
+const cartShipping = computed(() => {
+  return cart.cartTotal >= 500 ? 0 : 5
+})
+
+const isFreeShipping = computed(() => cartShipping.value === 0)
+
+const cartGrandTotal = computed(() => {
+  return Math.round((cart.cartTotal + cartVat.value + cartShipping.value) * 100) / 100
+})
 
 const showClearModal = ref(false)
 
@@ -100,7 +121,45 @@ function executeClearCart() {
   toast.success('Cart has been cleared.')
 }
 
-function handleCheckout() {
+async function validateStock() {
+  checkingStock.value = true
+
+  try {
+    // Check stock for each item in cart
+    for (const item of cart.items) {
+      const { data: product } = await axios.get(`/products/${item.productId}`)
+
+      if (!product) {
+        toast.error(`Product "${item.name}" not found`)
+        return false
+      }
+
+      if (product.stock < item.quantity) {
+        toast.error(
+          `Insufficient stock for "${item.name}". You want ${item.quantity} but only ${product.stock} available.`,
+          'Stock Error'
+        )
+        return false
+      }
+    }
+
+    return true
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message || error?.message || 'Failed to validate stock',
+      'Validation Error'
+    )
+    return false
+  } finally {
+    checkingStock.value = false
+  }
+}
+
+async function handleCheckout() {
+  // Validate stock before proceeding
+  const isValid = await validateStock()
+  if (!isValid) return
+
   router.push('/checkout')
 }
 </script>

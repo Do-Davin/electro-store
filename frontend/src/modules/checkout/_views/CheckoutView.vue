@@ -36,7 +36,10 @@ const orderTotal = computed(() => {
   if (orderStore.currentOrder) {
     return Number(orderStore.currentOrder.totalAmount).toFixed(2)
   }
-  return cart.cartTotal.toFixed(2)
+  const sub = cart.cartTotal
+  const vat = Math.round(sub * 10) / 100
+  const shipping = sub >= 500 ? 0 : 5
+  return (Math.round((sub + vat + shipping) * 100) / 100).toFixed(2)
 })
 
 const canPlaceOrder = computed(() => {
@@ -117,7 +120,12 @@ function goBack() {
  */
 onMounted(async () => {
   const existingOrderId = route.query.orderId
-  if (!existingOrderId) return
+
+  // Clear stale order data if not resuming payment for an existing order
+  if (!existingOrderId) {
+    orderStore.clearCurrentOrder()
+    return
+  }
 
   loadingExistingOrder.value = true
   orderError.value = ''
@@ -256,7 +264,7 @@ onMounted(async () => {
             <div class="lg:col-span-1">
               <div class="sticky top-24 space-y-4">
                 <!-- Order Review — shows backend order data when available, cart data otherwise -->
-                <OrderReview :order="orderStore.currentOrder" />
+                <OrderReview :order="createdOrderId ? orderStore.currentOrder : null" />
 
                 <!-- Continue to Payment button (only before payment step) -->
                 <template v-if="!clientSecret">

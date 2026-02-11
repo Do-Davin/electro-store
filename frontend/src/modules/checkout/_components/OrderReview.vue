@@ -39,9 +39,25 @@ const displayItems = computed(() => {
 
 const totalItemCount = computed(() => displayItems.value.reduce((sum, i) => sum + i.quantity, 0))
 
+// Items subtotal (before VAT & shipping)
+const displaySubtotal = computed(() => {
+  return displayItems.value.reduce((sum, i) => sum + i.quantity * i.price, 0)
+})
+
+const displayVat = computed(() => {
+  return Math.round(displaySubtotal.value * 10) / 100
+})
+
+const displayShipping = computed(() => {
+  if (props.order) return Number(props.order.shippingAmount ?? 0)
+  return displaySubtotal.value >= 500 ? 0 : 5
+})
+
+const isFreeShipping = computed(() => displayShipping.value === 0)
+
 const displayTotal = computed(() => {
   if (props.order) return Number(props.order.totalAmount)
-  return cart.cartTotal
+  return Math.round((displaySubtotal.value + displayVat.value + displayShipping.value) * 100) / 100
 })
 
 function getImageUrl(img) {
@@ -93,12 +109,20 @@ function onImageError(event) {
     <div class="border-t border-white/10 mt-4 pt-4 space-y-2">
       <div class="flex justify-between text-gray-400">
         <span>Subtotal ({{ totalItemCount }} items)</span>
-        <span>${{ displayTotal.toFixed(2) }}</span>
+        <span>${{ displaySubtotal.toFixed(2) }}</span>
+      </div>
+      <div class="flex justify-between text-gray-400">
+        <span>VAT (10%)</span>
+        <span>${{ displayVat.toFixed(2) }}</span>
       </div>
       <div class="flex justify-between text-gray-400">
         <span>Shipping</span>
-        <span class="text-green-400 font-medium">Free</span>
+        <span v-if="isFreeShipping" class="text-green-400 font-medium">Free</span>
+        <span v-else class="font-medium">${{ displayShipping.toFixed(2) }}</span>
       </div>
+      <p v-if="!isFreeShipping" class="text-xs text-gray-500">
+        Free shipping on orders over $500
+      </p>
       <div class="flex justify-between text-lg font-bold text-white pt-2 border-t border-white/10">
         <span>Total</span>
         <span>${{ displayTotal.toFixed(2) }}</span>

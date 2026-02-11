@@ -219,6 +219,27 @@
                 </p>
               </div>
             </div>
+
+            <!-- Price Breakdown -->
+            <div class="border-t border-white/10 mt-4 pt-4 space-y-2 text-sm">
+              <div class="flex justify-between text-gray-400">
+                <span>Subtotal</span>
+                <span>${{ orderItemsSubtotal.toFixed(2) }}</span>
+              </div>
+              <div class="flex justify-between text-gray-400">
+                <span>VAT (10%)</span>
+                <span>${{ orderVat.toFixed(2) }}</span>
+              </div>
+              <div class="flex justify-between text-gray-400">
+                <span>Shipping</span>
+                <span v-if="Number(order.shippingAmount ?? 0) === 0" class="text-green-400 font-medium">Free</span>
+                <span v-else class="font-medium">${{ Number(order.shippingAmount).toFixed(2) }}</span>
+              </div>
+              <div class="flex justify-between text-white font-bold text-base pt-2 border-t border-white/10">
+                <span>Total</span>
+                <span>${{ Number(order.totalAmount).toFixed(2) }}</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -281,6 +302,21 @@
             {{ orderStore.loading ? 'Cancelling...' : 'Cancel Order' }}
           </button>
         </div>
+
+        <!-- Download Receipt Button (paid orders only) -->
+        <div v-if="canDownloadReceipt" class="flex justify-center">
+          <button
+            @click="handleDownloadReceipt"
+            :disabled="receiptLoading"
+            class="px-6 py-3 bg-white/10 text-gray-300 rounded-xl font-medium
+            hover:bg-white/20 transition-colors disabled:opacity-50
+            disabled:cursor-not-allowed flex items-center gap-2 border border-white/[0.06]"
+          >
+            <Loader2 v-if="receiptLoading" class="w-5 h-5 animate-spin" />
+            <Download v-else class="w-5 h-5" />
+            {{ receiptLoading ? 'Downloading...' : 'Download Receipt' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -316,6 +352,7 @@ import {
   Info,
   XCircle,
   CreditCard,
+  Download,
 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
@@ -326,6 +363,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue'
 import SuccessResult from '../_components/SuccessResult.vue'
 import CancelledResult from '../_components/CancelledResult.vue'
 import { useOrderStore } from '../_stores/order.store'
+import { orderApi } from '../_services/order.service'
 import { placeholderSvg } from '@/lib/utils'
 import { useToast } from '@/composables/useToast'
 
@@ -334,6 +372,19 @@ const router = useRouter()
 const orderStore = useOrderStore()
 
 const order = computed(() => orderStore.currentOrder)
+
+// Derived price breakdown from order items
+const orderItemsSubtotal = computed(() => {
+  if (!order.value?.items) return 0
+  return order.value.items.reduce(
+    (sum, item) => sum + item.quantity * Number(item.priceAtTime),
+    0,
+  )
+})
+
+const orderVat = computed(() => {
+  return Math.round(orderItemsSubtotal.value * 10) / 100
+})
 
 // Payment state from URL query params
 const paymentStatus = computed(() => route.query.payment || null)
@@ -353,6 +404,26 @@ const canCancelOrder = computed(() => {
   if (!order.value) return false
   return order.value.status === 'PENDING'
 })
+
+const canDownloadReceipt = computed(() => {
+  if (!order.value) return false
+  return ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED'].includes(order.value.status)
+})
+
+const receiptLoading = ref(false)
+
+async function handleDownloadReceipt() {
+  if (!order.value) return
+  receiptLoading.value = true
+  try {
+    await orderApi.downloadReceipt(order.value.id)
+    toast.success('Receipt downloaded successfully!')
+  } catch (error) {
+    toast.error(error?.message || 'Failed to download receipt')
+  } finally {
+    receiptLoading.value = false
+  }
+}
 
 /**
  * Redirect user to checkout page to pay for this order.
