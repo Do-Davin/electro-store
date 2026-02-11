@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -111,5 +117,58 @@ export class UsersService {
     user.avatar = avatarUrl;
     await this.usersRepo.save(user);
     return this.getProfile(userId);
+  }
+
+  // ── Change Password ──
+
+  async changePassword(
+    userId: string,
+    dto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    // Fetch user WITH password (select: false by default)
+    const user = await this.usersRepo
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.id = :id', { id: userId })
+      .getOne();
+    if (!user) throw new NotFoundException('User not found');
+
+    const isMatch = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!isMatch) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    if (dto.currentPassword === dto.newPassword) {
+      throw new BadRequestException(
+        'New password must be different from current password',
+      );
+    }
+
+    user.password = await bcrypt.hash(dto.newPassword, 10);
+    await this.usersRepo.save(user);
+
+    return { message: 'Password changed successfully' };
+  }
+
+  // ── Delete Account ──
+
+  async deleteAccount(
+    userId: string,
+    password: string,
+  ): Promise<{ message: string }> {
+    const user = await this.usersRepo
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.id = :id', { id: userId })
+      .getOne();
+    if (!user) throw new NotFoundException('User not found');
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new BadRequestException('Password is incorrect');
+    }
+
+    await this.usersRepo.remove(user);
+    return { message: 'Account deleted successfully' };
   }
 }

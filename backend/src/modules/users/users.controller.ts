@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -16,6 +17,7 @@ import multer from 'multer';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 interface AuthRequest extends Request {
@@ -80,6 +82,21 @@ export class UsersController {
   @Get('me')
   getMe(@Request() req: AuthRequest) {
     return req.user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile/password')
+  changePassword(@Request() req: AuthRequest, @Body() dto: ChangePasswordDto) {
+    return this.usersService.changePassword(req.user.sub, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('profile')
+  deleteAccount(
+    @Request() req: AuthRequest,
+    @Body('password') password: string,
+  ) {
+    return this.usersService.deleteAccount(req.user.sub, password);
   }
 
   @Get(':id')
