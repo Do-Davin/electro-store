@@ -9,12 +9,15 @@
       <CategoryCarousel />
       <FeaturedProductComponent />
       <BestSellerComponent />
+      <AlmostOutOfStockSection />
       <BrandsSection />
       <TrustSection />
       <TestimonialsCarousel />
       <PaymentMethodsSection />
       <StatsSection />
       <NewsletterSection />
+      <StoreLocationSection />
+      <BackToTop />
     </main>
 
     <Footer />
@@ -33,12 +36,15 @@ import CategoryCarousel from '@/components/CategoryCarousel.vue';
 import Navbar from '@/components/Navbar.vue';
 import FeaturedProductComponent from '@/components/FeaturedProductComponent.vue';
 import BestSellerComponent from '@/components/BestSellerComponent.vue';
+import AlmostOutOfStockSection from '@/components/AlmostOutOfStockSection.vue';
 import BrandsSection from '@/components/BrandsSection.vue';
 import TrustSection from '@/components/TrustSection.vue';
 import TestimonialsCarousel from '@/components/TestimonialsCarousel.vue';
 import PaymentMethodsSection from '@/components/PaymentMethodsSection.vue';
 import StatsSection from '@/components/StatsSection.vue';
 import NewsletterSection from '@/components/NewsletterSection.vue';
+import StoreLocationSection from '@/components/StoreLocationSection.vue';
+import BackToTop from '@/components/BackToTop.vue';
 import Footer from '@/components/Footer.vue';
 
 const router = useRouter();

@@ -58,6 +58,34 @@
         </StatCard>
       </div>
 
+      <!-- Daily Report Download -->
+      <div class="report-section">
+        <div class="section-header">
+          <h3><FileText class="section-icon" :size="18" />Daily Sales Report</h3>
+        </div>
+        <div class="report-content">
+          <div class="report-form">
+            <label class="report-label">Select Date</label>
+            <input
+              type="date"
+              v-model="reportDate"
+              :max="todayStr"
+              class="report-date-input"
+            />
+          </div>
+          <button
+            class="report-download-btn"
+            :disabled="reportLoading || !reportDate"
+            @click="handleDownloadReport"
+          >
+            <Loader2 v-if="reportLoading" :size="16" class="animate-spin" />
+            <Download v-else :size="16" />
+            <span>{{ reportLoading ? 'Generating...' : 'Download PDF Report' }}</span>
+          </button>
+        </div>
+        <p v-if="reportError" class="report-error">{{ reportError }}</p>
+      </div>
+
       <!-- Orders Analytics Chart -->
       <OrdersChart />
 
@@ -114,7 +142,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { Package, DollarSign, ShoppingCart, Users, Loader2, RefreshCw, ClipboardList } from 'lucide-vue-next'
+import { Package, DollarSign, ShoppingCart, Users, Loader2, RefreshCw, ClipboardList, FileText, Download } from 'lucide-vue-next'
 import StatCard from '../_components/StatCard.vue'
 import OrdersChart from '../_components/OrdersChart.vue'
 import axios from '@/lib/axios'
@@ -183,33 +211,58 @@ function getInitials(email) {
 
 const toast = useToast()
 
+// ── Daily Report ──
+const todayStr = new Date().toISOString().split('T')[0]
+const reportDate = ref(todayStr)
+const reportLoading = ref(false)
+const reportError = ref('')
+
+async function handleDownloadReport() {
+  if (!reportDate.value) return
+  reportLoading.value = true
+  reportError.value = ''
+  try {
+    const token = localStorage.getItem('access_token')
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+    const res = await fetch(
+      `${baseUrl}/admin/reports/daily?date=${reportDate.value}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    )
+    if (!res.ok) {
+      const err = await res.json().catch(() => null)
+      throw new Error(err?.message || `Download failed (${res.status})`)
+    }
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `daily-report-${reportDate.value}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    toast.success('Report downloaded!')
+  } catch (e) {
+    reportError.value = e.message || 'Failed to generate report'
+    toast.error(reportError.value)
+  } finally {
+    reportLoading.value = false
+  }
+}
+
 async function loadDashboard() {
   loading.value = true
   try {
-    const [productsRes, ordersRes, usersRes] = await Promise.all([
-      axios.get('/products?limit=1'),
-      axios.get('/orders?limit=10'),
-      axios.get('/users'),
-    ])
+    // Fetch all dashboard stats from backend (source of truth)
+    const statsRes = await axios.get('/admin/reports/stats')
+    const data = statsRes.data
 
-    // Products total
-    stats.value.totalProducts = productsRes.data?.total ?? 0
-
-    // Orders total + recent orders
-    const ordersMeta = ordersRes.data?.meta ?? ordersRes.data
-    stats.value.totalOrders = ordersMeta?.total ?? 0
-    recentOrders.value = ordersRes.data?.data ?? []
-
-    // Calculate revenue from all paid orders
-    const allOrdersRes = await axios.get(`/orders?limit=${ordersMeta?.total || 100}`)
-    const allOrders = allOrdersRes.data?.data ?? []
-    stats.value.totalRevenue = allOrders
-      .filter(o => o.status !== 'CANCELLED' && o.status !== 'PENDING')
-      .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0)
-
-    // Users total
-    const usersData = usersRes.data
-    stats.value.totalUsers = Array.isArray(usersData) ? usersData.length : 0
+    // Set stats from backend
+    stats.value.totalProducts = data.totalProducts ?? 0
+    stats.value.totalOrders = data.totalOrders ?? 0
+    stats.value.totalRevenue = data.totalRevenue ?? 0
+    stats.value.totalUsers = data.totalUsers ?? 0
+    recentOrders.value = data.recentOrders ?? []
   } catch (e) {
     console.error('Failed to load dashboard stats:', e)
     toast.error('Failed to load dashboard. Please refresh the page.')
@@ -533,5 +586,84 @@ onMounted(() => loadDashboard())
   background: rgba(239, 68, 68, 0.15);
   color: rgb(248, 113, 113);
   border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Daily Report Section */
+.report-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  color: white;
+}
+
+.report-content {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.report-date-input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s;
+  color-scheme: dark;
+}
+
+.report-date-input:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.report-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.report-download-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.report-download-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.report-error {
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgb(248, 113, 113);
 }
 </style>

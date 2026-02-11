@@ -115,7 +115,7 @@
           </h2>
 
           <div
-          class="bg-[#111111] rounded-2xl shadow-sm border border-white/[0.06]
+          class="bg-[#111111] rounded-2xl shadow-sm border border-white/6
           overflow-hidden">
             <div class="overflow-x-auto">
               <table class="min-w-full text-sm">
@@ -136,7 +136,7 @@
                   <tr
                     v-for="row in specsRows"
                     :key="row.key"
-                    class="border-t border-white/[0.06] hover:bg-primary/5 transition-colors"
+                    class="border-t border-white/6 hover:bg-primary/5 transition-colors"
                   >
                     <td class="px-6 py-4 text-secondary font-medium whitespace-nowrap">
                       {{ row.label }}
@@ -160,8 +160,75 @@
           <h2 class="text-xl font-semibold text-primary mb-4">
             Specifications
           </h2>
-          <div class="bg-[#111111] border border-white/[0.06] rounded-2xl p-6 text-sm text-secondary/60">
+          <div class="bg-[#111111] border border-white/6 rounded-2xl p-6 text-sm text-secondary/60">
             No specifications available for this product yet.
+          </div>
+        </div>
+
+        <!-- Similar Products (same brand) -->
+        <div v-if="product && product.brand" class="mt-16">
+          <h2 class="text-xl font-semibold text-primary mb-2 flex items-center gap-2">
+            Similar Products
+          </h2>
+          <p class="text-sm text-secondary/60 mb-6">
+            More from <span class="text-primary font-medium">{{ product.brand.name }}</span>
+          </p>
+
+          <!-- Loading -->
+          <div v-if="similarLoading" class="flex items-center justify-center py-12">
+            <Loader2 class="w-6 h-6 animate-spin text-primary" />
+          </div>
+
+          <!-- No results -->
+          <div
+            v-else-if="similarProducts.length === 0"
+            class="bg-[#111111] border border-white/6 rounded-2xl p-6 text-sm text-secondary/60 text-center"
+          >
+            No other products found from this brand.
+          </div>
+
+          <!-- Product grid -->
+          <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            <RouterLink
+              v-for="item in similarProducts"
+              :key="item.id"
+              :to="`/products/${item.id}`"
+              class="group bg-[#111111] rounded-2xl border border-white/6 overflow-hidden
+              hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+            >
+              <!-- Image -->
+              <div class="aspect-square bg-white p-4 overflow-hidden">
+                <img
+                  :src="item.imageUrl"
+                  :alt="item.name"
+                  class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              <!-- Info -->
+              <div class="p-4 space-y-2">
+                <p class="text-sm font-semibold text-primary truncate">{{ item.name }}</p>
+                <div class="flex items-center gap-2">
+                  <span class="text-lg font-bold text-primary">${{ Number(item.finalPrice).toFixed(2) }}</span>
+                  <span
+                    v-if="item.discountPercent > 0"
+                    class="text-xs text-secondary/50 line-through"
+                  >
+                    ${{ Number(item.price).toFixed(2) }}
+                  </span>
+                </div>
+                <div class="flex gap-0.5">
+                  <Star
+                    v-for="i in 5"
+                    :key="i"
+                    class="w-3.5 h-3.5"
+                    :class="i <= Math.round(Number(item.rating ?? 0))
+                      ? 'text-primary fill-primary'
+                      : 'text-secondary/20'"
+                  />
+                </div>
+              </div>
+            </RouterLink>
           </div>
         </div>
       </div>
@@ -173,8 +240,8 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
-import { useRoute } from 'vue-router'
-import { Star, Heart } from 'lucide-vue-next'
+import { useRoute, RouterLink } from 'vue-router'
+import { Star, Heart, Loader2 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
 import BreadcrumbNav from '@/components/BreadcrumbNav.vue'
 import Footer from '@/components/Footer.vue'
@@ -217,6 +284,29 @@ const hasDiscount = computed(() => product.value?.discountPercent > 0)
 // Wishlist
 const isWishlisted = computed(() => product.value && wishlist.isInWishlist(product.value.id))
 
+// Similar Products (same brand)
+const similarProducts = ref([])
+const similarLoading = ref(false)
+
+async function loadSimilarProducts() {
+  const brand = product.value?.brand
+  if (!brand?.id) return
+  similarLoading.value = true
+  try {
+    const { data } = await axios.get('/products', {
+      params: { brand: brand.id, limit: 4 },
+    })
+    // Exclude the current product
+    similarProducts.value = (data.data ?? []).filter(
+      (p) => p.id !== product.value.id,
+    )
+  } catch {
+    similarProducts.value = []
+  } finally {
+    similarLoading.value = false
+  }
+}
+
 // Specs
 const hasSpecs = computed(() => {
   const specs = product.value?.specs
@@ -255,6 +345,22 @@ onMounted(async () => {
   try {
     const { data } = await axios.get(`/products/${route.params.id}`)
     product.value = data
+    loadSimilarProducts()
+  } finally {
+    loading.value = false
+  }
+})
+
+// Re-load when navigating between product pages
+watch(() => route.params.id, async (newId) => {
+  if (!newId) return
+  loading.value = true
+  showSkeleton.value = true
+  similarProducts.value = []
+  try {
+    const { data } = await axios.get(`/products/${newId}`)
+    product.value = data
+    loadSimilarProducts()
   } finally {
     loading.value = false
   }
