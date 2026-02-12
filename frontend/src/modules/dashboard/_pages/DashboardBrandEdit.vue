@@ -26,6 +26,10 @@
           </div>
         </div>
         <div class="header-actions">
+          <button class="btn-clear" type="button" @click="resetForm">
+            <RotateCcw :size="16" />
+            Reset
+          </button>
           <button class="btn-submit" :disabled="submitting" @click="submit">
             <Loader2 v-if="submitting" :size="16" class="animate-spin" />
             <Save v-else :size="16" />
@@ -43,11 +47,11 @@
 
       <!-- Cards -->
       <div class="row-2col">
-        <!-- Logo -->
+        <!-- Logo Upload -->
         <div class="card">
           <div class="card-header">
             <ImageIcon :size="18" />
-            <h3>Brand Logo</h3>
+            <h3>Brand Logo <span class="required">*</span></h3>
           </div>
           <div class="image-upload" @click="pickLogo">
             <input ref="logoInput" type="file" accept="image/*" hidden @change="onLogoPick" />
@@ -60,8 +64,8 @@
             </div>
             <div v-else class="placeholder">
               <div class="upload-icon-wrap"><Upload :size="28" /></div>
-              <span class="upload-title">Upload new logo</span>
-              <span class="upload-hint">Click to browse · Max 1 MB</span>
+              <span class="upload-title">Upload Brand Logo</span>
+              <span class="upload-hint">Click to browse · JPG, PNG, WEBP · Max 1 MB</span>
             </div>
           </div>
         </div>
@@ -74,11 +78,11 @@
           </div>
           <div class="card-body">
             <div class="field">
-              <label for="brandName">Brand Name</label>
+              <label for="brandName">Brand Name <span class="required">*</span></label>
               <input id="brandName" v-model="form.name" placeholder="e.g. Apple" />
             </div>
             <div class="field">
-              <label for="inventorName">Inventor / Founder Name</label>
+              <label for="inventorName">Inventor / Founder Name <span class="required">*</span></label>
               <input id="inventorName" v-model="form.inventorName" placeholder="e.g. Steve Jobs" />
             </div>
           </div>
@@ -97,7 +101,7 @@
             <img :src="inventorPreview" class="round" alt="inventor preview" />
             <div class="preview-overlay">
               <Upload :size="18" />
-              <span>Change</span>
+              <span>Change Photo</span>
             </div>
           </div>
           <div v-else class="placeholder">
@@ -115,7 +119,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
-  ArrowLeft, Save, Loader2,
+  ArrowLeft, Save, Loader2, RotateCcw,
   Upload, ImageIcon, FileText, User, AlertCircle,
 } from 'lucide-vue-next'
 import axios from '@/lib/axios'
@@ -137,6 +141,9 @@ const submitting = ref(false)
 const formError = ref(null)
 
 const originalName = ref('')
+const originalInventorName = ref('')
+const originalLogo = ref(null)
+const originalInventorImage = ref(null)
 const form = ref({ name: '', inventorName: '' })
 const logoFile = ref(null)
 const inventorFile = ref(null)
@@ -167,15 +174,28 @@ async function loadBrand() {
     const response = await axios.get(`/brands/${route.params.id}`)
     const brand = response.data
     originalName.value = brand.name
+    originalInventorName.value = brand.inventorName || ''
     form.value.name = brand.name
     form.value.inventorName = brand.inventorName
-    logoPreview.value = brand.logoUrl ? toUrl(brand.logoUrl) : null
-    inventorPreview.value = brand.inventorImageUrl ? toUrl(brand.inventorImageUrl) : null
+    originalLogo.value = brand.logoUrl ? toUrl(brand.logoUrl) : null
+    originalInventorImage.value = brand.inventorImageUrl ? toUrl(brand.inventorImageUrl) : null
+    logoPreview.value = originalLogo.value
+    inventorPreview.value = originalInventorImage.value
   } catch (err) {
     pageError.value = err?.response?.data?.message || err.message || 'Brand not found'
   } finally {
     pageLoading.value = false
   }
+}
+
+function resetForm() {
+  form.value.name = originalName.value
+  form.value.inventorName = originalInventorName.value
+  formError.value = null
+  logoFile.value = null
+  inventorFile.value = null
+  logoPreview.value = originalLogo.value
+  inventorPreview.value = originalInventorImage.value
 }
 
 async function submit() {
@@ -213,13 +233,13 @@ onMounted(loadBrand)
 <style scoped>
 /* ── Layout ── */
 .brand-form {
-  max-width: 900px;
+  max-width: 100%;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
@@ -228,67 +248,119 @@ onMounted(loadBrand)
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .btn-back {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: background 0.2s;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 .btn-back:hover {
-  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45); 
 }
 
 .title {
-  font-size: 22px;
+  font-size: 32px;
   font-weight: 700;
   color: #fff;
   margin: 0;
 }
 
 .subtitle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  color: rgba(148, 163, 184, 0.8);
   margin: 2px 0 0;
 }
 
 .header-actions {
   display: flex;
   gap: 10px;
+  align-items: center;
+}
+
+/* Apply blue accent color to icons on this page (like Brand Create) */
+::v-deep svg {
+  color: #60a5fa;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* Clear / reset button - match Category Create styles */
+.btn-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-clear:hover {
+  transform: translateY(-1px);
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
+}
+
+/* keep clear/reset button icon color as the button text (don't apply blue accent) */
+::v-deep .btn-clear svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 /* ── Buttons ── */
 .btn-submit {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  background: #fff3cd;
-  color: #0a0a0a;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 13px;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3da9ff, #1e88e5);
+  color: white;
+  box-shadow: 0 4px 14px rgba(61, 169, 255, 0.3);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: #ffe69c;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(61, 169, 255, 0.45);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 6px 12px rgba(16,185,129,0.12);
 }
 
 .btn-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* ensure the save icon stays white */
+::v-deep .btn-submit svg {
+  color: white !important;
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 .btn-retry {
@@ -375,6 +447,7 @@ onMounted(loadBrand)
   padding: 16px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   color: #fff;
+  font-size: 15px;
 }
 
 .card-header h3 {
@@ -385,6 +458,10 @@ onMounted(loadBrand)
 
 .card-body {
   padding: 20px;
+}
+
+.required {
+  color: #f87171;
 }
 
 .optional {
@@ -423,7 +500,7 @@ onMounted(loadBrand)
 }
 
 .field input:focus {
-  border-color: rgba(255, 243, 205, 0.5);
+  border-color: rgba(61, 169, 255, 0.35);
 }
 
 .field input::placeholder {
@@ -436,7 +513,7 @@ onMounted(loadBrand)
   margin: 16px;
   border: 2px dashed rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  min-height: 180px;
+  height: 330px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -446,13 +523,17 @@ onMounted(loadBrand)
 }
 
 .image-upload.small {
-  min-height: 140px;
-  max-width: 320px;
-  margin: 16px 20px;
+  min-height: 180px;
+  width: 98%;
+  box-sizing: border-box;
+  margin: 16px;
+  padding: 8px 16px;
 }
 
 .image-upload:hover {
-  border-color: rgba(255, 243, 205, 0.35);
+  border-color: rgba(61, 169, 255, 0.35);
+  background: rgba(7, 24, 33, 0.12);
+  transform: translateY(-1px);
 }
 
 .placeholder {
@@ -464,35 +545,60 @@ onMounted(loadBrand)
   padding: 20px;
 }
 
-.upload-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+/* Dark rounded square variant (match screenshot) */
+.placeholder .upload-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(10,34,47,0.95);
   display: grid;
   place-items: center;
-  color: #fff3cd;
+  color: #60a5fa;
+  box-shadow: 0 10px 30px rgba(61,169,255,0.06);
+  transition: all 0.18s ease;
+}
+
+/* Hover keeps a slightly stronger lift/glow */
+.placeholder .upload-icon-wrap:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(61,169,255,0.09);
+}
+
+/* Keep smaller upload variants consistent */
+.image-upload.small .upload-icon-wrap {
+  width: 48px;
+  height: 48px;
 }
 
 .upload-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 6px;
 }
 
 .upload-hint {
   font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 4px;
 }
 
 .preview {
   width: 100%;
   height: 100%;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .preview img {
-  width: 100%;
-  height: 180px;
+  max-width: 100%;
+  max-height: 160px;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
 }

@@ -48,7 +48,7 @@
 
       <!-- Form Card -->
       <div class="card">
-        <div class="card-header">
+        <div class="card-header icon-only">
           <LayoutGrid :size="18" />
           <h3>Category Information</h3>
         </div>
@@ -67,7 +67,7 @@
 
       <!-- Icon Selector Card -->
       <div class="card icon-card">
-        <div class="card-header">
+        <div class="card-header icon-only">
           <Palette :size="18" />
           <h3>Category Icon</h3>
           <span class="badge-ui">Optional</span>
@@ -202,7 +202,7 @@ onMounted(fetchCategory)
 
 <style scoped>
 .category-form {
-  max-width: 600px;
+  max-width: 100%;
 }
 
 /* ── States ── */
@@ -235,7 +235,7 @@ onMounted(fetchCategory)
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
@@ -244,96 +244,99 @@ onMounted(fetchCategory)
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .btn-back {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: background 0.2s;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
-.btn-back:hover { background: rgba(255, 255, 255, 0.12); }
+.btn-back:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45); 
+}
 
 .title {
-  font-size: 22px;
+  font-size: 32px;
   font-weight: 700;
   color: #fff;
   margin: 0;
 }
 
 .subtitle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  color: rgba(148, 163, 184, 0.8);
   margin: 2px 0 0;
 }
 
 .header-actions {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 /* ── Buttons ── */
 .btn-clear {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  font-size: 13px;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.btn-clear:hover { background: rgba(255, 255, 255, 0.1); }
+.btn-clear:hover {
+  transform: translateY(-1px);
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
+}
 
 .btn-submit {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  background: linear-gradient(180deg, #16a34a 0%, #0f8a3b 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3da9ff, #1e88e5);
+  color: white;
+  box-shadow: 0 4px 14px rgba(61, 169, 255, 0.3);
+  border-radius: 10px;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.16);
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 .btn-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgba(16, 185, 129, 0.22);
-  filter: brightness(1.03);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(61, 169, 255, 0.45);
 }
 
 .btn-submit:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 6px 12px rgba(16, 185, 129, 0.12);
+  box-shadow: 0 6px 12px rgba(16,185,129,0.12);
 }
 
-.btn-submit:focus-visible {
-  outline: 3px solid rgba(16, 185, 129, 0.18);
-  outline-offset: 2px;
-}
-
-.btn-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+/* ensure the save icon stays white like Create */
+::v-deep .btn-submit svg {
+  color: white !important;
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 /* ── Error banner ── */
@@ -411,8 +414,15 @@ onMounted(fetchCategory)
   box-sizing: border-box;
 }
 
-.field input:focus { border-color: rgba(255, 243, 205, 0.5); }
+.field input:focus { border-color: rgba(61, 169, 255, 0.35); }
 .field input::placeholder { color: rgba(255, 255, 255, 0.25); }
+
+/* Make only the header icons blue for specific category headers */
+::v-deep .card-header.icon-only svg {
+  color: #60a5fa;
+  stroke: currentColor;
+  fill: none;
+}
 
 /* ── Icon Card ── */
 .icon-card {
@@ -424,9 +434,9 @@ onMounted(fetchCategory)
   padding: 2px 8px;
   font-size: 11px;
   font-weight: 600;
-  color: #fff3cd;
-  background: rgba(255, 243, 205, 0.1);
-  border: 1px solid rgba(255, 243, 205, 0.2);
+  color: #60a5fa;
+  background: rgba(61, 169, 255, 0.1);
+  border: 1px solid rgba(61, 169, 255, 0.2);
   border-radius: 6px;
   letter-spacing: 0.3px;
 }
@@ -442,11 +452,11 @@ onMounted(fetchCategory)
   width: 60px;
   height: 60px;
   border-radius: 14px;
-  background: rgba(255, 243, 205, 0.08);
-  border: 1px solid rgba(255, 243, 205, 0.18);
+  background: rgba(61, 169, 255, 0.08);
+  border: 1px solid rgba(61, 169, 255, 0.18);
   display: grid;
   place-items: center;
-  color: #fff3cd;
+  color: #60a5fa;
   flex-shrink: 0;
 }
 
@@ -483,9 +493,9 @@ onMounted(fetchCategory)
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.45);
+  background: rgba(61, 169, 255, 0.08);
+  border: 1px solid rgba(61, 169, 255, 0.18);
+  color: #60a5fa;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -493,16 +503,15 @@ onMounted(fetchCategory)
 }
 
 .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45);
 }
 
 .icon-btn.selected {
-  background: rgba(255, 243, 205, 0.12);
-  border-color: rgba(255, 243, 205, 0.35);
-  color: #fff3cd;
-  box-shadow: 0 0 0 2px rgba(255, 243, 205, 0.1);
+  background: rgba(61, 169, 255, 0.12);
+  border-color: rgba(61, 169, 255, 0.35);
+  color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(61, 169, 255, 0.1);
 }
 
 /* ── Spin ── */

@@ -58,9 +58,9 @@
           <tr>
             <th class="idx-col">#</th>
             <th class="icon-col">Icon</th>
-            <th>Name</th>
-            <th>Created</th>
-            <th>Updated</th>
+            <th class="name-col">Name</th>
+            <th class="created-col">Created</th>
+            <th class="updated-col">Updated</th>
             <th class="actions-col">Actions</th>
           </tr>
         </thead>
@@ -182,13 +182,13 @@ onMounted(fetchCategories)
 
 <style scoped>
 .category-list {
-  max-width: 900px;
+  max-width: 100%;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 28px;
   flex-wrap: wrap;
   gap: 16px;
@@ -197,29 +197,31 @@ onMounted(fetchCategories)
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .header-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  display: grid;
-  place-items: center;
-  color: #fff3cd;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 .title {
-  font-size: 22px;
+  font-size: 32px;
   font-weight: 700;
   color: #fff;
   margin: 0;
 }
 
 .subtitle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  color: rgba(148, 163, 184, 0.8);
   margin: 2px 0 0;
 }
 
@@ -227,21 +229,30 @@ onMounted(fetchCategories)
 .btn-add {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  background: #fff3cd;
-  color: #0a0a0a;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3da9ff, #1e88e5);
+  box-shadow: 0 4px 14px rgba(61, 169, 255, 0.3);
+  color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 13px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-add:hover {
-  background: #ffe69c;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(61, 169, 255, 0.45);
+}
+
+/* ensure plus icon inside add button stays white */
+::v-deep .btn-add svg {
+  color: white !important;
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 .btn-retry {
@@ -402,7 +413,7 @@ tbody tr:hover {
 }
 
 .icon-cell {
-  color: #fff3cd;
+  color: #60a5fa;
   text-align: center;
 }
 
