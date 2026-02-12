@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Trash2 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
@@ -93,6 +93,11 @@ import axios from '@/lib/axios'
 const router = useRouter()
 const cart = useCartStore()
 const toast = useToast()
+
+// Refresh prices from API on mount
+onMounted(() => {
+  cart.refreshPrices()
+})
 
 const checkingStock = ref(false)
 

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getAuthPayload } from '@/lib/auth'
+import axios from '@/lib/axios'
 
 export type CartItem = {
   productId: string
@@ -173,6 +174,68 @@ export const useCartStore = defineStore('cart', () => {
     return findItemIndex(productId) >= 0
   }
 
+  const refreshing = ref(false)
+
+  /** Fetch live prices from the API and update cart items */
+  async function refreshPrices() {
+    if (items.value.length === 0) return
+
+    refreshing.value = true
+    try {
+      const results = await Promise.allSettled(
+        items.value.map((item) => axios.get(`/products/${item.productId}`))
+      )
+
+      let changed = false
+      const toRemove: string[] = []
+
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i]
+        const cartItem = items.value[i]
+
+        if (result.status === 'fulfilled' && result.value?.data) {
+          const product = result.value.data
+          const newOriginalPrice = Number(product.price)
+          const newDiscountPercent = product.discountPercent ?? 0
+          const newFinalPrice = product.finalPrice ?? (
+            newDiscountPercent > 0
+              ? newOriginalPrice * (1 - newDiscountPercent / 100)
+              : newOriginalPrice
+          )
+
+          if (
+            cartItem.priceSnapshot !== newFinalPrice ||
+            cartItem.originalPrice !== newOriginalPrice ||
+            cartItem.discountPercent !== newDiscountPercent ||
+            cartItem.name !== product.name ||
+            cartItem.imageUrl !== product.imageUrl
+          ) {
+            cartItem.priceSnapshot = newFinalPrice
+            cartItem.originalPrice = newOriginalPrice
+            cartItem.discountPercent = newDiscountPercent
+            cartItem.name = product.name
+            cartItem.imageUrl = product.imageUrl
+            changed = true
+          }
+        } else {
+          // Product no longer exists — mark for removal
+          toRemove.push(cartItem.productId)
+          changed = true
+        }
+      }
+
+      if (toRemove.length > 0) {
+        items.value = items.value.filter((item) => !toRemove.includes(item.productId))
+      }
+
+      if (changed) saveToStorage()
+    } catch (error) {
+      console.warn('Failed to refresh cart prices:', error)
+    } finally {
+      refreshing.value = false
+    }
+  }
+
   // Initialize: load from storage on store creation
   loadFromStorage()
 
@@ -180,6 +243,7 @@ export const useCartStore = defineStore('cart', () => {
   return {
     // State
     items,
+    refreshing,
 
     // Getters
     itemCount,
@@ -198,5 +262,6 @@ export const useCartStore = defineStore('cart', () => {
     getItemQuantity,
     isInCart,
     loadFromStorage,
+    refreshPrices,
   }
 })
