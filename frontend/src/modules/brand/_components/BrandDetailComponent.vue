@@ -148,6 +148,22 @@
           </div>
         </div>
       </div>
+
+      <!-- Brand Products -->
+      <div>
+        <h2 class="text-xl font-semibold text-primary mb-2 flex items-center gap-2">
+          Products
+        </h2>
+        <p class="text-sm text-secondary/60 mb-6">
+          More from <span class="text-primary font-medium">{{ brand.name }}</span>
+        </p>
+
+        <ProductCardGrid
+          :products="brandProducts"
+          :loading="productsLoading"
+          empty-text="No products found for this brand."
+        />
+      </div>
     </div>
 
     <!-- Not found -->
@@ -170,7 +186,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import {
   Award, Lightbulb, UserCircle,
@@ -178,13 +194,40 @@ import {
 } from 'lucide-vue-next'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import StateView from '@/components/StateView.vue'
+import ProductCardGrid from '@/components/ProductCardGrid.vue'
 import { placeholderSvg } from '@/lib/utils'
+import axios from '@/lib/axios'
 
 const props = defineProps({
   brand: { type: Object, default: null },
   loading: { type: Boolean, default: false },
   error: { type: String, default: null },
 })
+
+// ------ Brand products ------
+const brandProducts = ref([])
+const productsLoading = ref(false)
+
+async function loadBrandProducts(brandId) {
+  if (!brandId) return
+  productsLoading.value = true
+  try {
+    const { data } = await axios.get('/products', {
+      params: { brand: brandId },
+    })
+    brandProducts.value = data.data ?? data ?? []
+  } catch {
+    brandProducts.value = []
+  } finally {
+    productsLoading.value = false
+  }
+}
+
+watch(
+  () => props.brand?.id,
+  (id) => { if (id) loadBrandProducts(id) },
+  { immediate: true },
+)
 
 const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
