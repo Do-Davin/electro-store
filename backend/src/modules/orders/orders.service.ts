@@ -446,7 +446,7 @@ export class OrdersService {
     doc
       .fontSize(22)
       .font('Helvetica-Bold')
-      .text('ElectroStore', { align: 'center' });
+      .text('ELECTRO-STORE', { align: 'center' });
     doc.moveDown(0.3);
     doc
       .fontSize(10)
@@ -651,7 +651,7 @@ export class OrdersService {
       .fontSize(8)
       .font('Helvetica')
       .fillColor('#9ca3af')
-      .text('Thank you for shopping with ElectroStore!', 50, doc.y, {
+      .text('Thank you for shopping with ELECTRO-STORE!', 50, doc.y, {
         align: 'center',
       })
       .text(`Generated on ${new Date().toLocaleString('en-US')}`, {

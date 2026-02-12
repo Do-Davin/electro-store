@@ -16,7 +16,6 @@
         <span>Refresh</span>
       </button>
     </div>
-
     <!-- Loading -->
     <div v-if="loading" class="loading-state">
       <div class="loader-wrapper">

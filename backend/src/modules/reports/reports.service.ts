@@ -66,10 +66,11 @@ export class ReportsService {
     // Derive VAT from items (10% of original subtotal, before discount)
     const totalVat = paidOrders.reduce((sum, o) => {
       const originalSubtotal = o.items.reduce(
-        (s, item) => s + Number(item.product?.price ?? item.priceAtTime) * item.quantity,
+        (s, item) =>
+          s + Number(item.product?.price ?? item.priceAtTime) * item.quantity,
         0,
       );
-      return sum + Math.round(originalSubtotal * 0.10 * 100) / 100;
+      return sum + Math.round(originalSubtotal * 0.1 * 100) / 100;
     }, 0);
 
     // Calculate total discount on VAT-inclusive amount
@@ -79,7 +80,7 @@ export class ReportsService {
         const finalPrice = Number(item.priceAtTime);
         return s + (originalPrice - finalPrice) * item.quantity;
       }, 0);
-      return sum + Math.round(baseDiscount * 1.10 * 100) / 100;
+      return sum + Math.round(baseDiscount * 1.1 * 100) / 100;
     }, 0);
 
     const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
@@ -96,7 +97,7 @@ export class ReportsService {
     doc
       .fontSize(22)
       .font('Helvetica-Bold')
-      .text('ElectroStore', { align: 'center' });
+      .text('ELECTRO-STORE', { align: 'center' });
     doc.moveDown(0.3);
     doc
       .fontSize(14)
@@ -242,7 +243,7 @@ export class ReportsService {
       .text(`Generated on ${new Date().toLocaleString('en-US')}`, 50, doc.y, {
         align: 'center',
       })
-      .text('ElectroStore — Confidential', { align: 'center' });
+      .text('ELECTRO-STORE — Confidential', { align: 'center' });
 
     doc.end();
     return doc;

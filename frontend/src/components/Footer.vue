@@ -10,7 +10,7 @@ import { Github, Facebook, Instagram, Linkedin, Phone, Mail } from 'lucide-vue-n
       <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
         <!-- Brand Section -->
         <div class="space-y-4">
-          <h3 class="text-2xl font-bold tracking-tight">ELECTRO-STORE</h3>
+          <h3 class="logo__title-gradient text-2xl font-bold tracking-tight">ELECTRO-STORE</h3>
           <p class="text-primary/70 text-sm leading-relaxed">
             Your trusted destination for quality electronics and accessories.
             We bring innovation to your doorstep.
@@ -87,3 +87,15 @@ import { Github, Facebook, Instagram, Linkedin, Phone, Mail } from 'lucide-vue-n
     </div>
   </footer>
 </template>
+
+<style scoped>
+.logo__title-gradient {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: block;
+  background: linear-gradient(135deg, #ff8c42 0%, #ff6b9d 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+</style>
