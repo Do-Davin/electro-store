@@ -117,20 +117,22 @@
               </button>
             </td>
             <td class="actions-cell">
-              <RouterLink
-                :to="`/dashboard/products/${p.id}/edit`"
-                class="btn-icon edit"
-                title="Edit"
-              >
-                <Pencil :size="15" />
-              </RouterLink>
-              <button
-                class="btn-icon delete"
-                title="Delete"
-                @click="confirmDelete(p)"
-              >
-                <Trash2 :size="15" />
-              </button>
+              <div class="actions-inner">
+                <RouterLink
+                  :to="`/dashboard/products/${p.id}/edit`"
+                  class="btn-icon edit"
+                  title="Edit"
+                >
+                  <Pencil :size="15" />
+                </RouterLink>
+                <button
+                  class="btn-icon delete"
+                  title="Delete"
+                  @click="confirmDelete(p)"
+                >
+                  <Trash2 :size="15" />
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -302,11 +304,11 @@ onMounted(fetchProducts)
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background: rgba(255, 243, 205, 0.08);
-  border: 1px solid rgba(255, 243, 205, 0.15);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.12));
+  border: 1px solid rgba(59, 130, 246, 0.18);
   display: grid;
   place-items: center;
-  color: #fff3cd;
+  color: #60a5fa;
 }
 
 .title {
@@ -345,7 +347,8 @@ onMounted(fetchProducts)
 .search-box input {
   padding: 9px 14px 9px 34px;
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* border color changed to match Add Product blue (only the border) */
+  border: 1px solid rgba(61, 169, 255, 0.18);
   border-radius: 8px;
   color: #fff;
   font-size: 13px;
@@ -355,7 +358,7 @@ onMounted(fetchProducts)
 }
 
 .search-box input:focus {
-  border-color: rgba(255, 243, 205, 0.4);
+  border-color: rgba(61, 169, 255, 0.35);
 }
 
 .search-box input::placeholder {
@@ -368,10 +371,11 @@ onMounted(fetchProducts)
   align-items: center;
   gap: 6px;
   padding: 9px 16px;
-  background: rgba(255, 243, 205, 0.1);
+  background: linear-gradient(135deg, #3da9ff, #1e88e5);
+  box-shadow: 0 4px 14px rgba(61, 169, 255, 0.3);
   border: 1px solid rgba(255, 243, 205, 0.2);
   border-radius: 8px;
-  color: #fff3cd;
+  color: #ffffff;
   font-weight: 600;
   font-size: 13px;
   text-decoration: none;
@@ -379,7 +383,8 @@ onMounted(fetchProducts)
 }
 
 .btn-add:hover {
-  background: rgba(255, 243, 205, 0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45);
 }
 
 /* ── States ── */
@@ -597,6 +602,9 @@ tr:hover td {
 /* ── Action buttons ── */
 .actions-cell {
   text-align: right;
+}
+
+.actions-inner {
   display: flex;
   gap: 6px;
   justify-content: flex-end;
