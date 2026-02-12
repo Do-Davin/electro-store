@@ -244,7 +244,11 @@ function onLogout() {
 <style scoped>
 .sidebar {
   width: 240px;
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  z-index: 20;
+  left: 0;
+  height: 100vh;
   background: #0a0a0a;
   color: #ffffff;
   display: flex;
@@ -269,6 +273,12 @@ function onLogout() {
 
 .logo-image:hover {
   opacity: 1;
+}
+
+.nav {
+  /* make the nav area take remaining height and be scrollable */
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .nav ul {
@@ -392,6 +402,7 @@ function onLogout() {
 }
 
 .spacer {
-  flex: 1 1 auto;
+  /* keep spacer fixed sized so header/footer remain visible */
+  flex: 0 0 auto;
 }
 </style>

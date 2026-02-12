@@ -26,5 +26,13 @@ import SidebarComponent from '@/modules/dashboard/_components/SidebarComponent.v
   min-height: auto !important;
   overflow-y: auto;
   background: transparent;
+  /* account for fixed sidebar width so content isn't hidden underneath */
+  margin-left: 240px;
+}
+
+@media (max-width: 900px) {
+  .content {
+    margin-left: 0;
+  }
 }
 </style>
