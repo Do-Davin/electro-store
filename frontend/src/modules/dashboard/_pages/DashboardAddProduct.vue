@@ -434,9 +434,8 @@ onMounted(async () => {
 
 .subtitle {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0;
-  font-weight: 400;
+  color: rgba(148, 163, 184, 0.8);
+  margin: 2px 0 0;
 }
 
 .header-actions {
@@ -482,9 +481,10 @@ onMounted(async () => {
 }
 
 .btn-clear:hover {
-  background: rgba(255, 77, 79, 0.15);
-  color: #ff7875;
-  border-color: rgba(255, 77, 79, 0.3);
+  transform: translateY(-1px);
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 /* ── Row Layout ── */
@@ -550,6 +550,7 @@ onMounted(async () => {
 .image-upload:hover {
   background: rgba(61, 169, 255, 0.06);
   border-color: rgba(61, 169, 255, 0.35);
+  transform: translateY(-1px);
 }
 
 .placeholder {

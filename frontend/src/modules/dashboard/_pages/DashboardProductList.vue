@@ -289,7 +289,7 @@ onMounted(fetchProducts)
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
   gap: 16px;
 }
@@ -301,26 +301,27 @@ onMounted(fetchProducts)
 }
 
 .header-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.12));
-  border: 1px solid rgba(59, 130, 246, 0.18);
-  display: grid;
-  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(96,165,250,0.12);
   color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 .title {
-  font-size: 22px;
+  font-size: 32px;
   font-weight: 700;
   color: #fff;
   margin: 0;
 }
 
 .subtitle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  color: rgba(148, 163, 184, 0.8);
   margin: 2px 0 0;
 }
 
@@ -369,22 +370,28 @@ onMounted(fetchProducts)
 .btn-add {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 16px;
+  gap: 8px;
+  padding: 10px 20px;
   background: linear-gradient(135deg, #3da9ff, #1e88e5);
   box-shadow: 0 4px 14px rgba(61, 169, 255, 0.3);
-  border: 1px solid rgba(255, 243, 205, 0.2);
-  border-radius: 8px;
+  border-radius: 10px;
   color: #ffffff;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   text-decoration: none;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-add:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45);
+}
+
+/* ensure the plus icon remains white like the Add Product page */
+::v-deep .btn-add svg {
+  color: white !important;
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 /* ── States ── */

@@ -182,13 +182,13 @@ async function submit() {
 <style scoped>
 /* ── Layout ── */
 .brand-form {
-  max-width: 900px;
+  max-width: 100%;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
@@ -197,83 +197,94 @@ async function submit() {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .btn-back {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: background 0.2s;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 .btn-back:hover {
-  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45); 
 }
 
 .title {
-  font-size: 22px;
+  font-size: 32px;
   font-weight: 700;
   color: #fff;
   margin: 0;
 }
 
 .subtitle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  color: rgba(148, 163, 184, 0.8);
   margin: 2px 0 0;
 }
 
 .header-actions {
   display: flex;
   gap: 10px;
+  align-items: center;
+}
+
+/* Apply blue accent color to icons on this page (like Add Product page) */
+::v-deep svg {
+  color: #60a5fa;
+  stroke: currentColor;
+  fill: none;
 }
 
 /* ── Buttons ── */
 .btn-clear {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  font-size: 13px;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-clear:hover {
-  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 .btn-submit {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  background: linear-gradient(180deg, #16a34a 0%, #0f8a3b 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3da9ff, #1e88e5);
+  color: white;
+  box-shadow: 0 4px 14px rgba(61, 169, 255, 0.3);
+  border-radius: 10px;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(16,185,129,0.16);
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 .btn-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgba(16,185,129,0.22);
-  filter: brightness(1.03);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(61, 169, 255, 0.45);
 }
 
 .btn-submit:active:not(:disabled) {
@@ -291,6 +302,20 @@ async function submit() {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+/* ensure the plus icon inside Create Brand stays white like Add Product */
+::v-deep .btn-submit svg {
+  color: white !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* keep clear/reset button icon color as the button text (don't apply blue accent) */
+::v-deep .btn-clear svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+  fill: none !important;
 }
 
 /* ── Error banner ── */
@@ -403,7 +428,7 @@ async function submit() {
 }
 
 .field input:focus {
-  border-color: rgba(255, 243, 205, 0.5);
+  border-color: rgba(61, 169, 255, 0.35);
 }
 
 .field input::placeholder {
@@ -416,7 +441,7 @@ async function submit() {
   margin: 16px;
   border: 2px dashed rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  min-height: 180px;
+  height: 330px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -426,13 +451,18 @@ async function submit() {
 }
 
 .image-upload.small {
-  min-height: 140px;
-  max-width: 320px;
-  margin: 16px 20px;
+  /* Make inventor upload area full-width and centered like brand logo */
+  min-height: 180px;
+  width: 98%;
+  box-sizing: border-box;
+  margin: 16px;
+  padding: 8px 16px;
 }
 
 .image-upload:hover {
-  border-color: rgba(255, 243, 205, 0.35);
+  border-color: rgba(61, 169, 255, 0.35);
+  background: rgba(7, 24, 33, 0.12);
+  transform: translateY(-1px);
 }
 
 .placeholder {
@@ -448,10 +478,25 @@ async function submit() {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(96,165,250,0.12);
   display: grid;
   place-items: center;
-  color: #fff3cd;
+  color: #60a5fa;
+  transition: all 0.18s ease;
+}
+
+/* Hover state: darker rounded square with blue icon and subtle glow */
+.image-upload:hover .upload-icon-wrap {
+  background: rgba(10,34,47,0.9);
+  color: #60a5fa;
+  box-shadow: 0 10px 30px rgba(61,169,255,0.06), inset 0 1px 0 rgba(255,255,255,0.02);
+  transform: translateY(-1px);
+}
+
+/* Keep smaller upload variants consistent */
+.image-upload.small .upload-icon-wrap {
+  width: 48px;
+  height: 48px;
 }
 
 .upload-title {
@@ -468,11 +513,18 @@ async function submit() {
   width: 100%;
   height: 100%;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .preview img {
-  width: 100%;
-  height: 180px;
+  max-width: 100%;
+  max-height: 160px;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
 }

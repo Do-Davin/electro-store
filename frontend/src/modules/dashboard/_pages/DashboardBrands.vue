@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="header-left">
         <div class="header-icon">
-          <Layers :size="18" />
+          <Award :size="18" />
         </div>
         <div>
           <h1 class="title">Brands</h1>
@@ -128,7 +128,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import {
-  Layers, Plus, Loader2, AlertCircle,
+  Award, Plus, Loader2, AlertCircle,
   Pencil, Trash2, ImageIcon,
 } from 'lucide-vue-next'
 import axios from '@/lib/axios'
@@ -197,13 +197,14 @@ onMounted(fetchBrands)
 <style scoped>
 /* ── Layout ── */
 .brand-list {
-  max-width: 1100px;
+  width: 100%;
+  max-width: none;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 28px;
   flex-wrap: wrap;
   gap: 16px;
@@ -212,29 +213,31 @@ onMounted(fetchBrands)
 .header-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .header-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  display: grid;
-  place-items: center;
-  color: #fff3cd;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 .title {
-  font-size: 22px;
+  font-size: 32px;
   font-weight: 700;
   color: #fff;
   margin: 0;
 }
 
 .subtitle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  color: rgba(148, 163, 184, 0.8);
   margin: 2px 0 0;
 }
 
@@ -242,21 +245,30 @@ onMounted(fetchBrands)
 .btn-add {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
-  background: #fff3cd;
-  color: #0a0a0a;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3da9ff, #1e88e5);
+  color: white;
+  box-shadow: 0 4px 14px rgba(61, 169, 255, 0.3);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s;
 }
 
+/* ensure the plus icon inside Add Brand stays white like Add Product */
+::v-deep .btn-add svg {
+  color: white !important;
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
 .btn-add:hover {
-  background: #ffe69c;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45);
 }
 
 .btn-add.small {
