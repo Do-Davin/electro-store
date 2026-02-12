@@ -1,3 +1,30 @@
+<script setup>
+import { Truck, ShieldCheck, CreditCard, Wrench } from 'lucide-vue-next'
+
+const features = [
+  {
+    title: 'Fast Delivery',
+    desc: 'Quick and reliable shipping to your doorstep.',
+    icon: Truck,
+  },
+  {
+    title: '100% Genuine Products',
+    desc: 'Only original and verified electronics.',
+    icon: ShieldCheck,
+  },
+  {
+    title: 'Secure Payment',
+    desc: 'Protected transactions with trusted gateways.',
+    icon: CreditCard,
+  },
+  {
+    title: '1-Year Warranty',
+    desc: 'We’ve got you covered with warranty support.',
+    icon: Wrench,
+  },
+]
+</script>
+
 <template>
   <section class="w-full py-16 bg-[#f8f9fc] dark:bg-[#000000]">
     <div class="max-w-6xl mx-auto px-6">
@@ -35,30 +62,3 @@
     </div>
   </section>
 </template>
-
-<script setup>
-import { Truck, ShieldCheck, CreditCard, Wrench } from 'lucide-vue-next'
-
-const features = [
-  {
-    title: 'Fast Delivery',
-    desc: 'Quick and reliable shipping to your doorstep.',
-    icon: Truck,
-  },
-  {
-    title: '100% Genuine Products',
-    desc: 'Only original and verified electronics.',
-    icon: ShieldCheck,
-  },
-  {
-    title: 'Secure Payment',
-    desc: 'Protected transactions with trusted gateways.',
-    icon: CreditCard,
-  },
-  {
-    title: '1-Year Warranty',
-    desc: 'We’ve got you covered with warranty support.',
-    icon: Wrench,
-  },
-]
-</script>

@@ -1,3 +1,7 @@
+<script setup>
+import ProductSection from '@/modules/product/_components/ProductSection.vue';
+</script>
+
 <template>
   <ProductSection
     title="Best Sellers"
@@ -6,7 +10,3 @@
     bg="gray"
   />
 </template>
-
-<script setup>
-import ProductSection from '@/modules/product/_components/ProductSection.vue';
-</script>

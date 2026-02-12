@@ -1,4 +1,33 @@
-<!-- 
+<script setup>
+import Navbar from '@/components/Navbar.vue'
+import Footer from '@/components/Footer.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
+
+defineProps({
+  /** Show skeletons instead of the default slot */
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+  /** Which skeleton shape to render while loading */
+  skeletonVariant: {
+    type: String,
+    default: 'text',
+  },
+  /** How many skeleton items to show */
+  skeletonCount: {
+    type: Number,
+    default: 3,
+  },
+  /** Extra CSS classes passed to SkeletonLoader */
+  skeletonClass: {
+    type: String,
+    default: '',
+  },
+})
+</script>
+
+<!--
   PageLayout.vue — Reusable page wrapper that:
   1. Pushes the footer to the bottom (even when content is short / loading)
   2. Shows a skeleton loader while `loading` is true
@@ -39,35 +68,6 @@
     <Footer />
   </div>
 </template>
-
-<script setup>
-import Navbar from '@/components/Navbar.vue'
-import Footer from '@/components/Footer.vue'
-import SkeletonLoader from '@/components/SkeletonLoader.vue'
-
-defineProps({
-  /** Show skeletons instead of the default slot */
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  /** Which skeleton shape to render while loading */
-  skeletonVariant: {
-    type: String,
-    default: 'text',
-  },
-  /** How many skeleton items to show */
-  skeletonCount: {
-    type: Number,
-    default: 3,
-  },
-  /** Extra CSS classes passed to SkeletonLoader */
-  skeletonClass: {
-    type: String,
-    default: '',
-  },
-})
-</script>
 
 <style scoped>
 .page-layout {

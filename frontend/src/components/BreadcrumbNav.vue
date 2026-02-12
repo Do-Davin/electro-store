@@ -1,3 +1,16 @@
+<script setup>
+import { RouterLink } from 'vue-router'
+import { ChevronRight } from 'lucide-vue-next'
+
+defineProps({
+  crumbs: {
+    type: Array,
+    required: true,
+    // Each crumb: { label: string, to: string }
+  },
+})
+</script>
+
 <template>
   <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-sm text-gray-400 flex-wrap">
     <RouterLink
@@ -21,16 +34,3 @@
     </RouterLink>
   </nav>
 </template>
-
-<script setup>
-import { RouterLink } from 'vue-router'
-import { ChevronRight } from 'lucide-vue-next'
-
-defineProps({
-  crumbs: {
-    type: Array,
-    required: true,
-    // Each crumb: { label: string, to: string }
-  },
-})
-</script>

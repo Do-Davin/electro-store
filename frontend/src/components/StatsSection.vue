@@ -1,3 +1,12 @@
+<script setup>
+const stats = [
+  { value: "1200+", label: "Happy Customers" },
+  { value: "500+", label: "Products Delivered" },
+  { value: "15+", label: "Trusted Brands" },
+  { value: "4.9★", label: "Customer Rating" },
+]
+</script>
+
 <template>
   <section class="w-full py-16 bg-[#f8f9fc] dark:bg-[#000000]">
     <div class="max-w-6xl mx-auto px-6 text-center">
@@ -31,12 +40,3 @@
     </div>
   </section>
 </template>
-
-<script setup>
-const stats = [
-  { value: "1200+", label: "Happy Customers" },
-  { value: "500+", label: "Products Delivered" },
-  { value: "15+", label: "Trusted Brands" },
-  { value: "4.9★", label: "Customer Rating" },
-]
-</script>

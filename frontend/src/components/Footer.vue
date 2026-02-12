@@ -1,4 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
+<script setup>
+import { Github, Facebook, Instagram, Linkedin, Phone, Mail } from 'lucide-vue-next'
+</script>
+
 <template>
   <footer class="w-full bg-[#0a0a0a] text-primary border-t border-primary/20">
     <div class="max-w-6xl mx-auto px-6 py-16">
@@ -83,7 +87,3 @@
     </div>
   </footer>
 </template>
-
-<script setup>
-import { Github, Facebook, Instagram, Linkedin, Phone, Mail } from 'lucide-vue-next'
-</script>

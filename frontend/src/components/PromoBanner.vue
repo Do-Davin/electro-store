@@ -1,3 +1,11 @@
+<script setup>
+import { ref } from 'vue'
+import { X, Sparkles, ArrowRight } from 'lucide-vue-next';
+import { RouterLink } from 'vue-router';
+
+const visible = ref(true)
+</script>
+
 <template>
   <Transition name="promo-slide">
     <div v-if="visible" class="promo-banner">
@@ -31,14 +39,6 @@
     </div>
   </Transition>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { X, Sparkles, ArrowRight } from 'lucide-vue-next';
-import { RouterLink } from 'vue-router';
-
-const visible = ref(true)
-</script>
 
 <style scoped>
 .promo-banner {

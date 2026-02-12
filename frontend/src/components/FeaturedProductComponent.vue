@@ -1,3 +1,7 @@
+<script setup>
+import ProductSection from '@/modules/product/_components/ProductSection.vue'
+</script>
+
 <template>
   <ProductSection
     title="Featured Products"
@@ -5,7 +9,3 @@
     :params="{ limit: 6 }"
   />
 </template>
-
-<script setup>
-import ProductSection from '@/modules/product/_components/ProductSection.vue'
-</script>

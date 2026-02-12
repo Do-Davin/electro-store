@@ -1,26 +1,3 @@
-<template>
-  <div class="carousel">
-    <div ref="track" class="group">
-      <div
-        v-for="(item, index) in categories"
-        :key="index"
-        class="card"
-      >
-        <img
-          :src="item.img"
-          :alt="item.name"
-          class="card-img"
-          draggable="false"
-          :style="{
-            transform: item.scale ? `scale(${item.scale})` : 'scale(1)',
-            '--base-scale': item.scale || 1
-          }"
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 
@@ -49,6 +26,29 @@ onMounted(() => {
   }
 });
 </script>
+
+<template>
+  <div class="carousel">
+    <div ref="track" class="group">
+      <div
+        v-for="(item, index) in categories"
+        :key="index"
+        class="card"
+      >
+        <img
+          :src="item.img"
+          :alt="item.name"
+          class="card-img"
+          draggable="false"
+          :style="{
+            transform: item.scale ? `scale(${item.scale})` : 'scale(1)',
+            '--base-scale': item.scale || 1
+          }"
+        />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .carousel {

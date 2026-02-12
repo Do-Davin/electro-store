@@ -1,3 +1,76 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { Star } from 'lucide-vue-next';
+
+// Props to allow customization
+const props = defineProps({
+  reviews: {
+    type: Array,
+    default: () => []
+  }
+});
+
+const defaultTestimonials = [
+  {
+    name: 'Do Davin',
+    image: 'users/dodavin.jpg',
+    rating: '5.0',
+    review: 'Best electronics store! Got my new laptop at an amazing price. Fast shipping and excellent customer service. Highly recommend!'
+  },
+  {
+    name: 'Tath Chansereyvong',
+    image: 'users/vong.jpeg',
+    rating: '5.0',
+    review: 'The iPhone I ordered arrived in perfect condition. Great deals and authentic products. Will definitely shop here again!'
+  },
+  {
+    name: 'Bro Code',
+    image: 'users/brocode.jpg',
+    rating: '5.0',
+    review: 'Amazing selection of tech products! Found exactly what I needed for my home office setup. Professional service all the way.'
+  },
+  {
+    name: 'Tom',
+    image: 'users/tom.png',
+    rating: '5.0',
+    review: 'Top-notch quality products and competitive prices. The gaming headset I purchased exceeded my expectations. Five stars!'
+  },
+  {
+    name: 'Cristiano Ronaldo',
+    image: 'users/ronaldo.gif',
+    rating: '5.0',
+    review: 'Excellent shopping experience! The website is easy to navigate and checkout was smooth. My smartwatch arrived faster than expected.'
+  },
+  {
+    name: 'Leo Messi',
+    image: 'users/messi.jpg',
+    rating: '5.0',
+    review: 'Reliable and trustworthy store. Purchased a tablet for my kids and they love it! Great customer support team too.'
+  }
+];
+
+const testimonials = ref(props.reviews.length > 0 ? props.reviews : defaultTestimonials);
+
+const track1 = ref(null);
+const track2 = ref(null);
+
+// Duplicate cards for infinite scroll effect
+onMounted(() => {
+  const tracks = [track1.value, track2.value];
+
+  tracks.forEach(track => {
+    if (track) {
+      const cards = [...track.children];
+
+      // Duplicate cards for seamless loop
+      cards.forEach(card => {
+        track.appendChild(card.cloneNode(true));
+      });
+    }
+  });
+});
+</script>
+
 <template>
   <section class="w-full py-16 bg-white dark:bg-[#000000]">
     <div class="w-full">
@@ -80,79 +153,6 @@
     </div>
   </section>
 </template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-import { Star } from 'lucide-vue-next';
-
-// Props to allow customization
-const props = defineProps({
-  reviews: {
-    type: Array,
-    default: () => []
-  }
-});
-
-const defaultTestimonials = [
-  {
-    name: 'Do Davin',
-    image: 'users/dodavin.jpg',
-    rating: '5.0',
-    review: 'Best electronics store! Got my new laptop at an amazing price. Fast shipping and excellent customer service. Highly recommend!'
-  },
-  {
-    name: 'Tath Chansereyvong',
-    image: 'users/vong.jpeg',
-    rating: '5.0',
-    review: 'The iPhone I ordered arrived in perfect condition. Great deals and authentic products. Will definitely shop here again!'
-  },
-  {
-    name: 'Bro Code',
-    image: 'users/brocode.jpg',
-    rating: '5.0',
-    review: 'Amazing selection of tech products! Found exactly what I needed for my home office setup. Professional service all the way.'
-  },
-  {
-    name: 'Tom',
-    image: 'users/tom.png',
-    rating: '5.0',
-    review: 'Top-notch quality products and competitive prices. The gaming headset I purchased exceeded my expectations. Five stars!'
-  },
-  {
-    name: 'Cristiano Ronaldo',
-    image: 'users/ronaldo.gif',
-    rating: '5.0',
-    review: 'Excellent shopping experience! The website is easy to navigate and checkout was smooth. My smartwatch arrived faster than expected.'
-  },
-  {
-    name: 'Leo Messi',
-    image: 'users/messi.jpg',
-    rating: '5.0',
-    review: 'Reliable and trustworthy store. Purchased a tablet for my kids and they love it! Great customer support team too.'
-  }
-];
-
-const testimonials = ref(props.reviews.length > 0 ? props.reviews : defaultTestimonials);
-
-const track1 = ref(null);
-const track2 = ref(null);
-
-// Duplicate cards for infinite scroll effect
-onMounted(() => {
-  const tracks = [track1.value, track2.value];
-
-  tracks.forEach(track => {
-    if (track) {
-      const cards = [...track.children];
-
-      // Duplicate cards for seamless loop
-      cards.forEach(card => {
-        track.appendChild(card.cloneNode(true));
-      });
-    }
-  });
-});
-</script>
 
 <style scoped>
 /* TESTIMONIALS CAROUSEL */

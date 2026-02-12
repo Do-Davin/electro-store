@@ -1,74 +1,3 @@
-<!--
-  StateView.vue — Reusable component for empty & error states.
-
-  Usage:
-    <StateView variant="empty" title="No orders yet" subtitle="Your order history will appear here." action-text="Start Shopping" action-to="/products" />
-    <StateView variant="error" title="Something went wrong" :subtitle="errorMessage" :loading="store.loading" @retry="refetch" />
--->
-<template>
-  <div
-    class="rounded-2xl p-12 text-center relative overflow-hidden"
-    :class="[
-      containerClass,
-      { 'min-h-[60vh] flex flex-col items-center justify-center': fullHeight },
-    ]"
-  >
-    <!-- Loading overlay (shown during retry so we don't jump to skeleton) -->
-    <Transition name="fade">
-      <div
-        v-if="showOverlay"
-        class="absolute inset-0 z-10 flex items-center justify-center bg-black/70
-               backdrop-blur-[2px] rounded-2xl"
-      >
-        <Loader2 class="w-8 h-8 text-primary animate-spin" />
-      </div>
-    </Transition>
-
-    <!-- Icon -->
-    <div
-      class="w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center"
-      :class="iconBgClass"
-    >
-      <component :is="iconComponent" class="w-10 h-10" :class="iconColorClass" />
-    </div>
-
-    <!-- Title -->
-    <h2 class="text-xl font-bold mb-2" :class="titleClass">
-      {{ title }}
-    </h2>
-
-    <!-- Subtitle -->
-    <p class="mb-6 max-w-sm mx-auto" :class="subtitleClass">
-      {{ subtitle }}
-    </p>
-
-    <!-- Action: link or retry button -->
-    <div class="flex flex-wrap items-center justify-center gap-3">
-      <RouterLink
-        v-if="actionTo"
-        :to="actionTo"
-        class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white
-               rounded-xl font-semibold hover:bg-primary/90 transition-colors"
-      >
-        <component v-if="actionIcon" :is="actionIcon" class="w-5 h-5" />
-        {{ actionText }}
-      </RouterLink>
-
-      <button
-        v-if="variant === 'error'"
-        :disabled="showOverlay"
-        @click="$emit('retry')"
-        class="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium
-               rounded-xl transition-colors disabled:opacity-60 disabled:cursor-wait"
-        :class="retryBtnClass"
-      >
-        <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': showOverlay }" />
-        {{ showOverlay ? 'Retrying...' : 'Try Again' }}
-      </button>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { computed, ref, watch, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
@@ -207,6 +136,77 @@ const retryBtnClass = computed(() =>
   'bg-red-500 text-white hover:bg-red-600',
 )
 </script>
+
+<!--
+  StateView.vue — Reusable component for empty & error states.
+
+  Usage:
+    <StateView variant="empty" title="No orders yet" subtitle="Your order history will appear here." action-text="Start Shopping" action-to="/products" />
+    <StateView variant="error" title="Something went wrong" :subtitle="errorMessage" :loading="store.loading" @retry="refetch" />
+-->
+<template>
+  <div
+    class="rounded-2xl p-12 text-center relative overflow-hidden"
+    :class="[
+      containerClass,
+      { 'min-h-[60vh] flex flex-col items-center justify-center': fullHeight },
+    ]"
+  >
+    <!-- Loading overlay (shown during retry so we don't jump to skeleton) -->
+    <Transition name="fade">
+      <div
+        v-if="showOverlay"
+        class="absolute inset-0 z-10 flex items-center justify-center bg-black/70
+               backdrop-blur-[2px] rounded-2xl"
+      >
+        <Loader2 class="w-8 h-8 text-primary animate-spin" />
+      </div>
+    </Transition>
+
+    <!-- Icon -->
+    <div
+      class="w-20 h-20 mx-auto mb-5 rounded-full flex items-center justify-center"
+      :class="iconBgClass"
+    >
+      <component :is="iconComponent" class="w-10 h-10" :class="iconColorClass" />
+    </div>
+
+    <!-- Title -->
+    <h2 class="text-xl font-bold mb-2" :class="titleClass">
+      {{ title }}
+    </h2>
+
+    <!-- Subtitle -->
+    <p class="mb-6 max-w-sm mx-auto" :class="subtitleClass">
+      {{ subtitle }}
+    </p>
+
+    <!-- Action: link or retry button -->
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <RouterLink
+        v-if="actionTo"
+        :to="actionTo"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white
+               rounded-xl font-semibold hover:bg-primary/90 transition-colors"
+      >
+        <component v-if="actionIcon" :is="actionIcon" class="w-5 h-5" />
+        {{ actionText }}
+      </RouterLink>
+
+      <button
+        v-if="variant === 'error'"
+        :disabled="showOverlay"
+        @click="$emit('retry')"
+        class="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium
+               rounded-xl transition-colors disabled:opacity-60 disabled:cursor-wait"
+        :class="retryBtnClass"
+      >
+        <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': showOverlay }" />
+        {{ showOverlay ? 'Retrying...' : 'Try Again' }}
+      </button>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .fade-enter-active,

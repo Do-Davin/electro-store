@@ -1,4 +1,94 @@
 <!-- eslint-disable vue/multi-word-component-names -->
+<script setup>
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { RouterLink, useRouter, useRoute } from 'vue-router';
+import { Home, Box, ShoppingCart, Heart, Crown, Receipt, UserCircle, Menu, X } from 'lucide-vue-next';
+import { getRole, isLoggedIn, logout } from '@/lib/auth';
+import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store';
+import { useCartStore } from '@/modules/cart/_stores/cart.store';
+
+const router = useRouter();
+const route = useRoute();
+const wishlist = useWishlistStore();
+const cart = useCartStore();
+
+const loggedIn = computed(() => isLoggedIn());
+const isAdmin = computed(() => getRole() === 'ADMIN');
+const isMobileMenuOpen = ref(false);
+const scrollY = ref(0);
+
+// Computed classes that react to scroll position
+const navbarClasses = computed(() => {
+  const isScrolled = scrollY.value > 50;
+  const isDark = hasHeroSection.value && !isScrolled;
+
+  return [
+    'navbar',
+    'fixed top-0 left-0 w-full z-50 flex items-center',
+    'justify-between h-16 px-4 lg:px-8 border-b bg-transparent',
+    'backdrop-blur-sm transition-colors duration-300',
+    isDark ? 'navbar-dark' : 'navbar-light'
+  ];
+});
+
+const mobileNavClasses = computed(() => {
+  const isScrolled = scrollY.value > 50;
+  const isDark = hasHeroSection.value && !isScrolled;
+
+  return [
+    'mobile-nav',
+    'fixed top-16 left-0 w-full z-40 md:hidden',
+    'border-b backdrop-blur-md shadow-lg',
+    isDark ? 'navbar-dark' : 'navbar-light'
+  ];
+});
+
+function onLogout() {
+  logout();
+  // Reload stores so they switch to guest storage keys
+  wishlist.loadFromStorage();
+  cart.loadFromStorage();
+  closeMobileMenu();
+  router.push('/auth/login');
+}
+
+function onLogoClick() {
+  closeMobileMenu();
+  router.push(isAdmin.value ? '/dashboard' : '/');
+}
+
+function toggleMobileMenu() {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+}
+
+function closeMobileMenu() {
+  isMobileMenuOpen.value = false;
+}
+
+// Check if current page has hero section (only home page)
+const hasHeroSection = computed(() => route.path === '/');
+
+// Handle navbar color change on scroll (only for home page)
+const updateNavbarColor = () => {
+  scrollY.value = window.scrollY;
+};
+
+// Watch for route changes
+watch(() => route.path, () => {
+  closeMobileMenu();
+  scrollY.value = window.scrollY;
+});
+
+onMounted(() => {
+  scrollY.value = window.scrollY;
+  window.addEventListener('scroll', updateNavbarColor);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateNavbarColor);
+});
+</script>
+
 <template>
   <header :class="navbarClasses">
 
@@ -206,96 +296,6 @@
     </nav>
   </Transition>
 </template>
-
-<script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { RouterLink, useRouter, useRoute } from 'vue-router';
-import { Home, Box, ShoppingCart, Heart, Crown, Receipt, UserCircle, Menu, X } from 'lucide-vue-next';
-import { getRole, isLoggedIn, logout } from '@/lib/auth';
-import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store';
-import { useCartStore } from '@/modules/cart/_stores/cart.store';
-
-const router = useRouter();
-const route = useRoute();
-const wishlist = useWishlistStore();
-const cart = useCartStore();
-
-const loggedIn = computed(() => isLoggedIn());
-const isAdmin = computed(() => getRole() === 'ADMIN');
-const isMobileMenuOpen = ref(false);
-const scrollY = ref(0);
-
-// Computed classes that react to scroll position
-const navbarClasses = computed(() => {
-  const isScrolled = scrollY.value > 50;
-  const isDark = hasHeroSection.value && !isScrolled;
-
-  return [
-    'navbar',
-    'fixed top-0 left-0 w-full z-50 flex items-center',
-    'justify-between h-16 px-4 lg:px-8 border-b bg-transparent',
-    'backdrop-blur-sm transition-colors duration-300',
-    isDark ? 'navbar-dark' : 'navbar-light'
-  ];
-});
-
-const mobileNavClasses = computed(() => {
-  const isScrolled = scrollY.value > 50;
-  const isDark = hasHeroSection.value && !isScrolled;
-
-  return [
-    'mobile-nav',
-    'fixed top-16 left-0 w-full z-40 md:hidden',
-    'border-b backdrop-blur-md shadow-lg',
-    isDark ? 'navbar-dark' : 'navbar-light'
-  ];
-});
-
-function onLogout() {
-  logout();
-  // Reload stores so they switch to guest storage keys
-  wishlist.loadFromStorage();
-  cart.loadFromStorage();
-  closeMobileMenu();
-  router.push('/auth/login');
-}
-
-function onLogoClick() {
-  closeMobileMenu();
-  router.push(isAdmin.value ? '/dashboard' : '/');
-}
-
-function toggleMobileMenu() {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value;
-}
-
-function closeMobileMenu() {
-  isMobileMenuOpen.value = false;
-}
-
-// Check if current page has hero section (only home page)
-const hasHeroSection = computed(() => route.path === '/');
-
-// Handle navbar color change on scroll (only for home page)
-const updateNavbarColor = () => {
-  scrollY.value = window.scrollY;
-};
-
-// Watch for route changes
-watch(() => route.path, () => {
-  closeMobileMenu();
-  scrollY.value = window.scrollY;
-});
-
-onMounted(() => {
-  scrollY.value = window.scrollY;
-  window.addEventListener('scroll', updateNavbarColor);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', updateNavbarColor);
-});
-</script>
 
 <style scoped>
 .logo__title-gradient {

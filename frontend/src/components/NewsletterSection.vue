@@ -1,3 +1,34 @@
+<script setup>
+import { ref } from 'vue';
+import { http } from '@/lib/http.js';
+
+const email = ref('');
+const isLoading = ref(false);
+const successMessage = ref('');
+const errorMessage = ref('');
+
+const handleSubmit = async () => {
+  successMessage.value = '';
+  errorMessage.value = '';
+
+  if (!email.value) {
+    errorMessage.value = 'Please enter your email.';
+    return;
+  }
+
+  isLoading.value = true;
+  try {
+    const res = await http.post('/newsletter', { email: email.value });
+    successMessage.value = res?.message || 'Subscribed successfully.';
+    email.value = '';
+  } catch (error) {
+    errorMessage.value = error?.message || 'Subscription failed.';
+  } finally {
+    isLoading.value = false;
+  }
+};
+</script>
+
 <template>
   <section class="w-full py-16 bg-white dark:bg-[#000000]">
     <div class="max-w-4xl mx-auto px-6 text-center">
@@ -56,34 +87,3 @@
     </div>
   </section>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import { http } from '@/lib/http.js';
-
-const email = ref('');
-const isLoading = ref(false);
-const successMessage = ref('');
-const errorMessage = ref('');
-
-const handleSubmit = async () => {
-  successMessage.value = '';
-  errorMessage.value = '';
-
-  if (!email.value) {
-    errorMessage.value = 'Please enter your email.';
-    return;
-  }
-
-  isLoading.value = true;
-  try {
-    const res = await http.post('/newsletter', { email: email.value });
-    successMessage.value = res?.message || 'Subscribed successfully.';
-    email.value = '';
-  } catch (error) {
-    errorMessage.value = error?.message || 'Subscription failed.';
-  } finally {
-    isLoading.value = false;
-  }
-};
-</script>

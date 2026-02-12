@@ -1,3 +1,32 @@
+<script setup>
+defineProps({
+  /**
+   * Skeleton variant:
+   * 'card'    — grid of product-card-shaped skeletons
+   * 'detail'  — product detail page layout
+   * 'list'    — order/item list rows
+   * 'table'   — tabular data
+   * 'section' — home page content section
+   * 'text'    — generic text block (default)
+   */
+  variant: {
+    type: String,
+    default: 'text',
+    validator: (v) => ['card', 'detail', 'list', 'table', 'section', 'text'].includes(v),
+  },
+  /** Number of repeated skeleton items */
+  count: {
+    type: Number,
+    default: 3,
+  },
+  /** Extra CSS classes for the wrapper */
+  containerClass: {
+    type: String,
+    default: '',
+  },
+})
+</script>
+
 <template>
   <div class="animate-pulse" :class="containerClass">
     <!-- Card skeleton (e.g., product cards, order cards) -->
@@ -6,7 +35,7 @@
         <div
           v-for="i in count"
           :key="i"
-          class="w-75 bg-[#111111] rounded-2xl p-4 border border-white/[0.06]"
+          class="w-75 bg-[#111111] rounded-2xl p-4 border border-white/6"
         >
           <div class="w-full h-48 bg-white/10 rounded-2xl mb-4" />
           <div class="h-3 bg-white/10 rounded w-1/3 mb-2" />
@@ -23,7 +52,7 @@
     <!-- Detail skeleton (e.g., product detail page) -->
     <template v-else-if="variant === 'detail'">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-14">
-        <div class="bg-[#111111] rounded-2xl p-8 border border-white/[0.06]">
+        <div class="bg-[#111111] rounded-2xl p-8 border border-white/6">
           <div class="w-full h-80 bg-white/10 rounded-xl" />
         </div>
         <div class="space-y-6">
@@ -56,9 +85,9 @@
         <div
           v-for="i in count"
           :key="i"
-          class="bg-[#111111] rounded-2xl border border-white/[0.06] overflow-hidden"
+          class="bg-[#111111] rounded-2xl border border-white/6 overflow-hidden"
         >
-          <div class="flex justify-between items-center px-6 py-4 bg-white/5 border-b border-white/[0.06]">
+          <div class="flex justify-between items-center px-6 py-4 bg-white/5 border-b border-white/6">
             <div class="flex items-center gap-4">
               <div>
                 <div class="h-3 bg-white/10 rounded w-12 mb-1" />
@@ -90,13 +119,13 @@
 
     <!-- Table skeleton -->
     <template v-else-if="variant === 'table'">
-      <div class="bg-[#111111] rounded-2xl border border-white/[0.06] overflow-hidden">
-        <div class="px-6 py-4 bg-white/5 border-b border-white/[0.06]">
+      <div class="bg-[#111111] rounded-2xl border border-white/6 overflow-hidden">
+        <div class="px-6 py-4 bg-white/5 border-b border-white/6">
           <div class="flex gap-8">
             <div v-for="i in 4" :key="i" class="h-4 bg-white/10 rounded w-24" />
           </div>
         </div>
-        <div v-for="i in count" :key="i" class="px-6 py-4 border-b border-white/[0.04]">
+        <div v-for="i in count" :key="i" class="px-6 py-4 border-b border-white/4">
           <div class="flex gap-8 items-center">
             <div class="h-4 bg-white/10 rounded w-24" />
             <div class="h-4 bg-white/10 rounded w-32" />
@@ -132,32 +161,3 @@
     </template>
   </div>
 </template>
-
-<script setup>
-defineProps({
-  /**
-   * Skeleton variant:
-   * 'card'    — grid of product-card-shaped skeletons
-   * 'detail'  — product detail page layout
-   * 'list'    — order/item list rows
-   * 'table'   — tabular data
-   * 'section' — home page content section
-   * 'text'    — generic text block (default)
-   */
-  variant: {
-    type: String,
-    default: 'text',
-    validator: (v) => ['card', 'detail', 'list', 'table', 'section', 'text'].includes(v),
-  },
-  /** Number of repeated skeleton items */
-  count: {
-    type: Number,
-    default: 3,
-  },
-  /** Extra CSS classes for the wrapper */
-  containerClass: {
-    type: String,
-    default: '',
-  },
-})
-</script>

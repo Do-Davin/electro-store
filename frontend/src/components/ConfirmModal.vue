@@ -1,3 +1,52 @@
+<script setup>
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    default: false,
+  },
+  type: {
+    type: String,
+    default: 'danger',
+    validator: (value) => ['danger', 'warning', 'info', 'success'].includes(value),
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  confirmText: {
+    type: String,
+    default: 'Confirm',
+  },
+  cancelText: {
+    type: String,
+    default: 'Cancel',
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const emit = defineEmits(['close', 'confirm', 'cancel']);
+
+const handleConfirm = () => {
+  if (!props.loading) {
+    emit('confirm');
+  }
+};
+
+const handleCancel = () => {
+  if (!props.loading) {
+    emit('cancel');
+    emit('close');
+  }
+};
+</script>
+
 <template>
   <Teleport to="body">
     <Transition name="modal">
@@ -98,55 +147,6 @@
     </Transition>
   </Teleport>
 </template>
-
-<script setup>
-const props = defineProps({
-  isOpen: {
-    type: Boolean,
-    default: false,
-  },
-  type: {
-    type: String,
-    default: 'danger',
-    validator: (value) => ['danger', 'warning', 'info', 'success'].includes(value),
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  message: {
-    type: String,
-    required: true,
-  },
-  confirmText: {
-    type: String,
-    default: 'Confirm',
-  },
-  cancelText: {
-    type: String,
-    default: 'Cancel',
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const emit = defineEmits(['close', 'confirm', 'cancel']);
-
-const handleConfirm = () => {
-  if (!props.loading) {
-    emit('confirm');
-  }
-};
-
-const handleCancel = () => {
-  if (!props.loading) {
-    emit('cancel');
-    emit('close');
-  }
-};
-</script>
 
 <style scoped>
 .modal-overlay {

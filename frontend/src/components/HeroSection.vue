@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import { RouterLink } from 'vue-router';
+import TextType from './TextType.vue';
+// const backgroundImage = '/hero-bg.avif'
+const backgroundImage = ''
+</script>
+
 <template>
   <section
     class="hero"
@@ -161,13 +168,6 @@
   </section>
 </template>
 
-<script setup lang="ts">
-import { RouterLink } from 'vue-router';
-import TextType from './TextType.vue';
-// const backgroundImage = '/hero-bg.avif'
-const backgroundImage = ''
-</script>
-
 <style scoped>
 .hero {
   height: 100vh;
@@ -215,19 +215,6 @@ const backgroundImage = ''
   pointer-events: none;
 }
 
-/* .angkor-orange {
-  opacity: 0.18;
-  filter:
-    invert(60%)
-    sepia(90%)
-    saturate(800%)
-    hue-rotate(340deg)
-    brightness(100%)
-    contrast(95%)
-    drop-shadow(0 4px 12px rgba(255, 100, 16, 0.35))
-    drop-shadow(0 12px 40px rgba(210, 60, 0, 0.20));
-} */
-
 .angkor-orange {
   color: #ff9f55; /* STROKE BRIGHTNESS (MOST IMPORTANT) */
   /* fill: none; */
@@ -244,7 +231,6 @@ const backgroundImage = ''
   fill: none !important;
   stroke: currentColor;
 }
-
 
 .temple-path {
   fill: none;

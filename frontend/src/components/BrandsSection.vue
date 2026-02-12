@@ -1,3 +1,37 @@
+<script setup>
+import { computed, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
+import { Loader2 } from 'lucide-vue-next'
+import { useBrandStore } from '@/modules/brand/_stores/brand.store'
+import StateView from './StateView.vue'
+import { placeholderSvg } from '@/lib/utils'
+
+const brandStore = useBrandStore()
+const brands = computed(() => brandStore.brands)
+
+const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+
+function getLogoUrl(url) {
+  if (!url) return placeholderSvg
+  return url.startsWith('http') ? url : API + url
+}
+
+function onImageError(e) {
+  e.target.src = placeholderSvg
+}
+
+function handleRetry() {
+  brandStore.fetchBrands()
+}
+
+onMounted(() => {
+  // Reuse existing data if already fetched, otherwise fetch
+  if (brandStore.brands.length === 0) {
+    brandStore.fetchBrands()
+  }
+})
+</script>
+
 <template>
   <section class="w-full py-14 bg-white dark:bg-[#000000]">
     <div class="max-w-6xl mx-auto px-6">
@@ -33,7 +67,7 @@
           :key="brand.id"
           :to="`/brands/${brand.id}`"
           v-aos="{ delay: i * 120 }"
-          class="flex items-center justify-center flex-shrink-0
+          class="flex items-center justify-center shrink-0
           p-6 rounded-xl bg-white/90 dark:bg-white/90
           grayscale hover:grayscale-0 transition
           duration-300 opacity-80
@@ -53,37 +87,3 @@
     </div>
   </section>
 </template>
-
-<script setup>
-import { computed, onMounted } from 'vue'
-import { RouterLink } from 'vue-router'
-import { Loader2 } from 'lucide-vue-next'
-import { useBrandStore } from '@/modules/brand/_stores/brand.store'
-import StateView from './StateView.vue'
-import { placeholderSvg } from '@/lib/utils'
-
-const brandStore = useBrandStore()
-const brands = computed(() => brandStore.brands)
-
-const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
-
-function getLogoUrl(url) {
-  if (!url) return placeholderSvg
-  return url.startsWith('http') ? url : API + url
-}
-
-function onImageError(e) {
-  e.target.src = placeholderSvg
-}
-
-function handleRetry() {
-  brandStore.fetchBrands()
-}
-
-onMounted(() => {
-  // Reuse existing data if already fetched, otherwise fetch
-  if (brandStore.brands.length === 0) {
-    brandStore.fetchBrands()
-  }
-})
-</script>

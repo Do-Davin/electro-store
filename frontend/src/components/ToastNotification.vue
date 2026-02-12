@@ -1,3 +1,52 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'info',
+    validator: (value) => ['success', 'error', 'warning', 'info'].includes(value),
+  },
+  title: {
+    type: String,
+    default: '',
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  duration: {
+    type: Number,
+    default: 3000,
+  },
+});
+
+const emit = defineEmits(['close']);
+
+const isVisible = ref(false);
+let timeoutId = null;
+
+const close = () => {
+  isVisible.value = false;
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+  setTimeout(() => {
+    emit('close');
+  }, 300);
+};
+
+onMounted(() => {
+  isVisible.value = true;
+
+  if (props.duration > 0) {
+    timeoutId = setTimeout(() => {
+      close();
+    }, props.duration);
+  }
+});
+</script>
+
 <template>
     <Transition name="toast">
       <div v-if="isVisible" :class="['toast-container', `toast-${type}`]" @click="close">
@@ -98,55 +147,6 @@
       </div>
     </Transition>
 </template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-
-const props = defineProps({
-  type: {
-    type: String,
-    default: 'info',
-    validator: (value) => ['success', 'error', 'warning', 'info'].includes(value),
-  },
-  title: {
-    type: String,
-    default: '',
-  },
-  message: {
-    type: String,
-    required: true,
-  },
-  duration: {
-    type: Number,
-    default: 3000,
-  },
-});
-
-const emit = defineEmits(['close']);
-
-const isVisible = ref(false);
-let timeoutId = null;
-
-const close = () => {
-  isVisible.value = false;
-  if (timeoutId) {
-    clearTimeout(timeoutId);
-  }
-  setTimeout(() => {
-    emit('close');
-  }, 300);
-};
-
-onMounted(() => {
-  isVisible.value = true;
-
-  if (props.duration > 0) {
-    timeoutId = setTimeout(() => {
-      close();
-    }, props.duration);
-  }
-});
-</script>
 
 <style>
 .toast-container {

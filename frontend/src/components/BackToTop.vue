@@ -1,13 +1,3 @@
-<template>
-  <button
-    v-show="visible"
-    @click="scrollToTop"
-    class="back-top-btn"
-  >
-    ↑
-  </button>
-</template>
-
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
@@ -32,6 +22,16 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 </script>
+
+<template>
+  <button
+    v-show="visible"
+    @click="scrollToTop"
+    class="back-top-btn"
+  >
+    ↑
+  </button>
+</template>
 
 <style scoped>
 .back-top-btn {

@@ -1,3 +1,27 @@
+<script setup>
+import { AlertCircle, X } from 'lucide-vue-next'
+
+defineProps({
+  /** Optional bold heading above the message */
+  title: {
+    type: String,
+    default: '',
+  },
+  /** Error message text */
+  message: {
+    type: String,
+    required: true,
+  },
+  /** Show a dismiss (×) button */
+  dismissible: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+defineEmits(['dismiss'])
+</script>
+
 <!--
   ErrorBanner.vue — Reusable inline error banner for contextual errors
   (e.g. payment failures, form errors) that appear within page content.
@@ -28,27 +52,3 @@
     </button>
   </div>
 </template>
-
-<script setup>
-import { AlertCircle, X } from 'lucide-vue-next'
-
-defineProps({
-  /** Optional bold heading above the message */
-  title: {
-    type: String,
-    default: '',
-  },
-  /** Error message text */
-  message: {
-    type: String,
-    required: true,
-  },
-  /** Show a dismiss (×) button */
-  dismissible: {
-    type: Boolean,
-    default: false,
-  },
-})
-
-defineEmits(['dismiss'])
-</script>
