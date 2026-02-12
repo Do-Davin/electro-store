@@ -48,6 +48,12 @@ export class Order {
   @Column({ type: 'varchar', nullable: true })
   stripePaymentIntentId: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  paywayTranId: string;
+
+  @Column({ type: 'varchar', nullable: true, default: null })
+  paymentProvider: 'stripe' | 'payway' | null;
+
   @CreateDateColumn()
   createdAt: Date;
 }

@@ -57,6 +57,25 @@ export const orderApi = {
   verifyPayment: (orderId) =>
     http.post(`/payments/verify/${orderId}`),
 
+  // ─── PayWay (ABA Bank) ─────────────────────────────────────
+
+  /**
+   * Create a PayWay transaction for an order.
+   * Returns { tranId, checkoutHtml } — render HTML in popup.
+   * @param {string} orderId
+   * @param {'USD'|'KHR'} currency
+   */
+  createPaywayTransaction: (orderId, currency = 'USD') =>
+    http.post(`/payments/payway/create/${orderId}?currency=${currency}`),
+
+  /**
+   * Verify PayWay payment status and update order.
+   * Returns the updated order object.
+   * @param {string} orderId
+   */
+  verifyPaywayPayment: (orderId) =>
+    http.post(`/payments/payway/verify/${orderId}`),
+
   /**
    * Download PDF receipt for a paid order.
    * Triggers a browser file download.
