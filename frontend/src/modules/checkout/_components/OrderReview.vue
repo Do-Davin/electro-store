@@ -25,6 +25,8 @@ const displayItems = computed(() => {
       imageUrl: item.product?.imageUrl ?? null,
       quantity: item.quantity,
       price: Number(item.priceAtTime),
+      originalPrice: Number(item.product?.price ?? item.priceAtTime),
+      discountPercent: item.product?.discountPercent ?? 0,
     }))
   }
 
@@ -34,6 +36,8 @@ const displayItems = computed(() => {
     imageUrl: item.imageUrl,
     quantity: item.quantity,
     price: item.priceSnapshot,
+    originalPrice: item.originalPrice ?? item.priceSnapshot,
+    discountPercent: item.discountPercent ?? 0,
   }))
 })
 
@@ -44,8 +48,20 @@ const displaySubtotal = computed(() => {
   return displayItems.value.reduce((sum, i) => sum + i.quantity * i.price, 0)
 })
 
+// Original subtotal (before discount)
+const displayOriginalSubtotal = computed(() => {
+  return displayItems.value.reduce((sum, i) => sum + i.quantity * i.originalPrice, 0)
+})
+
+// Discount on VAT-inclusive amount
+const displayDiscount = computed(() => {
+  const baseDiscount = displayOriginalSubtotal.value - displaySubtotal.value
+  return Math.round(baseDiscount * 1.10 * 100) / 100
+})
+
+// VAT: 10% on original subtotal (before discount)
 const displayVat = computed(() => {
-  return Math.round(displaySubtotal.value * 10) / 100
+  return Math.round(displayOriginalSubtotal.value * 0.10 * 100) / 100
 })
 
 const displayShipping = computed(() => {
@@ -57,7 +73,7 @@ const isFreeShipping = computed(() => displayShipping.value === 0)
 
 const displayTotal = computed(() => {
   if (props.order) return Number(props.order.totalAmount)
-  return Math.round((displaySubtotal.value + displayVat.value + displayShipping.value) * 100) / 100
+  return Math.round((displayOriginalSubtotal.value + displayVat.value - displayDiscount.value + displayShipping.value) * 100) / 100
 })
 
 function getImageUrl(img) {
@@ -109,11 +125,15 @@ function onImageError(event) {
     <div class="border-t border-white/10 mt-4 pt-4 space-y-2">
       <div class="flex justify-between text-gray-400">
         <span>Subtotal ({{ totalItemCount }} items)</span>
-        <span>${{ displaySubtotal.toFixed(2) }}</span>
+        <span>${{ displayOriginalSubtotal.toFixed(2) }}</span>
       </div>
       <div class="flex justify-between text-gray-400">
         <span>VAT (10%)</span>
         <span>${{ displayVat.toFixed(2) }}</span>
+      </div>
+      <div v-if="displayDiscount > 0" class="flex justify-between text-green-400">
+        <span>Discount</span>
+        <span>-${{ displayDiscount.toFixed(2) }}</span>
       </div>
       <div class="flex justify-between text-gray-400">
         <span>Shipping</span>

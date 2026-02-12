@@ -64,6 +64,8 @@ function handleButtonClick() {
         id: props.product.id,
         name: props.product.name,
         price: props.product.finalPrice ?? props.product.price,
+        originalPrice: Number(props.product.price),
+        discountPercent: props.product.discountPercent ?? 0,
         imageUrl: props.product.imageUrl,
       },
       props.quantity

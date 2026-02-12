@@ -14,6 +14,11 @@
         <span class="font-medium text-white">${{ vat.toFixed(2) }}</span>
       </div>
 
+      <div v-if="discount > 0" class="flex justify-between text-green-400">
+        <span>Discount</span>
+        <span class="font-medium">-${{ discount.toFixed(2) }}</span>
+      </div>
+
       <div class="flex justify-between">
         <span>Shipping</span>
         <span v-if="isFreeShipping" class="font-medium text-green-600">Free</span>
@@ -64,6 +69,10 @@ defineProps({
   subtotal: {
     type: Number,
     required: true,
+  },
+  discount: {
+    type: Number,
+    default: 0,
   },
   vat: {
     type: Number,

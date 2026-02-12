@@ -40,7 +40,8 @@
         <div class="lg:col-span-1">
           <div class="sticky top-24">
             <CartSummary
-              :subtotal="cart.cartTotal"
+              :subtotal="cart.originalTotal"
+              :discount="cartDiscount"
               :vat="cartVat"
               :shipping="cartShipping"
               :is-free-shipping="isFreeShipping"
@@ -76,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Trash2 } from 'lucide-vue-next'
 import Navbar from '@/components/Navbar.vue'
@@ -93,10 +94,19 @@ const router = useRouter()
 const cart = useCartStore()
 const toast = useToast()
 
+// Refresh prices from API on mount
+onMounted(() => {
+  cart.refreshPrices()
+})
+
 const checkingStock = ref(false)
 
 const cartVat = computed(() => {
-  return Math.round(cart.cartTotal * 10) / 100
+  return Math.round(cart.originalTotal * 0.10 * 100) / 100
+})
+
+const cartDiscount = computed(() => {
+  return Math.round(cart.totalDiscount * 1.10 * 100) / 100
 })
 
 const cartShipping = computed(() => {
@@ -106,7 +116,7 @@ const cartShipping = computed(() => {
 const isFreeShipping = computed(() => cartShipping.value === 0)
 
 const cartGrandTotal = computed(() => {
-  return Math.round((cart.cartTotal + cartVat.value + cartShipping.value) * 100) / 100
+  return Math.round((cart.originalTotal + cartVat.value - cartDiscount.value + cartShipping.value) * 100) / 100
 })
 
 const showClearModal = ref(false)
