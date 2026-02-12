@@ -10,6 +10,8 @@ import ErrorBanner from '@/components/ErrorBanner.vue'
 import CheckoutForm from '../_components/CheckoutForm.vue'
 import OrderReview from '../_components/OrderReview.vue'
 import StripePaymentForm from '../_components/StripePaymentForm.vue'
+import PaymentMethodSelector from '../_components/PaymentMethodSelector.vue'
+import PaywayCheckoutForm from '../_components/PaywayCheckoutForm.vue'
 import { useCartStore } from '@/modules/cart/_stores/cart.store'
 import { useCheckoutStore } from '../_stores/checkout.store'
 import { useOrderStore } from '@/modules/order/_stores/order.store'
@@ -26,9 +28,21 @@ const toast = useToast()
 const isFormValid = ref(false)
 const isSubmitting = ref(false)
 const orderError = ref('')
-const clientSecret = ref('')
 const createdOrderId = ref('')
 const loadingExistingOrder = ref(false)
+
+// Payment method selection
+const paymentMethod = ref('stripe') // 'stripe' | 'payway'
+const paywayCurrency = ref('USD')   // 'USD' | 'KHR'
+
+// Stripe state
+const clientSecret = ref('')
+
+// PayWay state
+const paywayHtml = ref('')
+
+// Whether we're in "payment step" (order created, showing payment form)
+const inPaymentStep = computed(() => !!clientSecret.value || !!paywayHtml.value)
 
 const isLoggedIn = computed(() => checkLoggedIn())
 
@@ -48,8 +62,9 @@ const canPlaceOrder = computed(() => {
 })
 
 /**
- * Create the order, then get PaymentIntent clientSecret
- * to transition to the embedded Stripe payment form.
+ * Create the order, then initiate the selected payment flow.
+ * - Stripe: get PaymentIntent clientSecret → show Stripe Elements
+ * - PayWay: get checkout HTML → show iframe
  */
 async function handleCreateOrder() {
   if (!checkout.validateAll()) return
@@ -72,9 +87,15 @@ async function handleCreateOrder() {
     cart.clearCart()
     checkout.reset()
 
-    // Get PaymentIntent clientSecret
-    const secret = await orderStore.createPaymentIntent(order.id)
-    clientSecret.value = secret
+    if (paymentMethod.value === 'payway') {
+      // PayWay flow — get checkout HTML
+      const result = await orderStore.createPaywayTransaction(order.id, paywayCurrency.value)
+      paywayHtml.value = result.checkoutHtml
+    } else {
+      // Stripe flow — get PaymentIntent clientSecret
+      const secret = await orderStore.createPaymentIntent(order.id)
+      clientSecret.value = secret
+    }
 
     // Scroll to top when transitioning to payment step
     window.scrollTo({ top: 0, behavior: 'instant' })
@@ -85,12 +106,13 @@ async function handleCreateOrder() {
   }
 }
 
-/** Payment succeeded — verify with Stripe, then redirect to confirmation. */
+// ── Stripe handlers ──
+
+/** Stripe payment succeeded — verify with backend, then redirect. */
 async function handlePaymentSuccess() {
   try {
     await orderStore.verifyPayment(createdOrderId.value)
   } catch {
-    // Verification may fail, but the webhook will catch it
     toast.warning(
       'Payment verification is still processing. Your order will be updated shortly.',
       'Processing',
@@ -99,9 +121,36 @@ async function handlePaymentSuccess() {
   router.push(`/orders/${createdOrderId.value}/confirmation?payment=success`)
 }
 
-/** Payment failed — show error. */
+/** Stripe payment failed — show error. */
 function handlePaymentError(message) {
   orderError.value = message || 'Payment failed. Please try again.'
+}
+
+// ── PayWay handlers ──
+
+/** User clicked "Verify" after completing PayWay payment in the iframe. */
+async function handlePaywayVerify() {
+  isSubmitting.value = true
+  orderError.value = ''
+  try {
+    const result = await orderStore.verifyPaywayPayment(createdOrderId.value)
+    if (result.status === 'PAID' || result.status === 'approved') {
+      router.push(`/orders/${createdOrderId.value}/confirmation?payment=success`)
+    } else {
+      orderError.value = 'Payment has not been completed yet. Please finish the payment in the PayWay window, then click Verify again.'
+    }
+  } catch (error) {
+    orderError.value = error.message || 'Failed to verify PayWay payment.'
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+/** User cancelled PayWay payment. */
+function handlePaywayCancel() {
+  paywayHtml.value = ''
+  orderError.value = 'Payment was cancelled. You can retry from your order history.'
+  router.push('/orders')
 }
 
 /** Navigate back from the payment view. */
@@ -110,14 +159,13 @@ function goBack() {
     router.push('/orders')
     return
   }
-  // Can't go back to shipping after order is created (cart cleared),
-  // so go to order history instead
   router.push('/orders')
 }
 
 /**
  * On mount — if ?orderId= is present (from "Pay Now" button),
  * load that order and go straight to payment.
+ * Detects paymentProvider so we resume the correct flow.
  */
 onMounted(async () => {
   const existingOrderId = route.query.orderId
@@ -135,10 +183,19 @@ onMounted(async () => {
     await orderStore.fetchOrderById(existingOrderId)
     createdOrderId.value = existingOrderId
 
-    const secret = await orderStore.createPaymentIntent(existingOrderId)
-    clientSecret.value = secret
+    const order = orderStore.currentOrder
+    const provider = order?.paymentProvider || 'stripe'
+    paymentMethod.value = provider
 
-    // Scroll to top when transitioning to payment step
+    if (provider === 'payway') {
+      // Re-create PayWay transaction to get a fresh checkout page
+      const result = await orderStore.createPaywayTransaction(existingOrderId, paywayCurrency.value)
+      paywayHtml.value = result.checkoutHtml
+    } else {
+      const secret = await orderStore.createPaymentIntent(existingOrderId)
+      clientSecret.value = secret
+    }
+
     window.scrollTo({ top: 0, behavior: 'instant' })
   } catch (error) {
     orderError.value = error.message || 'Failed to load order for payment.'
@@ -158,18 +215,18 @@ onMounted(async () => {
         <div class="max-w-6xl mx-auto px-4">
           <h1 class="text-3xl font-bold text-white">Checkout</h1>
           <p class="text-white/70 mt-1">
-            {{ clientSecret ? 'Complete your payment' : 'Fill in your shipping details' }}
+            {{ inPaymentStep ? 'Complete your payment' : 'Fill in your shipping details' }}
           </p>
 
           <!-- Step Indicator -->
           <div class="flex items-center gap-3 mt-4">
             <span
               class="flex items-center gap-1.5 text-sm font-medium"
-              :class="clientSecret ? 'text-white/50' : 'text-white'"
+              :class="inPaymentStep ? 'text-white/50' : 'text-white'"
             >
               <span
                 class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                :class="clientSecret ? 'bg-white/30 text-white/60' : 'bg-white text-primary'"
+                :class="inPaymentStep ? 'bg-white/30 text-white/60' : 'bg-white text-primary'"
                 >1</span
               >
               Shipping
@@ -177,11 +234,11 @@ onMounted(async () => {
             <ChevronRight class="w-4 h-4 text-white/40" />
             <span
               class="flex items-center gap-1.5 text-sm font-medium"
-              :class="clientSecret ? 'text-white' : 'text-white/50'"
+              :class="inPaymentStep ? 'text-white' : 'text-white/50'"
             >
               <span
                 class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                :class="clientSecret ? 'bg-white text-primary' : 'bg-white/30 text-white/60'"
+                :class="inPaymentStep ? 'bg-white text-primary' : 'bg-white/30 text-white/60'"
                 >2</span
               >
               Payment
@@ -214,9 +271,9 @@ onMounted(async () => {
             <SkeletonLoader variant="list" :count="1" />
           </div>
 
-          <!-- Empty Cart Warning (only when not paying an existing order) -->
+          <!-- Empty Cart Warning (only when not in payment step and not resuming) -->
           <StateView
-            v-else-if="cart.isEmpty && !clientSecret && !route.query.orderId"
+            v-else-if="cart.isEmpty && !inPaymentStep && !route.query.orderId"
             icon="cart"
             title="Your cart is empty"
             subtitle="Add some products before checking out."
@@ -228,9 +285,29 @@ onMounted(async () => {
           <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column -->
             <div class="lg:col-span-2 space-y-6">
-              <!-- ===== Shipping Form (before order is created) ===== -->
-              <template v-if="!clientSecret">
+              <!-- ===== Shipping Form + Payment Method (before order is created) ===== -->
+              <template v-if="!inPaymentStep">
                 <CheckoutForm @valid="isFormValid = true" @invalid="isFormValid = false" />
+
+                <!-- Payment Method Selector -->
+                <PaymentMethodSelector v-model="paymentMethod">
+                  <!-- Currency selector for PayWay -->
+                  <template #currency-selector>
+                    <button
+                      v-for="cur in ['USD', 'KHR']"
+                      :key="cur"
+                      @click="paywayCurrency = cur"
+                      class="px-3 py-1 rounded-lg text-sm font-medium transition-colors"
+                      :class="
+                        paywayCurrency === cur
+                          ? 'bg-primary text-white'
+                          : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                      "
+                    >
+                      {{ cur }}
+                    </button>
+                  </template>
+                </PaymentMethodSelector>
               </template>
 
               <!-- ===== Payment Section (after order is created) ===== -->
@@ -246,17 +323,27 @@ onMounted(async () => {
 
                 <!-- Stripe Payment Element -->
                 <StripePaymentForm
+                  v-if="clientSecret"
                   :client-secret="clientSecret"
                   :total="orderTotal"
                   @success="handlePaymentSuccess"
                   @error="handlePaymentError"
+                />
+
+                <!-- PayWay Checkout Form -->
+                <PaywayCheckoutForm
+                  v-else-if="paywayHtml"
+                  :checkout-html="paywayHtml"
+                  :order-id="createdOrderId"
+                  @success="handlePaywayVerify"
+                  @cancel="handlePaywayCancel"
                 />
               </template>
 
               <!-- Error Message -->
               <ErrorBanner
                 v-if="orderError"
-                :title="clientSecret ? 'Payment Error' : 'Order Failed'"
+                :title="inPaymentStep ? 'Payment Error' : 'Order Failed'"
                 :message="orderError"
               />
             </div>
@@ -268,7 +355,7 @@ onMounted(async () => {
                 <OrderReview :order="createdOrderId ? orderStore.currentOrder : null" />
 
                 <!-- Continue to Payment button (only before payment step) -->
-                <template v-if="!clientSecret">
+                <template v-if="!inPaymentStep">
                   <button
                     :disabled="!canPlaceOrder || isSubmitting"
                     @click="handleCreateOrder"

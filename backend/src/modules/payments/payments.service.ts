@@ -80,6 +80,7 @@ export class PaymentsService {
 
     // Store the PaymentIntent ID on the order
     order.stripePaymentIntentId = paymentIntent.id;
+    order.paymentProvider = 'stripe';
     await this.ordersRepo.save(order);
 
     return { clientSecret: paymentIntent.client_secret };

@@ -188,6 +188,49 @@ export const useOrderStore = defineStore('order', () => {
     }
   }
 
+  // ─── PayWay (ABA Bank) ─────────────────────────────────────
+
+  /**
+   * Create a PayWay transaction and return { tranId, checkoutHtml }.
+   */
+  async function createPaywayTransaction(orderId: string, currency: 'USD' | 'KHR' = 'USD') {
+    loading.value = true
+    error.value = null
+
+    try {
+      const result = await orderApi.createPaywayTransaction(orderId, currency)
+      return result as { tranId: string; checkoutHtml: string }
+    } catch (e: any) {
+      error.value = e.message || 'Failed to start PayWay payment'
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  /**
+   * Verify a PayWay payment and update the order status.
+   */
+  async function verifyPaywayPayment(orderId: string) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const order = await orderApi.verifyPaywayPayment(orderId)
+      currentOrder.value = order
+      const idx = orders.value.findIndex((o) => o.id === orderId)
+      if (idx >= 0) {
+        orders.value[idx] = order
+      }
+      return order
+    } catch (e: any) {
+      error.value = e.message || 'Failed to verify PayWay payment'
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
   // ============ RETURN ============
   return {
     // State
@@ -210,5 +253,7 @@ export const useOrderStore = defineStore('order', () => {
     clearError,
     createPaymentIntent,
     verifyPayment,
+    createPaywayTransaction,
+    verifyPaywayPayment,
   }
 })
