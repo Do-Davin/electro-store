@@ -44,9 +44,6 @@ export const useWishlistStore = defineStore('wishlist', () => {
     }
   }
 
-  // Load on store creation
-  loadFromStorage()
-
   /** Fetch live product data from the API for all wishlisted IDs */
   async function refreshProducts() {
     if (productIds.value.length === 0) {
@@ -118,6 +115,10 @@ export const useWishlistStore = defineStore('wishlist', () => {
     },
     { deep: true }
   )
+
+  // Initialize on store creation
+  loadFromStorage()
+  refreshProducts()
 
   return {
     items,

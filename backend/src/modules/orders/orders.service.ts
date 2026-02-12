@@ -13,10 +13,28 @@ import { User } from '../users/entities/user.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
-import PDFDocument = require('pdfkit');
+import PDFDocument from 'pdfkit';
 
 @Injectable()
 export class OrdersService {
+  /**
+   * Valid status transitions.
+   * PENDING → PAID → PROCESSING → SHIPPED → DELIVERED → COMPLETED
+   * Only PENDING can be cancelled. CANCELLED and COMPLETED are terminal.
+   */
+  private static readonly VALID_TRANSITIONS: Record<
+    OrderStatus,
+    OrderStatus[]
+  > = {
+    PENDING: ['PAID', 'CANCELLED'],
+    PAID: ['PROCESSING'],
+    PROCESSING: ['SHIPPED'],
+    SHIPPED: ['DELIVERED'],
+    DELIVERED: ['COMPLETED'],
+    COMPLETED: [],
+    CANCELLED: [],
+  };
+
   constructor(
     @InjectRepository(Order)
     private ordersRepo: Repository<Order>,
@@ -47,17 +65,13 @@ export class OrdersService {
       productMap.set(it.productId, product);
     }
 
-    // Second pass: create order items and deduct stock
+    // Second pass: create order items (stock is deducted later when PENDING → PAID)
     const items: OrderItem[] = [];
     let originalSubtotal = 0;
     let discountedSubtotal = 0;
 
     for (const it of dto.items) {
       const product = productMap.get(it.productId)!;
-
-      // Deduct stock
-      product.stock -= it.quantity;
-      await this.productsRepo.save(product);
 
       // Apply discount to get final price
       const finalPrice =
@@ -80,17 +94,20 @@ export class OrdersService {
     discountedSubtotal = Math.round(discountedSubtotal * 100) / 100;
 
     // 1. VAT: 10% on original subtotal (before discount)
-    const vatAmount = Math.round(originalSubtotal * 0.10 * 100) / 100;
+    const vatAmount = Math.round(originalSubtotal * 0.1 * 100) / 100;
 
     // 2. Discount on VAT-inclusive amount
-    const discountAmount = Math.round((originalSubtotal - discountedSubtotal) * 1.10 * 100) / 100;
+    const discountAmount =
+      Math.round((originalSubtotal - discountedSubtotal) * 1.1 * 100) / 100;
 
     // 3. Shipping: applied after VAT and discount
     const shippingAmount = discountedSubtotal >= 500 ? 0 : 5;
 
     // Total = original + VAT - discount + shipping
     const totalAmount =
-      Math.round((originalSubtotal + vatAmount - discountAmount + shippingAmount) * 100) / 100;
+      Math.round(
+        (originalSubtotal + vatAmount - discountAmount + shippingAmount) * 100,
+      ) / 100;
 
     const order = this.ordersRepo.create({
       user,
@@ -205,10 +222,12 @@ export class OrdersService {
       newDiscountedSubtotal = Math.round(newDiscountedSubtotal * 100) / 100;
 
       // 1. VAT: 10% on original subtotal (before discount)
-      const newVat = Math.round(newOriginalSubtotal * 0.10 * 100) / 100;
+      const newVat = Math.round(newOriginalSubtotal * 0.1 * 100) / 100;
 
       // 2. Discount on VAT-inclusive amount
-      const newDiscount = Math.round((newOriginalSubtotal - newDiscountedSubtotal) * 1.10 * 100) / 100;
+      const newDiscount =
+        Math.round((newOriginalSubtotal - newDiscountedSubtotal) * 1.1 * 100) /
+        100;
 
       // 3. Shipping: applied after VAT and discount
       const newShipping = newDiscountedSubtotal >= 500 ? 0 : 5;
@@ -217,7 +236,9 @@ export class OrdersService {
       order.shippingAmount = newShipping;
       // Total = original + VAT - discount + shipping
       order.totalAmount =
-        Math.round((newOriginalSubtotal + newVat - newDiscount + newShipping) * 100) / 100;
+        Math.round(
+          (newOriginalSubtotal + newVat - newDiscount + newShipping) * 100,
+        ) / 100;
     }
 
     const { items: _unusedItems, ...rest } = dto;
@@ -239,9 +260,15 @@ export class OrdersService {
       throw new ForbiddenException('You cannot delete this order');
     }
 
-    // Restore stock for orders that haven't been shipped yet
-    const unshippedStatuses: OrderStatus[] = ['PENDING', 'PAID', 'PROCESSING'];
-    if (unshippedStatuses.includes(order.status)) {
+    // Restore stock only if it was already deducted (status is PAID or later, not PENDING/CANCELLED)
+    const stockDeductedStatuses: OrderStatus[] = [
+      'PAID',
+      'PROCESSING',
+      'SHIPPED',
+      'DELIVERED',
+      'COMPLETED',
+    ];
+    if (stockDeductedStatuses.includes(order.status)) {
       await this.restoreStock(order.items);
     }
 
@@ -261,12 +288,8 @@ export class OrdersService {
       throw new ForbiddenException('You cannot pay this order');
     }
 
-    if (order.status !== 'PENDING') {
-      throw new BadRequestException('Only PENDING orders can be paid');
-    }
-
-    order.status = 'PAID';
-    return this.ordersRepo.save(order);
+    // Delegate to updateStatus which validates transition and deducts stock
+    return this.updateStatus(orderId, 'PAID');
   }
 
   async cancel(orderId: string, userId: string, role: 'USER' | 'ADMIN') {
@@ -281,23 +304,13 @@ export class OrdersService {
       throw new ForbiddenException('You cannot cancel this order');
     }
 
-    if (order.status === 'CANCELLED') {
-      throw new BadRequestException('Order is already cancelled');
-    }
-
-    // Orders can only be cancelled if not yet shipped
-    const cancellableStatuses: OrderStatus[] = [
-      'PENDING',
-      'PAID',
-      'PROCESSING',
-    ];
-    if (!cancellableStatuses.includes(order.status)) {
+    // Only PENDING orders can be cancelled
+    if (order.status !== 'PENDING') {
       throw new BadRequestException(
-        `Cannot cancel order with status: ${order.status}`,
+        `Cannot cancel order with status: ${order.status}. Only PENDING orders can be cancelled.`,
       );
     }
 
-    // Use updateStatus to properly handle stock restoration
     return this.updateStatus(orderId, 'CANCELLED');
   }
 
@@ -310,18 +323,49 @@ export class OrdersService {
 
     const previousStatus = order.status;
 
-    // Restore stock when changing to CANCELLED from unshipped status
-    const unshippedStatuses: OrderStatus[] = ['PENDING', 'PAID', 'PROCESSING'];
-    if (
-      status === 'CANCELLED' &&
-      previousStatus !== 'CANCELLED' &&
-      unshippedStatuses.includes(previousStatus)
-    ) {
+    // ── Transition validation ──
+    const allowed = OrdersService.VALID_TRANSITIONS[previousStatus];
+    if (!allowed || !allowed.includes(status)) {
+      throw new BadRequestException(
+        `Invalid status transition: ${previousStatus} → ${status}`,
+      );
+    }
+
+    // ── Stock deduction: only on PENDING → PAID ──
+    if (previousStatus === 'PENDING' && status === 'PAID') {
+      await this.deductStock(order.items);
+    }
+
+    // ── Stock restoration: cancel from a stock-deducted state (safety net) ──
+    if (status === 'CANCELLED' && previousStatus !== 'PENDING') {
       await this.restoreStock(order.items);
     }
 
     order.status = status;
     return this.ordersRepo.save(order);
+  }
+
+  /**
+   * Helper: deduct stock for order items (called on PENDING → PAID)
+   */
+  private async deductStock(items: OrderItem[]) {
+    for (const item of items) {
+      const product = await this.productsRepo.findOneBy({
+        id: item.product.id,
+      });
+      if (!product) {
+        throw new BadRequestException(
+          `Product no longer exists: ${item.product.id}`,
+        );
+      }
+      if (product.stock < item.quantity) {
+        throw new BadRequestException(
+          `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`,
+        );
+      }
+      product.stock -= item.quantity;
+      await this.productsRepo.save(product);
+    }
   }
 
   /**
@@ -380,16 +424,17 @@ export class OrdersService {
 
     // Calculate original subtotal (before discount) from product prices
     const originalSubtotal = order.items.reduce(
-      (sum, item) => sum + Number(item.product?.price ?? item.priceAtTime) * item.quantity,
+      (sum, item) =>
+        sum + Number(item.product?.price ?? item.priceAtTime) * item.quantity,
       0,
     );
 
     // VAT: 10% on original subtotal (before discount)
-    const vat = Math.round(originalSubtotal * 0.10 * 100) / 100;
+    const vat = Math.round(originalSubtotal * 0.1 * 100) / 100;
 
     // Discount on VAT-inclusive amount
     const baseDiscount = originalSubtotal - subtotal;
-    const totalDiscount = Math.round(baseDiscount * 1.10 * 100) / 100;
+    const totalDiscount = Math.round(baseDiscount * 1.1 * 100) / 100;
 
     const shipping = Number(order.shippingAmount);
     const total = Number(order.totalAmount);
@@ -398,43 +443,91 @@ export class OrdersService {
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
 
     // ── Header ──
-    doc.fontSize(22).font('Helvetica-Bold').text('ElectroStore', { align: 'center' });
+    doc
+      .fontSize(22)
+      .font('Helvetica-Bold')
+      .text('ElectroStore', { align: 'center' });
     doc.moveDown(0.3);
-    doc.fontSize(10).font('Helvetica').fillColor('#666666').text('Receipt / Tax Invoice', { align: 'center' });
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .fillColor('#666666')
+      .text('Receipt / Tax Invoice', { align: 'center' });
     doc.moveDown(1);
 
     // Divider
-    doc.strokeColor('#e5e7eb').lineWidth(1)
-      .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+    doc
+      .strokeColor('#e5e7eb')
+      .lineWidth(1)
+      .moveTo(50, doc.y)
+      .lineTo(545, doc.y)
+      .stroke();
     doc.moveDown(0.8);
 
     // ── Order info ──
     doc.fillColor('#000000').fontSize(10).font('Helvetica-Bold');
-    doc.text(`Order ID:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${order.id}`);
-    doc.font('Helvetica-Bold').text(`Date:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`);
-    doc.font('Helvetica-Bold').text(`Status:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${order.status}`);
+    doc
+      .text(`Order ID:`, 50, doc.y, { continued: true })
+      .font('Helvetica')
+      .text(`  ${order.id}`);
+    doc
+      .font('Helvetica-Bold')
+      .text(`Date:`, 50, doc.y, { continued: true })
+      .font('Helvetica')
+      .text(
+        `  ${new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+      );
+    doc
+      .font('Helvetica-Bold')
+      .text(`Status:`, 50, doc.y, { continued: true })
+      .font('Helvetica')
+      .text(`  ${order.status}`);
     doc.moveDown(0.5);
 
     // ── Customer info ──
     const user = order.user;
-    const customerName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
-    doc.font('Helvetica-Bold').text(`Customer:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${customerName}`);
-    doc.font('Helvetica-Bold').text(`Email:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${user.email}`);
+    const customerName =
+      [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+    doc
+      .font('Helvetica-Bold')
+      .text(`Customer:`, 50, doc.y, { continued: true })
+      .font('Helvetica')
+      .text(`  ${customerName}`);
+    doc
+      .font('Helvetica-Bold')
+      .text(`Email:`, 50, doc.y, { continued: true })
+      .font('Helvetica')
+      .text(`  ${user.email}`);
     if (user.addressStreet) {
-      const address = [user.addressStreet, user.addressCity, user.addressState, user.addressPostCode, user.addressCountry]
-        .filter(Boolean).join(', ');
-      doc.font('Helvetica-Bold').text(`Address:`, 50, doc.y, { continued: true }).font('Helvetica').text(`  ${address}`);
+      const address = [
+        user.addressStreet,
+        user.addressCity,
+        user.addressState,
+        user.addressPostCode,
+        user.addressCountry,
+      ]
+        .filter(Boolean)
+        .join(', ');
+      doc
+        .font('Helvetica-Bold')
+        .text(`Address:`, 50, doc.y, { continued: true })
+        .font('Helvetica')
+        .text(`  ${address}`);
     }
     doc.moveDown(1);
 
     // Divider
-    doc.strokeColor('#e5e7eb').lineWidth(1)
-      .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+    doc
+      .strokeColor('#e5e7eb')
+      .lineWidth(1)
+      .moveTo(50, doc.y)
+      .lineTo(545, doc.y)
+      .stroke();
     doc.moveDown(0.8);
 
     // ── Items table header ──
     const tableTop = doc.y;
-    const col1 = 50;  // Product
+    const col1 = 50; // Product
     const col2 = 220; // Qty
     const col3 = 270; // Original Price
     const col4 = 350; // Discount
@@ -448,8 +541,12 @@ export class OrdersService {
     doc.text('Total', col5, tableTop);
     doc.moveDown(0.5);
 
-    doc.strokeColor('#e5e7eb').lineWidth(0.5)
-      .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+    doc
+      .strokeColor('#e5e7eb')
+      .lineWidth(0.5)
+      .moveTo(50, doc.y)
+      .lineTo(545, doc.y)
+      .stroke();
     doc.moveDown(0.5);
 
     // ── Items rows ──
@@ -479,8 +576,12 @@ export class OrdersService {
     }
 
     doc.moveDown(0.5);
-    doc.strokeColor('#e5e7eb').lineWidth(1)
-      .moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+    doc
+      .strokeColor('#e5e7eb')
+      .lineWidth(1)
+      .moveTo(50, doc.y)
+      .lineTo(545, doc.y)
+      .stroke();
     doc.moveDown(0.8);
 
     // ── Totals ──
@@ -489,37 +590,73 @@ export class OrdersService {
 
     doc.fontSize(10).font('Helvetica');
 
-    doc.fillColor('#000000').text('Subtotal:', totalsX, doc.y, { continued: false });
-    doc.text(`$${originalSubtotal.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+    doc
+      .fillColor('#000000')
+      .text('Subtotal:', totalsX, doc.y, { continued: false });
+    doc.text(
+      `$${originalSubtotal.toFixed(2)}`,
+      totalsValX,
+      doc.y - doc.currentLineHeight(),
+    );
 
     doc.text('VAT (10%):', totalsX, doc.y, { continued: false });
     doc.text(`$${vat.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
 
     // Show discount if applicable
     if (totalDiscount > 0) {
-      doc.fillColor('#16a34a').font('Helvetica-Bold').text('Discount:', totalsX, doc.y, { continued: false });
-      doc.fillColor('#16a34a').text(`-$${totalDiscount.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+      doc
+        .fillColor('#16a34a')
+        .font('Helvetica-Bold')
+        .text('Discount:', totalsX, doc.y, { continued: false });
+      doc
+        .fillColor('#16a34a')
+        .text(
+          `-$${totalDiscount.toFixed(2)}`,
+          totalsValX,
+          doc.y - doc.currentLineHeight(),
+        );
       doc.font('Helvetica');
     }
 
-    doc.fillColor('#000000').text('Shipping:', totalsX, doc.y, { continued: false });
-    doc.text(shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+    doc
+      .fillColor('#000000')
+      .text('Shipping:', totalsX, doc.y, { continued: false });
+    doc.text(
+      shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`,
+      totalsValX,
+      doc.y - doc.currentLineHeight(),
+    );
 
     doc.moveDown(0.3);
-    doc.strokeColor('#e5e7eb').lineWidth(0.5)
-      .moveTo(totalsX, doc.y).lineTo(545, doc.y).stroke();
+    doc
+      .strokeColor('#e5e7eb')
+      .lineWidth(0.5)
+      .moveTo(totalsX, doc.y)
+      .lineTo(545, doc.y)
+      .stroke();
     doc.moveDown(0.5);
 
     doc.fontSize(12).font('Helvetica-Bold');
     doc.text('Total:', totalsX, doc.y, { continued: false });
-    doc.text(`$${total.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+    doc.text(
+      `$${total.toFixed(2)}`,
+      totalsValX,
+      doc.y - doc.currentLineHeight(),
+    );
 
     doc.moveDown(2);
 
     // ── Footer ──
-    doc.fontSize(8).font('Helvetica').fillColor('#9ca3af')
-      .text('Thank you for shopping with ElectroStore!', 50, doc.y, { align: 'center' })
-      .text(`Generated on ${new Date().toLocaleString('en-US')}`, { align: 'center' });
+    doc
+      .fontSize(8)
+      .font('Helvetica')
+      .fillColor('#9ca3af')
+      .text('Thank you for shopping with ElectroStore!', 50, doc.y, {
+        align: 'center',
+      })
+      .text(`Generated on ${new Date().toLocaleString('en-US')}`, {
+        align: 'center',
+      });
 
     doc.end();
     return doc;

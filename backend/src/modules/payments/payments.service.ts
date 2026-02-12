@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Stripe from 'stripe';
 import { Order } from '../orders/entities/order.entity';
+import { OrdersService } from '../orders/orders.service';
 
 @Injectable()
 export class PaymentsService {
@@ -18,6 +19,7 @@ export class PaymentsService {
   constructor(
     @InjectRepository(Order)
     private ordersRepo: Repository<Order>,
+    private ordersService: OrdersService,
   ) {
     const secretKey = process.env.STRIPE_SECRET_KEY; // Now Test Key ex: sk_test_xxxx
     if (!secretKey) {
@@ -110,9 +112,13 @@ export class PaymentsService {
     );
 
     if (intent.status === 'succeeded') {
-      order.status = 'PAID';
-      await this.ordersRepo.save(order);
+      await this.ordersService.updateStatus(orderId, 'PAID');
       this.logger.log(`Order ${orderId} verified & marked as PAID`);
+      // Re-fetch to return updated order
+      return this.ordersRepo.findOne({
+        where: { id: orderId },
+        relations: ['user', 'items', 'items.product'],
+      });
     }
 
     return order;
@@ -231,9 +237,11 @@ export class PaymentsService {
       return;
     }
 
-    order.status = 'PAID';
+    // Save stripePaymentIntentId first, then transition via OrdersService
     order.stripePaymentIntentId = paymentIntent.id;
     await this.ordersRepo.save(order);
+
+    await this.ordersService.updateStatus(orderId, 'PAID');
 
     this.logger.log(`Order ${orderId} marked as PAID`);
   }

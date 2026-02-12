@@ -65,8 +65,13 @@ async function onLogin() {
     setAccessToken(res.access_token);
 
     // Reload stores so they read from the new user's storage keys
-    useWishlistStore().loadFromStorage();
-    useCartStore().loadFromStorage();
+    const wishlist = useWishlistStore();
+    const cart = useCartStore();
+    wishlist.loadFromStorage();
+    cart.loadFromStorage();
+
+    // Fetch live product data for wishlist badge
+    wishlist.refreshProducts();
 
     // Redirect based on role
     const role = getRole();

@@ -48,6 +48,7 @@ function onLogout() {
   // Reload stores so they switch to guest storage keys
   wishlist.loadFromStorage();
   cart.loadFromStorage();
+  wishlist.refreshProducts();
   closeMobileMenu();
   router.push('/auth/login');
 }
