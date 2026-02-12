@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="header-left">
         <div class="header-icon">
-          <Package :size="22" />
+          <LayoutDashboard  :size="22" />
         </div>
         <div>
           <h1 class="title">Dashboard</h1>
@@ -142,14 +142,13 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { Package, DollarSign, ShoppingCart, Users, Loader2, RefreshCw, ClipboardList, FileText, Download } from 'lucide-vue-next'
+import { Package, LayoutDashboard, DollarSign, ShoppingCart, Users, Loader2, RefreshCw, ClipboardList, FileText, Download } from 'lucide-vue-next'
 import StatCard from '../_components/StatCard.vue'
 import OrdersChart from '../_components/OrdersChart.vue'
 import axios from '@/lib/axios'
 import { useToast } from '@/composables/useToast'
 
 const loading = ref(true)
-
 const stats = ref({
   totalProducts: 0,
   totalRevenue: 0,

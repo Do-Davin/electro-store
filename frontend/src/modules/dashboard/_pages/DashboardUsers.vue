@@ -46,7 +46,7 @@
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-icon total-icon">
-            <Users :size="18" />
+            <User :size="18" />
           </div>
           <div class="stat-info">
             <span class="stat-value">{{ users.length }}</span>

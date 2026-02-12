@@ -3,7 +3,7 @@
     <!-- Profile / Logo -->
     <div class="profile">
       <img
-        src="/icons/logo-white.svg"
+        src="/icons/logo.svg"
         alt="Electro Store"
         class="logo-image"
       />
@@ -19,7 +19,7 @@
             class="nav-link"
             exact-active-class="active"
           >
-            <Home class="icon" />
+            <LayoutDashboard class="icon" />
             <span class="label">Dashboard</span>
           </RouterLink>
         </li>
@@ -201,7 +201,7 @@
 import { reactive, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
-  Home, Pencil, ShoppingCart, Tag, LogOut, Users,
+  LayoutDashboard, Pencil, ShoppingCart, Tag, LogOut, Users,
   ChevronDown, Award, Layers, Plus, LayoutGrid,
 } from 'lucide-vue-next';
 import { logout } from '@/lib/auth';
@@ -304,7 +304,7 @@ function onLogout() {
 .icon {
   width: 20px;
   height: 20px;
-  color: #fff3cd;
+  color: #60a5fa;
   flex-shrink: 0;
 }
 
@@ -371,6 +371,20 @@ function onLogout() {
 .accordion-leave-to {
   max-height: 0;
   opacity: 0;
+}
+
+/* Make logout button (icon + text) red while keeping icon size
+   consistent with other nav icons. */
+.logout .nav-link {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.logout .icon {
+  color: inherit;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .logout {
