@@ -237,15 +237,15 @@ onMounted(fetchDeals)
 }
 
 .header-icon {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.12));
-  border: 1px solid rgba(59, 130, 246, 0.18);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: rgba(96,165,250,0.12);
   color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 .title {
