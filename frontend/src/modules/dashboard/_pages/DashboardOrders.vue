@@ -172,9 +172,14 @@
                   <span class="date-cell">{{ formatDate(order.createdAt) }}</span>
                 </td>
                 <td>
-                  <button class="delete-btn" @click="confirmDeleteOrder(order.id)" title="Delete order">
-                    <Trash2 :size="15" />
-                  </button>
+                  <div class="action-btns">
+                    <button class="view-btn" @click="openOrderDetails(order.id)" title="View details">
+                      <Eye :size="15" />
+                    </button>
+                    <button class="delete-btn" @click="confirmDeleteOrder(order.id)" title="Delete order">
+                      <Trash2 :size="15" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -211,6 +216,14 @@
       </div>
     </div>
 
+    <!-- Order Details Modal -->
+    <OrderDetailsModal
+      :isOpen="detailsModal.open"
+      :orderId="detailsModal.orderId"
+      :orderData="detailsModal.orderData"
+      @close="closeOrderDetails"
+    />
+
     <!-- Delete Confirm Modal -->
     <ConfirmModal
       :isOpen="deleteModal.open"
@@ -232,11 +245,12 @@ import { ref, computed, onMounted } from 'vue'
 import {
   Loader2, AlertCircle, Trash2, ShoppingBag, RefreshCw,
   Package, FileText, Layers, ClipboardList, Hash, User,
-  DollarSign, Activity, Calendar, Inbox, ChevronLeft, ChevronRight,
+  DollarSign, Activity, Calendar, Inbox, ChevronLeft, ChevronRight, Eye,
 } from 'lucide-vue-next'
 import axios from '@/lib/axios'
 import { useToast } from '@/composables/useToast'
 import ConfirmModal from '@/components/ConfirmModal.vue'
+import OrderDetailsModal from '@/modules/dashboard/_components/OrderDetailsModal.vue'
 
 const statuses = ['PENDING', 'PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'CANCELLED']
 
@@ -248,6 +262,19 @@ const total = ref(0)
 const totalPages = ref(1)
 
 const toast = useToast()
+
+// Order details modal state
+const detailsModal = ref({ open: false, orderId: null, orderData: null })
+
+function openOrderDetails(orderId) {
+  // Pass the already-fetched order data so the modal doesn't need to re-fetch
+  const orderData = orders.value.find(o => o.id === orderId) ?? null
+  detailsModal.value = { open: true, orderId, orderData }
+}
+
+function closeOrderDetails() {
+  detailsModal.value = { open: false, orderId: null, orderData: null }
+}
 
 // Delete confirmation modal state
 const deleteModal = ref({
@@ -289,12 +316,12 @@ async function fetchOrders(p = 1) {
   error.value = null
 
   try {
-    const res = await axios.get(`/orders?page=${p}&limit=10`)
-    orders.value = res.data?.data ?? []
-    const meta = res.data?.meta ?? {}
-    page.value = meta.page ?? p
-    total.value = meta.total ?? 0
-    totalPages.value = meta.totalPages ?? 1
+    const res = await axios.get('/orders', { params: { page: p, limit: 10 } })
+    const data = res.data
+    orders.value = data.data ?? []
+    page.value = data.meta?.page ?? p
+    total.value = data.meta?.total ?? 0
+    totalPages.value = data.meta?.totalPages ?? 1
   } catch (e) {
     error.value = e?.response?.data?.message || e.message || 'Failed to load orders'
   } finally {
@@ -797,7 +824,14 @@ td {
   color: #e2e8f0;
 }
 
-/* ── Delete Button ── */
+/* ── Action Buttons ── */
+.action-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-btn,
 .delete-btn {
   width: 34px;
   height: 34px;
@@ -810,6 +844,12 @@ td {
   cursor: pointer;
   border-radius: 9px;
   transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.2);
 }
 
 .delete-btn:hover {
