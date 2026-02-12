@@ -36,10 +36,11 @@ const orderTotal = computed(() => {
   if (orderStore.currentOrder) {
     return Number(orderStore.currentOrder.totalAmount).toFixed(2)
   }
-  const sub = cart.cartTotal
-  const vat = Math.round(sub * 10) / 100
-  const shipping = sub >= 500 ? 0 : 5
-  return (Math.round((sub + vat + shipping) * 100) / 100).toFixed(2)
+  const original = cart.originalTotal
+  const vat = Math.round(original * 0.10 * 100) / 100
+  const discount = Math.round(cart.totalDiscount * 1.10 * 100) / 100
+  const shipping = cart.cartTotal >= 500 ? 0 : 5
+  return (Math.round((original + vat - discount + shipping) * 100) / 100).toFixed(2)
 })
 
 const canPlaceOrder = computed(() => {

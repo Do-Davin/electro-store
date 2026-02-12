@@ -5,7 +5,9 @@ import { getAuthPayload } from '@/lib/auth'
 export type CartItem = {
   productId: string
   quantity: number
-  priceSnapshot: number // price at time of adding to cart
+  priceSnapshot: number // price at time of adding to cart (discounted if applicable)
+  originalPrice: number // original price before discount
+  discountPercent: number // discount percentage (0 if none)
   name: string
   imageUrl?: string
 }
@@ -30,6 +32,17 @@ export const useCartStore = defineStore('cart', () => {
       (sum, item) => sum + item.priceSnapshot * item.quantity,
       0
     )
+  })
+
+  const originalTotal = computed(() => {
+    return items.value.reduce(
+      (sum, item) => sum + (item.originalPrice ?? item.priceSnapshot) * item.quantity,
+      0
+    )
+  })
+
+  const totalDiscount = computed(() => {
+    return originalTotal.value - cartTotal.value
   })
 
   const isEmpty = computed(() => items.value.length === 0)
@@ -73,6 +86,8 @@ export const useCartStore = defineStore('cart', () => {
     id: string
     name: string
     price: number
+    originalPrice?: number
+    discountPercent?: number
     imageUrl?: string
   }, quantity: number = 1) {
     if (quantity < 1) return
@@ -88,6 +103,8 @@ export const useCartStore = defineStore('cart', () => {
         productId: product.id,
         quantity,
         priceSnapshot: product.price,
+        originalPrice: product.originalPrice ?? product.price,
+        discountPercent: product.discountPercent ?? 0,
         name: product.name,
         imageUrl: product.imageUrl,
       })
@@ -167,6 +184,8 @@ export const useCartStore = defineStore('cart', () => {
     // Getters
     itemCount,
     cartTotal,
+    originalTotal,
+    totalDiscount,
     isEmpty,
 
     // Actions

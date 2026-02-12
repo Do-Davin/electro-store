@@ -49,7 +49,8 @@ export class OrdersService {
 
     // Second pass: create order items and deduct stock
     const items: OrderItem[] = [];
-    let subtotal = 0;
+    let originalSubtotal = 0;
+    let discountedSubtotal = 0;
 
     for (const it of dto.items) {
       const product = productMap.get(it.productId)!;
@@ -58,24 +59,38 @@ export class OrdersService {
       product.stock -= it.quantity;
       await this.productsRepo.save(product);
 
+      // Apply discount to get final price
+      const finalPrice =
+        product.discountPercent > 0
+          ? Number(product.price) * (1 - product.discountPercent / 100)
+          : Number(product.price);
+
       const item = this.orderItemsRepo.create({
         product,
         quantity: it.quantity,
-        priceAtTime: product.price,
+        priceAtTime: finalPrice,
       });
 
-      subtotal += Number(product.price) * it.quantity;
+      originalSubtotal += Number(product.price) * it.quantity;
+      discountedSubtotal += finalPrice * it.quantity;
       items.push(item);
     }
 
-    // Calculate VAT at 10%
-    const vatAmount = Math.round(subtotal * 10) / 100;
+    originalSubtotal = Math.round(originalSubtotal * 100) / 100;
+    discountedSubtotal = Math.round(discountedSubtotal * 100) / 100;
 
-    // Shipping: free if subtotal >= $500, otherwise $5
-    const shippingAmount = subtotal >= 500 ? 0 : 5;
+    // 1. VAT: 10% on original subtotal (before discount)
+    const vatAmount = Math.round(originalSubtotal * 0.10 * 100) / 100;
 
+    // 2. Discount on VAT-inclusive amount
+    const discountAmount = Math.round((originalSubtotal - discountedSubtotal) * 1.10 * 100) / 100;
+
+    // 3. Shipping: applied after VAT and discount
+    const shippingAmount = discountedSubtotal >= 500 ? 0 : 5;
+
+    // Total = original + VAT - discount + shipping
     const totalAmount =
-      Math.round((subtotal + vatAmount + shippingAmount) * 100) / 100;
+      Math.round((originalSubtotal + vatAmount - discountAmount + shippingAmount) * 100) / 100;
 
     const order = this.ordersRepo.create({
       user,
@@ -162,32 +177,47 @@ export class OrdersService {
 
     if (dto.items && dto.items.length > 0) {
       const newItems: OrderItem[] = [];
-      let newSubtotal = 0;
+      let newOriginalSubtotal = 0;
+      let newDiscountedSubtotal = 0;
 
       for (const it of dto.items) {
         const product = await this.productsRepo.findOneBy({ id: it.productId });
         if (!product) throw new NotFoundException('Product not found');
 
+        // Apply discount to get final price
+        const finalPrice =
+          product.discountPercent > 0
+            ? Number(product.price) * (1 - product.discountPercent / 100)
+            : Number(product.price);
+
         const item = this.orderItemsRepo.create({
           product,
           quantity: it.quantity,
-          priceAtTime: product.price,
+          priceAtTime: finalPrice,
         });
 
-        newSubtotal += Number(product.price) * it.quantity;
+        newOriginalSubtotal += Number(product.price) * it.quantity;
+        newDiscountedSubtotal += finalPrice * it.quantity;
         newItems.push(item);
       }
 
-      // Calculate VAT at 10%
-      const newVat = Math.round(newSubtotal * 10) / 100;
+      newOriginalSubtotal = Math.round(newOriginalSubtotal * 100) / 100;
+      newDiscountedSubtotal = Math.round(newDiscountedSubtotal * 100) / 100;
 
-      // Shipping: free if subtotal >= $500, otherwise $5
-      const newShipping = newSubtotal >= 500 ? 0 : 5;
+      // 1. VAT: 10% on original subtotal (before discount)
+      const newVat = Math.round(newOriginalSubtotal * 0.10 * 100) / 100;
+
+      // 2. Discount on VAT-inclusive amount
+      const newDiscount = Math.round((newOriginalSubtotal - newDiscountedSubtotal) * 1.10 * 100) / 100;
+
+      // 3. Shipping: applied after VAT and discount
+      const newShipping = newDiscountedSubtotal >= 500 ? 0 : 5;
 
       order.items = newItems;
       order.shippingAmount = newShipping;
+      // Total = original + VAT - discount + shipping
       order.totalAmount =
-        Math.round((newSubtotal + newVat + newShipping) * 100) / 100;
+        Math.round((newOriginalSubtotal + newVat - newDiscount + newShipping) * 100) / 100;
     }
 
     const { items: _unusedItems, ...rest } = dto;
@@ -347,8 +377,21 @@ export class OrdersService {
       (sum, item) => sum + Number(item.priceAtTime) * item.quantity,
       0,
     );
+
+    // Calculate original subtotal (before discount) from product prices
+    const originalSubtotal = order.items.reduce(
+      (sum, item) => sum + Number(item.product?.price ?? item.priceAtTime) * item.quantity,
+      0,
+    );
+
+    // VAT: 10% on original subtotal (before discount)
+    const vat = Math.round(originalSubtotal * 0.10 * 100) / 100;
+
+    // Discount on VAT-inclusive amount
+    const baseDiscount = originalSubtotal - subtotal;
+    const totalDiscount = Math.round(baseDiscount * 1.10 * 100) / 100;
+
     const shipping = Number(order.shippingAmount);
-    const vat = Math.round(subtotal * 10) / 100;
     const total = Number(order.totalAmount);
 
     // Build PDF
@@ -392,15 +435,17 @@ export class OrdersService {
     // ── Items table header ──
     const tableTop = doc.y;
     const col1 = 50;  // Product
-    const col2 = 280; // Qty
-    const col3 = 350; // Price
-    const col4 = 440; // Total
+    const col2 = 220; // Qty
+    const col3 = 270; // Original Price
+    const col4 = 350; // Discount
+    const col5 = 430; // Total
 
     doc.fontSize(9).font('Helvetica-Bold').fillColor('#374151');
     doc.text('Product', col1, tableTop);
     doc.text('Qty', col2, tableTop);
     doc.text('Unit Price', col3, tableTop);
-    doc.text('Total', col4, tableTop);
+    doc.text('Discount', col4, tableTop);
+    doc.text('Total', col5, tableTop);
     doc.moveDown(0.5);
 
     doc.strokeColor('#e5e7eb').lineWidth(0.5)
@@ -412,13 +457,24 @@ export class OrdersService {
     for (const item of order.items) {
       const y = doc.y;
       const productName = item.product?.name || 'Unknown Product';
-      const unitPrice = Number(item.priceAtTime);
-      const lineTotal = unitPrice * item.quantity;
+      const originalPrice = Number(item.product?.price ?? item.priceAtTime);
+      const finalPrice = Number(item.priceAtTime);
+      const discountPct = item.product?.discountPercent ?? 0;
+      const lineTotal = finalPrice * item.quantity;
 
-      doc.text(productName, col1, y, { width: 220 });
+      doc.text(productName, col1, y, { width: 160 });
       doc.text(String(item.quantity), col2, y);
-      doc.text(`$${unitPrice.toFixed(2)}`, col3, y);
-      doc.text(`$${lineTotal.toFixed(2)}`, col4, y);
+
+      if (discountPct > 0) {
+        // Show original price with strikethrough effect
+        doc.fillColor('#6b7280').text(`$${originalPrice.toFixed(2)}`, col3, y);
+        doc.fillColor('#16a34a').text(`-${discountPct}%`, col4, y);
+      } else {
+        doc.fillColor('#000000').text(`$${originalPrice.toFixed(2)}`, col3, y);
+        doc.fillColor('#6b7280').text('—', col4, y);
+      }
+
+      doc.fillColor('#000000').text(`$${lineTotal.toFixed(2)}`, col5, y);
       doc.moveDown(0.3);
     }
 
@@ -432,13 +488,21 @@ export class OrdersService {
     const totalsValX = 440;
 
     doc.fontSize(10).font('Helvetica');
-    doc.text('Subtotal:', totalsX, doc.y, { continued: false });
-    doc.text(`$${subtotal.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+
+    doc.fillColor('#000000').text('Subtotal:', totalsX, doc.y, { continued: false });
+    doc.text(`$${originalSubtotal.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
 
     doc.text('VAT (10%):', totalsX, doc.y, { continued: false });
     doc.text(`$${vat.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
 
-    doc.text('Shipping:', totalsX, doc.y, { continued: false });
+    // Show discount if applicable
+    if (totalDiscount > 0) {
+      doc.fillColor('#16a34a').font('Helvetica-Bold').text('Discount:', totalsX, doc.y, { continued: false });
+      doc.fillColor('#16a34a').text(`-$${totalDiscount.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
+      doc.font('Helvetica');
+    }
+
+    doc.fillColor('#000000').text('Shipping:', totalsX, doc.y, { continued: false });
     doc.text(shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`, totalsValX, doc.y - doc.currentLineHeight());
 
     doc.moveDown(0.3);

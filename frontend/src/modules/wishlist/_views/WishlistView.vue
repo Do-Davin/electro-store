@@ -27,13 +27,16 @@
 
     <!-- Empty state -->
     <StateView
-      v-if="wishlist.items.length === 0"
+      v-if="!wishlist.loading && wishlist.items.length === 0"
       icon="wishlist"
       title="Your wishlist is empty"
       subtitle="Save products you love for later."
       action-to="/products"
       action-text="Browse Products"
     />
+
+    <!-- Loading state -->
+    <SkeletonLoader v-else-if="wishlist.loading" variant="grid" :count="3" />
 
     <!-- Wishlist grid -->
     <div
@@ -105,7 +108,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useWishlistStore } from '../_stores/wishlist.store';
 import Navbar from '@/components/Navbar.vue';
 import BreadcrumbNav from '@/components/BreadcrumbNav.vue';
@@ -113,8 +116,14 @@ import Footer from '@/components/Footer.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Trash2 } from 'lucide-vue-next';
 import StateView from '@/components/StateView.vue';
+import SkeletonLoader from '@/components/SkeletonLoader.vue';
 
 const wishlist = useWishlistStore();
+
+// Fetch fresh product data on mount
+onMounted(() => {
+  wishlist.refreshProducts();
+});
 
 // Modal state
 const modal = reactive({

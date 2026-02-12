@@ -224,7 +224,15 @@
             <div class="border-t border-white/10 mt-4 pt-4 space-y-2 text-sm">
               <div class="flex justify-between text-gray-400">
                 <span>Subtotal</span>
-                <span>${{ orderItemsSubtotal.toFixed(2) }}</span>
+                <span>${{ orderOriginalSubtotal.toFixed(2) }}</span>
+              </div>
+              <div class="flex justify-between text-gray-400">
+                <span>VAT (10%)</span>
+                <span>${{ orderVat.toFixed(2) }}</span>
+              </div>
+              <div v-if="orderDiscount > 0" class="flex justify-between text-green-400">
+                <span>Discount</span>
+                <span>-${{ orderDiscount.toFixed(2) }}</span>
               </div>
               <div class="flex justify-between text-gray-400">
                 <span>VAT (10%)</span>
@@ -382,8 +390,24 @@ const orderItemsSubtotal = computed(() => {
   )
 })
 
+// Original subtotal (before discount) from product prices
+const orderOriginalSubtotal = computed(() => {
+  if (!order.value?.items) return 0
+  return order.value.items.reduce(
+    (sum, item) => sum + item.quantity * Number(item.product?.price ?? item.priceAtTime),
+    0,
+  )
+})
+
+// Discount on VAT-inclusive amount
+const orderDiscount = computed(() => {
+  const baseDiscount = orderOriginalSubtotal.value - orderItemsSubtotal.value
+  return Math.round(baseDiscount * 1.10 * 100) / 100
+})
+
+// VAT: 10% on original subtotal (before discount)
 const orderVat = computed(() => {
-  return Math.round(orderItemsSubtotal.value * 10) / 100
+  return Math.round(orderOriginalSubtotal.value * 0.10 * 100) / 100
 })
 
 // Payment state from URL query params

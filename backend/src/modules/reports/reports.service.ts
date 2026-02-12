@@ -63,13 +63,23 @@ export class ReportsService {
       0,
     );
 
-    // Derive VAT from items (10% of subtotal)
+    // Derive VAT from items (10% of original subtotal, before discount)
     const totalVat = paidOrders.reduce((sum, o) => {
-      const subtotal = o.items.reduce(
-        (s, item) => s + Number(item.priceAtTime) * item.quantity,
+      const originalSubtotal = o.items.reduce(
+        (s, item) => s + Number(item.product?.price ?? item.priceAtTime) * item.quantity,
         0,
       );
-      return sum + Math.round(subtotal * 10) / 100;
+      return sum + Math.round(originalSubtotal * 0.10 * 100) / 100;
+    }, 0);
+
+    // Calculate total discount on VAT-inclusive amount
+    const totalDiscountAmount = paidOrders.reduce((sum, o) => {
+      const baseDiscount = o.items.reduce((s, item) => {
+        const originalPrice = Number(item.product?.price ?? item.priceAtTime);
+        const finalPrice = Number(item.priceAtTime);
+        return s + (originalPrice - finalPrice) * item.quantity;
+      }, 0);
+      return sum + Math.round(baseDiscount * 1.10 * 100) / 100;
     }, 0);
 
     const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
@@ -121,6 +131,7 @@ export class ReportsService {
       ['Total Orders', String(totalOrders)],
       ['Paid Orders', String(totalPaidOrders)],
       ['Total Revenue', `$${totalRevenue.toFixed(2)}`],
+      ['Total Discounts Given', `$${totalDiscountAmount.toFixed(2)}`],
       ['Total VAT Collected', `$${totalVat.toFixed(2)}`],
       ['Total Shipping Collected', `$${totalShipping.toFixed(2)}`],
     ];
