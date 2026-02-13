@@ -203,7 +203,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useOrderStore } from '../_stores/order.store'
 import { orderApi } from '../_services/order.service'
 import { isLoggedIn } from '@/lib/auth'
-import { placeholderSvg } from '@/lib/utils'
+import { placeholderSvg, resolveImageUrl } from '@/lib/utils'
 import OrderStatusBadge from './OrderStatusBadge.vue'
 import { useToast } from '@/composables/useToast'
 
@@ -241,11 +241,8 @@ async function handleDownloadReceipt(orderId) {
   }
 }
 
-const API = import.meta.env.VITE_API_URL
-
 function getImageUrl(img) {
-  if (!img) return placeholderSvg
-  return img.startsWith('http') ? img : API + img
+  return resolveImageUrl(img)
 }
 
 function onImageError(event) {

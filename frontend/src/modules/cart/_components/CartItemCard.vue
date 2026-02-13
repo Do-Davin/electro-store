@@ -70,7 +70,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { Plus, Minus, Trash2 } from 'lucide-vue-next'
-import { placeholderSvg } from '@/lib/utils'
+import { placeholderSvg, resolveImageUrl } from '@/lib/utils'
 
 const props = defineProps({
   item: {
@@ -81,12 +81,7 @@ const props = defineProps({
 
 const emit = defineEmits(['increment', 'decrement', 'remove'])
 
-const API = import.meta.env.VITE_API_URL
-
-const toUrl = (img) => {
-  if (!img) return placeholderSvg
-  return img.startsWith('http') ? img : API + img
-}
+const toUrl = (img) => resolveImageUrl(img)
 
 const imageSource = ref(toUrl(props.item.imageUrl))
 

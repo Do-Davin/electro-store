@@ -5,6 +5,21 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+/** Backend API base URL — single source of truth for image resolution */
+const API_BASE = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'https://electro-store-backend-p7dc.onrender.com';
+
+/**
+ * Resolve a product/avatar image URL.
+ * - If the URL is already absolute (http/https), return as-is.
+ * - If it's a relative path like `/uploads/products/...`, prepend the backend URL.
+ * - If falsy, return the placeholder SVG.
+ */
+export function resolveImageUrl(img) {
+  if (!img) return placeholderSvg;
+  if (img.startsWith('http')) return img;
+  return API_BASE + img;
+}
+
 /** Inline SVG data URI used as a fallback src for broken / missing images */
 export const placeholderSvg = `data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">` +

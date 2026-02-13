@@ -22,7 +22,7 @@
         <div v-else-if="product" class="grid grid-cols-1 md:grid-cols-2 gap-14">
           <!-- LEFT: Main Image -->
           <div class="bg-white rounded-2xl p-8 shadow-sm relative border border-white/6">
-            <img :src="product.imageUrl" class="max-h-110 mx-auto object-contain" />
+            <img :src="resolveImageUrl(product.imageUrl)" class="max-h-110 mx-auto object-contain" />
 
             <!-- Wishlist Heart -->
             <button
@@ -198,6 +198,7 @@ import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import ProductCardGrid from '@/components/ProductCardGrid.vue'
 import AddToCartButton from '@/modules/cart/_components/AddToCartButton.vue'
 import axios from '@/lib/axios'
+import { resolveImageUrl } from '@/lib/utils'
 import { useWishlistStore } from '@/modules/wishlist/_stores/wishlist.store'
 import { MIN_SKELETON_MS } from '../_constants/ui'
 

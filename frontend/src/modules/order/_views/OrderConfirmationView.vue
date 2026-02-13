@@ -372,7 +372,7 @@ import SuccessResult from '../_components/SuccessResult.vue'
 import CancelledResult from '../_components/CancelledResult.vue'
 import { useOrderStore } from '../_stores/order.store'
 import { orderApi } from '../_services/order.service'
-import { placeholderSvg } from '@/lib/utils'
+import { placeholderSvg, resolveImageUrl } from '@/lib/utils'
 import { useToast } from '@/composables/useToast'
 
 const route = useRoute()
@@ -499,11 +499,8 @@ const statusClass = computed(() => {
   }
 })
 
-const API = import.meta.env.VITE_API_URL
-
 function getImageUrl(img) {
-  if (!img) return placeholderSvg
-  return img.startsWith('http') ? img : API + img
+  return resolveImageUrl(img)
 }
 
 function onImageError(event) {

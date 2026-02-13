@@ -85,7 +85,7 @@
             <td>
               <img
                 v-if="p.imageUrl"
-                :src="p.imageUrl"
+                :src="resolveImageUrl(p.imageUrl)"
                 class="thumb"
                 alt="product"
               />
@@ -184,6 +184,7 @@ import {
   ChevronLeft, ChevronRight, Star,
 } from 'lucide-vue-next'
 import axios from '@/lib/axios'
+import { resolveImageUrl } from '@/lib/utils'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useToast } from '@/composables/useToast'
 

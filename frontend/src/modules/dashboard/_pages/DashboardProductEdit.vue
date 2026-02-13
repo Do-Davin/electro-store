@@ -224,6 +224,7 @@ import {
   LayoutGrid, Tag, Settings, Star,
 } from 'lucide-vue-next'
 import axios from '@/lib/axios'
+import { resolveImageUrl } from '@/lib/utils'
 import { useProductStore } from '@/modules/product/_stores/product.store'
 import SpecsEditor from '../_components/SpecsEditor.vue'
 import { useToast } from '@/composables/useToast'
@@ -233,8 +234,7 @@ const route = useRoute()
 const productStore = useProductStore()
 const toast = useToast()
 
-const API = 'https://electro-store-backend-p7dc.onrender.com'
-const toUrl = (img) => img?.startsWith('http') ? img : API + img
+const toUrl = (img) => resolveImageUrl(img)
 
 // Page state
 const pageLoading = ref(true)
@@ -317,7 +317,7 @@ function populateForm(data) {
   }
 
   // Set existing image preview
-  preview.value = data.imageUrl || null
+  preview.value = data.imageUrl ? resolveImageUrl(data.imageUrl) : null
 }
 
 async function fetchProduct() {

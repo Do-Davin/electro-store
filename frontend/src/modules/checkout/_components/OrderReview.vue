@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { ShoppingBag } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
 import { useCartStore } from '@/modules/cart/_stores/cart.store'
-import { placeholderSvg } from '@/lib/utils'
+import { placeholderSvg, resolveImageUrl } from '@/lib/utils'
 
 const props = defineProps({
   /** Pass the created order object to show order items from backend instead of cart */
@@ -11,7 +11,6 @@ const props = defineProps({
 })
 
 const cart = useCartStore()
-const API = import.meta.env.VITE_API_URL
 
 /**
  * Normalised list of items – reads from the order prop when available,
@@ -77,8 +76,7 @@ const displayTotal = computed(() => {
 })
 
 function getImageUrl(img) {
-  if (!img) return placeholderSvg
-  return img.startsWith('http') ? img : API + img
+  return resolveImageUrl(img)
 }
 
 function onImageError(event) {

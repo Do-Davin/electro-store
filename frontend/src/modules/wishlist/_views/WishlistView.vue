@@ -53,7 +53,7 @@
         <!-- Image -->
         <div class="h-44 flex items-center justify-center mb-4 bg-white rounded-xl p-4">
           <img
-            :src="product.imageUrl"
+            :src="resolveImageUrl(product.imageUrl)"
             alt=""
             class="max-h-full object-contain group-hover:scale-110 transition-all
             duration-400 ease-out"
@@ -117,6 +117,7 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Trash2 } from 'lucide-vue-next';
 import StateView from '@/components/StateView.vue';
 import SkeletonLoader from '@/components/SkeletonLoader.vue';
+import { resolveImageUrl } from '@/lib/utils';
 
 const wishlist = useWishlistStore();
 
