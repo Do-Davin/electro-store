@@ -80,13 +80,22 @@ watch(() => route.path, () => {
   scrollY.value = window.scrollY;
 });
 
+// Close mobile menu on Escape key
+const onKeydown = (e) => {
+  if (e.key === 'Escape' && isMobileMenuOpen.value) {
+    closeMobileMenu();
+  }
+};
+
 onMounted(() => {
   scrollY.value = window.scrollY;
   window.addEventListener('scroll', updateNavbarColor);
+  window.addEventListener('keydown', onKeydown);
 });
 
 onUnmounted(() => {
   window.removeEventListener('scroll', updateNavbarColor);
+  window.removeEventListener('keydown', onKeydown);
 });
 </script>
 
@@ -207,6 +216,15 @@ onUnmounted(() => {
     </div>
 
   </header>
+
+  <!-- Mobile overlay — click anywhere to close -->
+  <Transition name="overlay-fade">
+    <div
+      v-if="!isAdmin && isMobileMenuOpen"
+      class="fixed inset-0 z-30 bg-black/40 md:hidden"
+      @click="closeMobileMenu"
+    />
+  </Transition>
 
   <!-- Mobile Navigation Menu -->
   <Transition name="slide-fade">
@@ -401,6 +419,20 @@ onUnmounted(() => {
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   transform: translateY(-10px);
+  opacity: 0;
+}
+
+/* Overlay fade */
+.overlay-fade-enter-active {
+  transition: opacity 0.25s ease-out;
+}
+
+.overlay-fade-leave-active {
+  transition: opacity 0.2s ease-in;
+}
+
+.overlay-fade-enter-from,
+.overlay-fade-leave-to {
   opacity: 0;
 }
 

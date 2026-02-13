@@ -72,7 +72,15 @@
   </g>
   
   <!-- Khmer script-inspired text "ELECTRO STORE" -->
-  <g fill="#e07530">
-    <text x="100" y="195" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="2">ELECTRO STORE</text>
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff8c42;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ff6b9d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <g>
+    <text x="100" y="195" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="2" fill="url(#logoGradient)">ELECTRO STORE</text>
   </g>
 </svg>

@@ -1,17 +1,16 @@
 <template>
   <Transition name="splash-fade" @after-leave="$emit('done')">
     <div v-if="visible" class="splash-overlay">
-      <!-- Animated background particles -->
+      <!-- Lightweight background particles -->
       <div class="particles">
-        <div v-for="i in 40" :key="i" class="particle" :style="particleStyle(i)" />
+        <div v-for="i in 12" :key="i" class="particle" :style="particles[i - 1]" />
       </div>
 
-      <!-- Gradient orbs for depth -->
-      <div class="orb orb-1" />
-      <div class="orb orb-2" />
+      <!-- Single subtle orb -->
+      <div class="orb" />
 
       <div class="splash-content">
-        <!-- Logo container with glow effect -->
+        <!-- Logo container with shining glow -->
         <div class="logo-container">
           <div class="logo-glow-outer" />
           <div class="logo-glow" />
@@ -19,12 +18,14 @@
             src="/icons/logo.svg"
             alt="Electro Store"
             class="splash-logo"
+            width="240"
+            height="240"
+            fetchpriority="high"
           />
         </div>
 
-        <!-- Modern loading indicator -->
+        <!-- Minimal loading indicator -->
         <div class="loading-section">
-          <!-- Circular progress spinner -->
           <div class="spinner-ring">
             <svg viewBox="0 0 50 50" class="spinner-svg">
               <circle
@@ -38,7 +39,6 @@
             </svg>
           </div>
 
-          <!-- Loading text with dots animation -->
           <div class="loading-text">
             Loading<span class="dots">
               <span class="dot">.</span>
@@ -59,33 +59,28 @@ defineEmits(['done'])
 
 const visible = ref(true)
 
-// Generate random styles for particles
-const particleStyle = () => {
-  const size = Math.random() * 4 + 2
-  const x = Math.random() * 100
-  const y = Math.random() * 100
-  const duration = Math.random() * 3 + 2
-  const delay = Math.random() * 2
-
+// Pre-compute particle styles once (avoid recalculating in template)
+const particles = Array.from({ length: 12 }, () => {
+  const size = Math.random() * 3 + 1.5
   return {
     width: `${size}px`,
     height: `${size}px`,
-    left: `${x}%`,
-    top: `${y}%`,
-    animationDuration: `${duration}s`,
-    animationDelay: `${delay}s`,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    animationDuration: `${Math.random() * 2 + 1.5}s`,
+    animationDelay: `${Math.random() * 1}s`,
   }
-}
+})
 
 onMounted(() => {
   // Remove the raw HTML splash from index.html
   const rawSplash = document.getElementById('splash-screen')
   if (rawSplash) rawSplash.remove()
 
-  // Keep Vue splash visible for a short duration, then fade out
+  // Dismiss quickly — 1 second is enough
   setTimeout(() => {
     visible.value = false
-  }, 2000)
+  }, 1000)
 })
 </script>
 
@@ -99,101 +94,66 @@ onMounted(() => {
   justify-content: center;
   background: radial-gradient(ellipse at center, #0d0d1a 0%, #050508 50%, #000000 100%);
   overflow: hidden;
+  will-change: opacity, transform;
+  contain: layout style;
 }
 
-/* Animated background particles */
+/* Lightweight particles — no box-shadow, single animation */
 .particles {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  opacity: 0.8;
+  opacity: 0.6;
+  contain: strict;
 }
 
 .particle {
   position: absolute;
-  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 200, 0.8) 50%, transparent 100%);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
-  animation: float-particle infinite ease-in-out, twinkle 3s infinite ease-in-out;
-  box-shadow:
-    0 0 4px rgba(255, 255, 255, 0.8),
-    0 0 8px rgba(255, 255, 255, 0.4);
+  animation: float-particle infinite ease-in-out;
+  will-change: transform, opacity;
 }
 
 @keyframes float-particle {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
+  0% {
+    transform: translateY(0) translateZ(0);
     opacity: 0;
   }
-  10% {
-    opacity: 1;
+  15% {
+    opacity: 0.8;
   }
-  90% {
-    opacity: 1;
+  85% {
+    opacity: 0.8;
   }
   100% {
-    transform: translateY(-100vh) translateX(20px);
+    transform: translateY(-60vh) translateZ(0);
     opacity: 0;
   }
 }
 
-@keyframes twinkle {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-}
-
-/* Gradient orbs for depth */
+/* Single subtle orb — no filter blur, uses opacity only */
 .orb {
   position: absolute;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-  animation: pulse-orb 4s ease-in-out infinite;
-}
-
-.orb-1 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(255, 140, 66, 0.15) 0%, transparent 70%);
-  top: -10%;
-  left: -10%;
-  animation-delay: 0s;
-}
-
-.orb-2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(255, 180, 100, 0.1) 0%, transparent 70%);
-  bottom: -15%;
-  right: -15%;
-  animation-delay: 2s;
-}
-
-@keyframes pulse-orb {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.2;
-  }
+  background: radial-gradient(circle, rgba(255, 140, 66, 0.12) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.2;
 }
 
 .splash-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 48px;
+  gap: 36px;
   z-index: 1;
 }
 
-/* Logo container with glow */
+/* Logo container with shining glow */
 .logo-container {
   position: relative;
   display: flex;
@@ -203,153 +163,121 @@ onMounted(() => {
 
 .logo-glow-outer {
   position: absolute;
-  inset: -100px;
+  inset: -80px;
   background: radial-gradient(
     circle,
-    rgba(255, 160, 66, 0.4) 0%,
-    rgba(255, 140, 42, 0.25) 40%,
-    rgba(224, 117, 48, 0.1) 70%,
+    rgba(255, 160, 66, 0.35) 0%,
+    rgba(255, 140, 42, 0.2) 35%,
+    rgba(224, 117, 48, 0.08) 65%,
     transparent 85%
   );
   border-radius: 50%;
   animation: glow-pulse-outer 3s ease-in-out infinite;
-  filter: blur(60px);
+  filter: blur(20px);
 }
 
 @keyframes glow-pulse-outer {
   0%, 100% {
-    opacity: 0.6;
-    transform: scale(0.85);
+    opacity: 0.5;
+    transform: scale(0.9) translateZ(0);
   }
   50% {
     opacity: 1;
-    transform: scale(1.15);
+    transform: scale(1.12) translateZ(0);
   }
 }
 
 .logo-glow {
   position: absolute;
-  inset: -60px;
+  inset: -50px;
   background: radial-gradient(
     circle,
-    rgba(255, 140, 66, 0.6) 0%,
-    rgba(255, 120, 42, 0.4) 30%,
-    rgba(224, 117, 48, 0.2) 60%,
+    rgba(255, 140, 66, 0.55) 0%,
+    rgba(255, 120, 42, 0.3) 35%,
+    rgba(224, 117, 48, 0.12) 60%,
     transparent 80%
   );
   border-radius: 50%;
   animation: glow-pulse 2s ease-in-out infinite;
-  filter: blur(40px);
+  filter: blur(10px);
 }
 
 @keyframes glow-pulse {
   0%, 100% {
-    opacity: 0.8;
-    transform: scale(0.9);
+    opacity: 0.75;
+    transform: scale(0.92) translateZ(0);
   }
   50% {
     opacity: 1;
-    transform: scale(1.1);
+    transform: scale(1.08) translateZ(0);
   }
 }
 
 .splash-logo {
-  width: 280px;
-  height: 280px;
+  width: 240px;
+  height: 240px;
   object-fit: contain;
   position: relative;
   z-index: 1;
-  animation:
-    logo-entrance 1s cubic-bezier(0.34, 1.56, 0.64, 1) both,
-    logo-float 3s ease-in-out 1s infinite;
+  animation: logo-entrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   filter:
-    drop-shadow(0 0 60px rgba(255, 140, 66, 0.8))
-    drop-shadow(0 0 100px rgba(255, 120, 42, 0.6))
-    drop-shadow(0 10px 40px rgba(255, 140, 66, 0.5))
-    brightness(1.3)
-    contrast(1.1);
+    drop-shadow(0 0 40px rgba(255, 140, 66, 0.7))
+    drop-shadow(0 0 80px rgba(255, 120, 42, 0.4));
+  will-change: transform, opacity;
 }
 
 @keyframes logo-entrance {
   0% {
     opacity: 0;
-    transform: scale(0.5) rotateY(-180deg);
+    transform: scale(0.7) translateZ(0);
   }
   100% {
     opacity: 1;
-    transform: scale(1) rotateY(0deg);
+    transform: scale(1) translateZ(0);
   }
 }
 
-@keyframes logo-float {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-12px) scale(1.02);
-  }
-}
-
-/* Modern loading section */
+/* Loading section */
 .loading-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
-/* Circular spinner */
+/* Spinner */
 .spinner-ring {
-  width: 50px;
-  height: 50px;
-  position: relative;
+  width: 40px;
+  height: 40px;
 }
 
 .spinner-svg {
   width: 100%;
   height: 100%;
-  transform: rotate(-90deg);
-  animation: rotate-spinner 2s linear infinite;
+  animation: rotate-spinner 1s linear infinite;
+  will-change: transform;
 }
 
 @keyframes rotate-spinner {
-  0% {
-    transform: rotate(-90deg);
-  }
-  100% {
-    transform: rotate(270deg);
+  to {
+    transform: rotate(360deg);
   }
 }
 
 .spinner-circle {
   stroke: #ffffff;
   stroke-linecap: round;
-  stroke-dasharray: 125;
-  stroke-dashoffset: 125;
-  animation: draw-circle 1.5s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
-}
-
-@keyframes draw-circle {
-  0% {
-    stroke-dashoffset: 125;
-  }
-  50% {
-    stroke-dashoffset: 25;
-  }
-  100% {
-    stroke-dashoffset: 125;
-  }
+  stroke-dasharray: 90 35;
+  stroke-dashoffset: 0;
 }
 
 /* Loading text */
 .loading-text {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #ffffff;
   letter-spacing: 2px;
   text-transform: uppercase;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
 }
@@ -360,21 +288,13 @@ onMounted(() => {
 }
 
 .dot {
-  animation: dot-bounce 1.4s infinite;
+  animation: dot-bounce 1.2s infinite;
   opacity: 0;
 }
 
-.dot:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.dot:nth-child(1) { animation-delay: 0s; }
+.dot:nth-child(2) { animation-delay: 0.15s; }
+.dot:nth-child(3) { animation-delay: 0.3s; }
 
 @keyframes dot-bounce {
   0%, 80%, 100% {
@@ -383,36 +303,46 @@ onMounted(() => {
   }
   40% {
     opacity: 1;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
 }
 
-/* Vue transition for smooth fade-out */
+/* Fast fade-out transition */
 .splash-fade-leave-active {
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .splash-fade-leave-to {
   opacity: 0;
-  transform: scale(1.05);
 }
 
-/* Responsive adjustments */
+/* Mobile — smaller logo, fewer resources */
 @media (max-width: 768px) {
   .splash-logo {
+    width: 160px;
+    height: 160px;
+  }
+
+  .logo-glow-outer {
+    inset: -50px;
+  }
+
+  .logo-glow {
+    inset: -30px;
+  }
+
+  .orb {
     width: 200px;
     height: 200px;
   }
 
-  .orb-1,
-  .orb-2 {
-    width: 300px;
-    height: 300px;
+  .loading-text {
+    font-size: 12px;
   }
 
-  .loading-text {
-    font-size: 14px;
+  .spinner-ring {
+    width: 32px;
+    height: 32px;
   }
 }
 
@@ -420,11 +350,20 @@ onMounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .splash-logo,
   .particle,
-  .orb,
   .logo-glow,
-  .spinner-svg {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+  .logo-glow-outer,
+  .spinner-svg,
+  .dot {
+    animation: none !important;
+  }
+
+  .splash-logo {
+    opacity: 1;
+    transform: none;
+  }
+
+  .dot {
+    opacity: 1;
   }
 }
 </style>
