@@ -5,7 +5,7 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import animateOnScroll from './directives/animateOnScroll'
-axios.defaults.baseURL = 'http://localhost:3000'
+axios.defaults.baseURL = 'https://electro-store-q1uw.onrender.com'
 
 const app = createApp(App)
 app.use(createPinia())
