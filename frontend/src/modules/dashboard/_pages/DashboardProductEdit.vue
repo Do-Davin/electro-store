@@ -233,7 +233,7 @@ const route = useRoute()
 const productStore = useProductStore()
 const toast = useToast()
 
-const API = 'https://electro-store-q1uw.onrender.com'
+const API = 'https://electro-store-backend-p7dc.onrender.com'
 const toUrl = (img) => img?.startsWith('http') ? img : API + img
 
 // Page state
