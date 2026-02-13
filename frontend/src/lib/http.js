@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  import.meta.env.VITE_API_BASE_URL || 'https://electro-store-backend-p7dc.onrender.com';
 
 function getToken() {
   return localStorage.getItem('access_token');

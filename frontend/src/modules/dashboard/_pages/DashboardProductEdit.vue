@@ -233,7 +233,7 @@ const route = useRoute()
 const productStore = useProductStore()
 const toast = useToast()
 
-const API = 'http://localhost:3000'
+const API = 'https://electro-store-q1uw.onrender.com'
 const toUrl = (img) => img?.startsWith('http') ? img : API + img
 
 // Page state
@@ -457,9 +457,9 @@ onMounted(fetchProduct)
   border: 1px solid rgba(96,165,250,0.18);
 }
 
-.btn-back:hover { 
+.btn-back:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45); 
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45);
 }
 
 .title {
@@ -497,7 +497,7 @@ onMounted(fetchProduct)
   transition: all 0.2s ease;
 }
 
-.btn-clear:hover { 
+.btn-clear:hover {
   transform: translateY(-1px);
   background: rgba(96,165,250,0.12);
   color: #60a5fa;

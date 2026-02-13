@@ -135,7 +135,7 @@ import axios from '@/lib/axios'
 import ConfirmModal from '@/components/ConfirmModal.vue'
 import { useToast } from '@/composables/useToast'
 
-const API = 'http://localhost:3000'
+const API = 'https://electro-store-q1uw.onrender.com'
 const toUrl = (img) => (img?.startsWith('http') ? img : API + img)
 
 const toast = useToast()

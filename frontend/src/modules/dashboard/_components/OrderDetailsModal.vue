@@ -127,7 +127,7 @@ import {
 } from 'lucide-vue-next'
 import axios from '@/lib/axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://electro-store-backend-p7dc.onrender.com'
 
 const props = defineProps({
   isOpen: { type: Boolean, default: false },

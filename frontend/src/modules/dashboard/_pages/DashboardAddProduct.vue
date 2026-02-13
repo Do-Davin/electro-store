@@ -220,7 +220,7 @@ const loading = ref(false)
 const categories = ref([])
 const brands = ref([])
 
-const API = 'http://localhost:3000'
+const API = 'https://electro-store-q1uw.onrender.com'
 // const API = import.meta.env.VITE_API_URL
 
 const toUrl = (img) =>

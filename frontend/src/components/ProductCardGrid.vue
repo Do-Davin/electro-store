@@ -71,7 +71,7 @@ defineProps({
   emptyText: { type: String, default: 'No products found.' },
 })
 
-const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://electro-store-backend-p7dc.onrender.com'
 
 function resolveImage(url) {
   if (!url) return placeholderSvg

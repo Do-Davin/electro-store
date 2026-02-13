@@ -222,7 +222,7 @@ async function handleDownloadReport() {
   reportError.value = ''
   try {
     const token = localStorage.getItem('access_token')
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://electro-store-backend-p7dc.onrender.com'
     const res = await fetch(
       `${baseUrl}/admin/reports/daily?date=${reportDate.value}`,
       { headers: { Authorization: `Bearer ${token}` } },

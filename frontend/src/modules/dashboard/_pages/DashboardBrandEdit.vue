@@ -125,7 +125,7 @@ import {
 import axios from '@/lib/axios'
 import { useToast } from '@/composables/useToast'
 
-const API = 'http://localhost:3000'
+const API = 'https://electro-store-q1uw.onrender.com'
 const toUrl = (img) => (img?.startsWith('http') ? img : API + img)
 
 const router = useRouter()
@@ -265,7 +265,7 @@ onMounted(loadBrand)
 
 .btn-back:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45); 
+  box-shadow: 0 6px 20px rgba(61, 169, 255, 0.45);
 }
 
 .title {
