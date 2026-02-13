@@ -73,7 +73,8 @@ export class UsersController {
     @Request() req: AuthRequest,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<any> {
-    const avatarUrl = `http://localhost:3000/uploads/avatars/${file.filename}`;
+    // const avatarUrl = `http://localhost:3000/uploads/avatars/${file.filename}`;
+    const avatarUrl = `https://electro-store-q1uw.onrender.com/uploads/avatars/${file.filename}`;
     return this.usersService.updateAvatar(req.user.sub, avatarUrl);
   }
 

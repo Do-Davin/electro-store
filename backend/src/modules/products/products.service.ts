@@ -47,7 +47,8 @@ export class ProductsService {
       name: dto.name,
       description: dto.description,
       price: dto.price,
-      imageUrl: `http://localhost:3000/uploads/products/${file.filename}`,
+      // imageUrl: `http://localhost:3000/uploads/products/${file.filename}`,
+      imageUrl: `https://electro-store-q1uw.onrender.com/uploads/products/${file.filename}`,
       category,
       stock: dto.stock ?? 0,
       rating: dto.rating ?? 0,
@@ -189,7 +190,8 @@ export class ProductsService {
 
     // Update image only if new one uploaded
     if (file) {
-      product.imageUrl = `http://localhost:3000/uploads/products/${file.filename}`;
+      // product.imageUrl = `http://localhost:3000/uploads/products/${file.filename}`;
+      product.imageUrl = `https://electro-store-q1uw.onrender.com/uploads/products/${file.filename}`;
     }
 
     if (dto.name !== undefined) product.name = dto.name;
