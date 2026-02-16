@@ -229,7 +229,7 @@ watch(
   { immediate: true },
 )
 
-const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://electro-store-backend-p7dc.onrender.com'
+const API = import.meta.env.VITE_API_BASE_URL
 
 const logoSrc = computed(() => {
   const url = props.brand?.logoUrl

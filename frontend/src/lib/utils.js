@@ -6,7 +6,7 @@ export function cn(...inputs) {
 }
 
 /** Backend API base URL — single source of truth for image resolution */
-const API_BASE = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'https://electro-store-backend-p7dc.onrender.com';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 /**
  * Resolve a product/avatar image URL.

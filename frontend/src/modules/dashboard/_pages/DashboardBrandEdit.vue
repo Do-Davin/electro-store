@@ -125,7 +125,7 @@ import {
 import axios from '@/lib/axios'
 import { useToast } from '@/composables/useToast'
 
-const API = 'https://electro-store-backend-p7dc.onrender.com'
+const API = import.meta.env.VITE_API_BASE_URL
 const toUrl = (img) => (img?.startsWith('http') ? img : API + img)
 
 const router = useRouter()

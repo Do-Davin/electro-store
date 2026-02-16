@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: 'https://electro-store-backend-p7dc.onrender.com',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 })
 
 instance.interceptors.request.use((config) => {

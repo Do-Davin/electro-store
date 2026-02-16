@@ -9,7 +9,7 @@ import { placeholderSvg } from '@/lib/utils'
 const brandStore = useBrandStore()
 const brands = computed(() => brandStore.brands)
 
-const API = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || 'https://electro-store-backend-p7dc.onrender.com'
+const API = import.meta.env.VITE_API_BASE_URL
 
 function getLogoUrl(url) {
   if (!url) return placeholderSvg

@@ -192,7 +192,7 @@
   </section>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from '@/lib/axios'
 import { Upload, RotateCcw, Plus, Loader2, ImageIcon, DollarSign, Package, FileText, LayoutGrid, Tag, Settings, Star } from 'lucide-vue-next'
@@ -220,8 +220,7 @@ const loading = ref(false)
 const categories = ref([])
 const brands = ref([])
 
-const API = 'https://electro-store-backend-p7dc.onrender.com'
-// const API = import.meta.env.VITE_API_URL
+const API = import.meta.env.VITE_API_BASE_URL
 
 const toUrl = (img) =>
   img?.startsWith('http') ? img : API + img
