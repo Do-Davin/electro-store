@@ -18,6 +18,10 @@ COPY --from=builder /app/package*.json ./
 RUN npm install --only=production
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
+
+# Ensure upload directories exist for multer at runtime
+RUN mkdir -p public/uploads/products public/uploads/brands public/uploads/avatars
 
 ENV PORT=3000
 EXPOSE 3000

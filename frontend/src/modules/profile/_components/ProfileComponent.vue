@@ -593,7 +593,12 @@ function populateUser(data) {
 }
 
 // Computed property for avatar display
-const avatarSrc = computed(() => user.avatar || '')
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+const avatarSrc = computed(() => {
+  if (!user.avatar) return ''
+  if (user.avatar.startsWith('http')) return user.avatar
+  return API_BASE + user.avatar
+})
 const hasAvatar = computed(() => !!user.avatar && !user.avatar.endsWith('default-avatar.png'))
 
 function triggerAvatarUpload() {
